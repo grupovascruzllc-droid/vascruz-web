@@ -266,7 +266,7 @@ footer .wrap{padding-block:24px;display:flex;justify-content:space-between;gap:1
 const WA="https://wa.me/59177006107?text=";
 const CAT=(window.VASCRUZ_CATALOGO&&window.VASCRUZ_CATALOGO.modelos)||[];
 // Formato interno: [marca, modelo+versión, año, tecnología, carrocería, autonomía, colores, precio, foto]
-const V=CAT.map(m=>[m.marca,[m.modelo,m.version].filter(Boolean).join(" "),m.anio,m.tec,m.tipo||"",m.autonomia,m.colores,m.precio,m.foto]).sort((a,b)=>a[7]-b[7]);
+const V=CAT.map(m=>[m.marca,[m.modelo,m.version].filter(Boolean).join(" "),m.anio,m.tec,m.tipo||"",m.autonomia,m.colores,m.precio,m.foto]).sort((a,b)=>(a[7]==null?1e12:a[7])-(b[7]==null?1e12:b[7]));
 
 const fmt=n=>"USD "+n.toLocaleString("de-DE");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -287,7 +287,7 @@ function render(){
       <h3>${esc(v[1])}</h3>
       <dl class="specs"><div><dt>Carrocería</dt><dd>${esc(v[4])}</dd></div><div><dt>Autonomía eléctrica</dt><dd>${v[5]?v[5]+" km":"Consultar"}</dd></div></dl>
       <p class="colors">${esc(v[6])}</p>
-      <div class="price"><div><small>Desde, puesto en Bolivia</small><b>${fmt(v[7])}</b></div><a href="${WA+msg}" target="_blank" rel="noopener">Cotizar →</a></div>
+      <div class="price">${v[7]!=null?`<div><small>Desde, puesto en Bolivia</small><b>${fmt(v[7])}</b></div>`:`<div><small>Precio puesto en Bolivia</small><b>Consultar precio</b></div>`}<a href="${WA+msg}" target="_blank" rel="noopener">Cotizar →</a></div>
     </article>`}).join(""):`<div class="empty">No hay modelos con ese filtro. Pruebe otra búsqueda o escríbanos por WhatsApp.</div>`;
 }
 document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
