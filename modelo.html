@@ -178,7 +178,7 @@ if(!m){
         ${v.interior?`<button type="button" data-v="interior" aria-pressed="false">Interior 360°</button>`:""}
       </div></div>
     <div class="viewer" id="viewer"><div class="hint"><b>Vista 360° del ${esc(nombre)}</b><span>Arrastre con el dedo o el mouse para girar el vehículo.</span><button class="btn btn-gold" type="button" id="cargar360">Cargar vista 360°</button></div></div>
-    <p class="note">Vista referencial del modelo proporcionada por Autohome (China); colores, versión y textos pueden diferir del vehículo importado.</p>
+    <p class="note"><a id="full360" href="${esc(v.exterior||v.interior)}" target="_blank" rel="noopener noreferrer" style="font-weight:700;color:var(--gold)">Abrir la vista 360° en pantalla completa ↗</a><br>Vista referencial del modelo proporcionada por Autohome (China); colores, versión y textos pueden diferir del vehículo importado.</p>
   </section>`:""}
 
   <section>
@@ -190,7 +190,8 @@ if(!m){
   if(v){
     let actual=v.exterior?"exterior":"interior";
     const viewer=document.getElementById("viewer");
-    const show=t=>{actual=t;viewer.innerHTML=`<iframe src="${esc(v[t])}" title="Vista 360° ${t} del ${esc(nombre)}" allow="fullscreen; accelerometer; gyroscope" allowfullscreen></iframe>`;
+    const show=t=>{actual=t;viewer.innerHTML=`<iframe src="${esc(v[t])}" title="Vista 360° ${t} del ${esc(nombre)}" allow="fullscreen; accelerometer; gyroscope" allowfullscreen referrerpolicy="no-referrer"></iframe>`;
+      const fs=document.getElementById("full360"); if(fs) fs.href=v[t];
       document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===t));};
     document.getElementById("cargar360").addEventListener("click",()=>show(actual));
     document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>show(b.dataset.v)));
