@@ -76,6 +76,15 @@ section{padding-block:36px}
 .ficha dt{color:var(--muted);font-size:14px}
 .ficha dd{margin:0;font-weight:600;text-align:right;font-size:14px}
 @media (max-width:760px){.ficha{grid-template-columns:1fr}}
+.fichafull{columns:2;column-gap:40px}
+.fsec{break-inside:avoid;margin-bottom:22px}
+.fsec h3{font-family:var(--body);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 4px;padding-bottom:6px;border-bottom:2px solid var(--gold-soft)}
+.fsec dl{margin:0}.fsec div{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid var(--line)}
+.fsec dt{color:var(--muted);font-size:13.5px}.fsec dd{margin:0;font-weight:600;text-align:right;font-size:13.5px}
+@media (max-width:760px){.fichafull{columns:1}}
+.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.gal img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;background:var(--surface)}
+@media (max-width:640px){.gal{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .aviso{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;margin-top:20px}
 .notfound{padding:80px 0;text-align:center}
 footer{border-top:1px solid var(--line);padding-block:24px;font-size:13px;color:var(--muted)}
@@ -99,7 +108,20 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .pricebox{padding:10px;margin-bottom:8px}.pricebox b{font-size:18pt;margin:2px 0}
   .kpis{margin-top:8px}.kpis div{padding:8px}.kpis b{font-size:13pt}
   .sec-title{margin-bottom:6px}.sec-title h2{font-size:15pt}
-  .ficha dt,.ficha dd{font-size:9.5pt}.aviso{font-size:8.5pt;margin-top:10px;padding-top:8px}
+  .ficha dt,.ficha dd{font-size:9.5pt}.aviso{font-size:8pt;margin-top:8px;padding-top:6px}
+  #galeria{display:block!important;padding-top:6px}
+  #galeria .sec-title{display:none}
+  .gal{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .gal img{border-radius:3px;width:100%;height:auto;aspect-ratio:4/3}
+  .gal img:nth-child(n+4){display:none}
+  #galeria .note{font-size:7.5pt;margin-top:4px}
+  .fichasec{break-before:page}
+  .fichafull{columns:3;column-gap:12px}
+  .fsec{margin-bottom:6px}
+  .fsec h3{font-size:7.5pt;padding-bottom:1px;margin-bottom:1px}
+  .fsec div{padding:0.9px 0;gap:6px;line-height:1.2}
+  .fsec dt,.fsec dd{font-size:6.5pt}
+  .fichasec .sec-title{margin-bottom:4px}
 }
 </style>
 </head>
@@ -118,7 +140,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 <footer><div class="wrap"><span>© 2026 Vascruz Import &amp; Export SRL · Vascruz Grupo Empresarial</span><span>Av. Grigotá B/El Parí, Calle Guariyú #132 · Santa Cruz de la Sierra, Bolivia · +591 77006107</span></div></footer>
 
-<script>document.write('<script src="catalogo.js?v='+Math.floor(Date.now()/60000)+'"><\/script><script src="vistas360.js?v='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
+<script>document.write('<script src="catalogo.js?v='+Math.floor(Date.now()/60000)+'"><\/script><script src="vistas360.js?v='+Math.floor(Date.now()/60000)+'"><\/script><script src="fichas.js?v='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
 <script>
 const WA="https://wa.me/59177006107?text=";
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -137,6 +159,8 @@ if(!m){
   document.title=nombre+" "+(m.version||"")+" | Vascruz Import & Export SRL";
   const msg=encodeURIComponent("Hola Vascruz, quisiera una cotización del "+titulo+".");
   const fi=m.ficha||{};
+  const FX=(window.VASCRUZ_FICHAS||{})[[m.marca,m.modelo,m.version||"",m.anio||""].join("|")];
+  const gal=(FX&&FX.galeria)||[];
   const v=V360[m.marca+"|"+m.modelo];
   const p=m.precio;
   const pago=p!=null?[["50%","Reserva"],["30%","Chasis listo"],["20%","En Iquique"]].map(([pc,t])=>`<div><strong>${fmt(p*parseInt(pc)/100)}</strong><span>${pc} · ${t}</span></div>`).join(""):"";
@@ -171,6 +195,10 @@ if(!m){
     </div>
   </div>
 
+  ${gal.length?`<section id="galeria"><div class="sec-title"><div><div class="eyebrow">Galería</div><h2>Fotos del modelo</h2></div></div>
+    <div class="gal">${gal.map((g,i)=>`<img src="${esc(g)}" alt="${esc(nombre)} – foto ${i+1}" loading="lazy" referrerpolicy="no-referrer" width="800" height="600">`).join("")}</div>
+    <p class="note">Fotos referenciales del modelo (fuente: Autohome). Colores y equipamiento pueden variar según la versión.</p></section>`:""}
+
   ${v?`<section id="vista360">
     <div class="sec-title"><div><div class="eyebrow">Vista interactiva</div><h2>Véalo en 360°</h2></div>
       <div class="tabs" role="group" aria-label="Tipo de vista">
@@ -181,10 +209,10 @@ if(!m){
     <p class="note"><a id="full360" href="${esc(v.exterior||v.interior)}" target="_blank" rel="noopener noreferrer" style="font-weight:700;color:var(--gold)">Abrir la vista 360° en pantalla completa ↗</a><br>Vista referencial del modelo proporcionada por Autohome (China); colores, versión y textos pueden diferir del vehículo importado.</p>
   </section>`:""}
 
-  <section>
+  <section class="fichasec">
     <div class="sec-title"><div><div class="eyebrow">Ficha técnica</div><h2>Características</h2></div></div>
-    <div class="ficha">${dl(filas.slice(0,mitad))}${dl(filas.slice(mitad))}</div>
-    <p class="aviso"><b>Precio y datos referenciales.</b> Sujetos a confirmación de stock, versión y colores al momento de la reserva. Los datos técnicos provienen de fichas de fábrica y fuentes públicas. Este documento no constituye una cotización final.</p>
+    ${FX&&FX.secciones&&FX.secciones.length?`<div class="fichafull">${FX.secciones.map(sec=>`<div class="fsec"><h3>${esc(sec[0])}</h3><dl>${sec[1].map(r=>`<div><dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd></div>`).join("")}</dl></div>`).join("")}</div>`:`<div class="ficha">${dl(filas.slice(0,mitad))}${dl(filas.slice(mitad))}</div>`}
+    ${FX?`<p class="aviso" style="margin-top:12px">Ficha técnica de la versión equivalente vendida en China (fuente: Autohome, ficha n.º ${esc(FX.autohome_spec||"")}). Algunos equipos pueden variar en la versión de exportación.</p>`:""}<p class="aviso"><b>Precio y datos referenciales.</b> Sujetos a confirmación de stock, versión y colores al momento de la reserva. Los datos técnicos provienen de fichas de fábrica y fuentes públicas. Este documento no constituye una cotización final.</p>
   </section>`;
 
   if(v){
