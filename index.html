@@ -124,6 +124,9 @@ section{padding-block:80px}
 .price b{font-family:var(--display);font-size:21px;font-variant-numeric:tabular-nums}
 .price a{font-size:13px;font-weight:700;color:var(--gold);text-decoration:none;white-space:nowrap}
 .price a:hover{text-decoration:underline}
+.card .photo{position:relative;display:block}.card h3 a{text-decoration:none}.card h3 a:hover{color:var(--gold)}
+.b360{position:absolute;top:10px;right:10px;background:rgba(14,14,14,.82);color:#d2ad55;font:600 12px var(--mono);padding:5px 9px;border-radius:4px;letter-spacing:.06em}
+.more{display:inline-flex;align-items:center;min-height:44px;margin:-6px 0 -10px;font-size:13.5px;font-weight:700;color:var(--fg);text-decoration:none}.more:hover{color:var(--gold)}
 .empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:6px}
 .note{margin-top:28px;padding:18px 20px;border-left:3px solid var(--gold);background:var(--surface);font-size:14px;color:var(--muted);border-radius:0 6px 6px 0}
 .note b{color:var(--fg)}
@@ -261,12 +264,12 @@ footer .wrap{padding-block:24px;display:flex;justify-content:space-between;gap:1
 </main>
 <footer><div class="wrap"><span>© 2026 Vascruz Import &amp; Export SRL · Vascruz Grupo Empresarial</span><span>Av. Grigotá B/El Parí, Calle Guariyú #132 · Santa Cruz de la Sierra, Bolivia</span></div></footer>
 
-<script>/* Pide siempre el catálogo más reciente (evita versiones guardadas en caché) */document.write('<script src="catalogo.js?v='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
+<script>/* Pide siempre el catálogo más reciente (evita versiones guardadas en caché) */document.write('<script src="catalogo.js?v='+Math.floor(Date.now()/60000)+'"><\/script><script src="vistas360.js?v='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
 <script>
 const WA="https://wa.me/59177006107?text=";
 const CAT=(window.VASCRUZ_CATALOGO&&window.VASCRUZ_CATALOGO.modelos)||[];
 // Formato interno: [marca, modelo+versión, año, tecnología, carrocería, autonomía, colores, precio, foto]
-const V=CAT.map(m=>[m.marca,[m.modelo,m.version].filter(Boolean).join(" "),m.anio,m.tec,m.tipo||"",m.autonomia,m.colores,m.precio,m.foto]).sort((a,b)=>(a[7]==null?1e12:a[7])-(b[7]==null?1e12:b[7]));
+const V=CAT.map(m=>[m.marca,[m.modelo,m.version].filter(Boolean).join(" "),m.anio,m.tec,m.tipo||"",m.autonomia,m.colores,m.precio,m.foto,m.id,!!(window.VASCRUZ_360||{})[m.marca+"|"+m.modelo]]).sort((a,b)=>(a[7]==null?1e12:a[7])-(b[7]==null?1e12:b[7]));
 
 const fmt=n=>"USD "+n.toLocaleString("de-DE");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -282,12 +285,13 @@ function render(){
     const name=v[0]+" "+v[1]+" ("+v[2]+")";
     const msg=encodeURIComponent("Hola Vascruz, quisiera una cotización del "+name+".");
     return `<article class="card">
-      <div class="photo">${v[8]?`<img src="${esc(v[8])}" alt="${esc(v[0]+" "+v[1])}" loading="lazy" width="720" height="540">`:""}</div>
+      <a class="photo" href="modelo.html?id=${v[9]}" aria-label="Ver ficha del ${esc(v[0]+" "+v[1])}">${v[8]?`<img src="${esc(v[8])}" alt="${esc(v[0]+" "+v[1])}" loading="lazy" width="720" height="540">`:""}${v[10]?`<span class="b360">360°</span>`:""}</a>
       <div class="card-top"><span class="make">${esc(v[0])} · ${v[2]}</span><span class="tag">${v[3]==="PHEV"?"Híbrido enchufable":"100% eléctrico"}</span></div>
-      <h3>${esc(v[1])}</h3>
+      <h3><a href="modelo.html?id=${v[9]}">${esc(v[1])}</a></h3>
       <dl class="specs"><div><dt>Carrocería</dt><dd>${esc(v[4])}</dd></div><div><dt>Autonomía eléctrica</dt><dd>${v[5]?v[5]+" km":"Consultar"}</dd></div></dl>
       <p class="colors">${esc(v[6])}</p>
       <div class="price">${v[7]!=null?`<div><small>Desde, puesto en Bolivia</small><b>${fmt(v[7])}</b></div>`:`<div><small>Precio puesto en Bolivia</small><b>Consultar precio</b></div>`}<a href="${WA+msg}" target="_blank" rel="noopener">Cotizar →</a></div>
+      <a class="more" href="modelo.html?id=${v[9]}">Ver ficha técnica${v[10]?" y vista 360°":""} →</a>
     </article>`}).join(""):`<div class="empty">No hay modelos con ese filtro. Pruebe otra búsqueda o escríbanos por WhatsApp.</div>`;
 }
 document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{

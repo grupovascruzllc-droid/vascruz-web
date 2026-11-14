@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vehículo | Vascruz Import & Export SRL</title>
+<meta name="description" content="Ficha del vehículo eléctrico importado por Vascruz Import & Export SRL: fotos, vista 360°, ficha técnica y precio referencial puesto en Santa Cruz.">
+<link rel="icon" type="image/png" href="img/logo-sm.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#ffffff; --fg:#141414; --muted:#5f5d58; --surface:#f5f4f1; --line:#e3e0d8;
+  --gold:#a8822a; --gold-soft:#f3ead3; --band:#0e0e0e; --band-fg:#f4f1e8; --band-gold:#d2ad55;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f0f0f; --fg:#f1eee6; --muted:#a19d93; --surface:#181817; --line:#2b2a27;
+  --gold:#d6b25e; --gold-soft:#2a2416; --band:#070707; color-scheme:dark}}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.15;font-weight:700;text-wrap:balance}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+header{position:sticky;top:0;z-index:20;background:var(--band);color:var(--band-fg);border-bottom:1px solid #2a2720}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.logo{height:42px;width:auto}
+.back{font-size:14px;font-weight:600;text-decoration:none;opacity:.85}.back:hover{opacity:1;color:var(--band-gold)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;min-height:44px;border-radius:4px;font-weight:700;font-size:14px;text-decoration:none;border:1px solid transparent;cursor:pointer;font-family:var(--body)}
+.btn-gold{background:var(--band-gold);color:#111}.btn-gold:hover{filter:brightness(1.08)}
+.btn-line{border-color:var(--line);background:var(--bg);color:var(--fg)}.btn-line:hover{border-color:var(--gold)}
+/* Hero */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;padding-block:40px 24px;align-items:start}
+.hero .photo{border-radius:8px;overflow:hidden;background:var(--surface);aspect-ratio:4/3}
+.hero .photo img{width:100%;height:100%;object-fit:cover}
+.hero h1{font-size:clamp(26px,3.6vw,40px);margin:10px 0 6px}
+.version{font-size:17px;color:var(--muted);margin:0 0 18px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.tag{font-family:var(--mono);font-size:12px;padding:4px 10px;border-radius:3px;background:var(--gold-soft);color:var(--gold)}
+.pricebox{border:1px solid var(--line);border-radius:8px;padding:20px;margin-bottom:16px}
+.pricebox small{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.pricebox b{display:block;font-family:var(--display);font-size:30px;margin:4px 0 8px;font-variant-numeric:tabular-nums}
+.pricebox p{margin:0;font-size:13px;color:var(--muted)}
+.pay{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.pay div{background:var(--surface);border-radius:6px;padding:10px;text-align:center}
+.pay strong{display:block;font-family:var(--mono);font-size:13px}
+.pay span{font-size:11.5px;color:var(--muted)}
+.ctas{display:flex;flex-wrap:wrap;gap:10px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:18px}
+.kpis div{background:var(--bg);padding:14px;text-align:center}
+.kpis b{display:block;font-family:var(--display);font-size:18px}
+.kpis span{font-size:12px;color:var(--muted)}
+@media (max-width:860px){.hero{grid-template-columns:1fr;gap:24px;padding-top:24px}}
+/* 360 */
+section{padding-block:36px}
+.sec-title{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.sec-title h2{font-size:clamp(22px,2.8vw,30px);margin-top:8px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{font:600 14px var(--body);padding:10px 16px;min-height:44px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.viewer{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:#e9e9ea;aspect-ratio:16/9;min-height:320px}
+.viewer iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.viewer .hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:20px;color:#333;background:#eceae5}
+.note{font-size:12.5px;color:var(--muted);margin-top:10px}
+@media (max-width:640px){.viewer{aspect-ratio:3/4}}
+/* Ficha */
+.ficha{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px}
+.ficha dl{margin:0}
+.ficha div{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.ficha dt{color:var(--muted);font-size:14px}
+.ficha dd{margin:0;font-weight:600;text-align:right;font-size:14px}
+@media (max-width:760px){.ficha{grid-template-columns:1fr}}
+.aviso{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;margin-top:20px}
+.notfound{padding:80px 0;text-align:center}
+footer{border-top:1px solid var(--line);padding-block:24px;font-size:13px;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+/* Impresión: ficha técnica en una hoja */
+.print-head{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  header,.ctas,#vista360,footer,.back,.noprint{display:none!important}
+  body{font-size:11pt;color:#000;background:#fff}
+  .print-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #a8822a;padding-bottom:8px;margin-bottom:14px}
+  .print-head img{height:46px}
+  .print-head div{text-align:right;font-size:9pt;line-height:1.4}
+  .hero{grid-template-columns:1fr 1fr;gap:20px;padding:0}
+  .hero .photo{aspect-ratio:4/3}
+  section{padding-block:10px}
+  .ficha{gap:0 24px}.ficha div{padding:5px 0}
+  .kpis,.pricebox{break-inside:avoid}
+  body{font-size:10pt;line-height:1.4}
+  .tags{display:none}.hero h1{font-size:20pt;margin:4px 0}.version{margin-bottom:8px}
+  .pricebox{padding:10px;margin-bottom:8px}.pricebox b{font-size:18pt;margin:2px 0}
+  .kpis{margin-top:8px}.kpis div{padding:8px}.kpis b{font-size:13pt}
+  .sec-title{margin-bottom:6px}.sec-title h2{font-size:15pt}
+  .ficha dt,.ficha dd{font-size:9.5pt}.aviso{font-size:8.5pt;margin-top:10px;padding-top:8px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a href="index.html" aria-label="Vascruz Import & Export, inicio"><img class="logo" src="img/logo-sm.png" alt="Vascruz Import &amp; Export SRL" width="360" height="204"></a>
+    <a class="back" href="index.html#catalogo">← Volver al catálogo</a>
+    <a class="btn btn-gold" id="wa-top" href="https://wa.me/59177006107" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+</header>
+
+<main class="wrap" id="app">
+  <div class="notfound" id="cargando">Cargando…</div>
+</main>
+
+<footer><div class="wrap"><span>© 2026 Vascruz Import &amp; Export SRL · Vascruz Grupo Empresarial</span><span>Av. Grigotá B/El Parí, Calle Guariyú #132 · Santa Cruz de la Sierra, Bolivia · +591 77006107</span></div></footer>
+
+<script>document.write('<script src="catalogo.js?v='+Math.floor(Date.now()/60000)+'"><\/script><script src="vistas360.js?v='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
+<script>
+const WA="https://wa.me/59177006107?text=";
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=n=>"USD "+Math.round(n).toLocaleString("de-DE");
+const CAT=(window.VASCRUZ_CATALOGO&&window.VASCRUZ_CATALOGO.modelos)||[];
+const V360=window.VASCRUZ_360||{};
+const id=new URLSearchParams(location.search).get("id");
+const m=CAT.find(x=>String(x.id)===String(id));
+const app=document.getElementById("app");
+
+if(!m){
+  app.innerHTML=`<div class="notfound"><h1 style="font-size:26px">Este vehículo no está disponible</h1><p>Puede que ya no esté en el catálogo.</p><p><a class="btn btn-gold" href="index.html#catalogo">Ver catálogo</a></p></div>`;
+}else{
+  const nombre=[m.marca,m.modelo].join(" ");
+  const titulo=nombre+" "+(m.version||"")+(m.anio?" ("+m.anio+")":"");
+  document.title=nombre+" "+(m.version||"")+" | Vascruz Import & Export SRL";
+  const msg=encodeURIComponent("Hola Vascruz, quisiera una cotización del "+titulo+".");
+  const fi=m.ficha||{};
+  const v=V360[m.marca+"|"+m.modelo];
+  const p=m.precio;
+  const pago=p!=null?[["50%","Reserva"],["30%","Chasis listo"],["20%","En Iquique"]].map(([pc,t])=>`<div><strong>${fmt(p*parseInt(pc)/100)}</strong><span>${pc} · ${t}</span></div>`).join(""):"";
+  const filas=[
+    ["Marca",m.marca],["Modelo",m.modelo],["Versión",m.version],["Año modelo",m.anio],
+    ["Tecnología",m.tec==="PHEV"?"Híbrido enchufable (PHEV)":"100% eléctrico (BEV)"],["Carrocería",m.tipo],
+    ["Autonomía de referencia",m.autonomia?m.autonomia+" km (CLTC)":null],["Batería",fi.bateria],
+    ["Potencia",fi.potencia],["Tracción",fi.traccion],["Dimensiones (L × A × H)",fi.dimensiones],
+    ["Distancia entre ejes",fi.distancia_ejes],["Carga",fi.carga],["Destacado",fi.destacado],["Colores disponibles",m.colores]
+  ].filter(r=>r[1]);
+  const mitad=Math.ceil(filas.length/2);
+  const dl=a=>`<dl>${a.map(r=>`<div><dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd></div>`).join("")}</dl>`;
+  const kpi=[[m.autonomia?m.autonomia+" km":"—","Autonomía"],[fi.bateria_destacado||"—","Batería"],[fi.potencia_destacado||"—","Potencia"]];
+
+  app.innerHTML=`
+  <div class="print-head"><img src="img/logo.png" alt="Vascruz Import &amp; Export SRL"><div><b>Vascruz Import &amp; Export SRL</b><br>Av. Grigotá B/El Parí, Calle Guariyú #132, Santa Cruz de la Sierra<br>WhatsApp +591 77006107 · grupovascruzllc@gmail.com · vascruz.com</div></div>
+  <div class="hero">
+    <div class="photo">${m.foto?`<img src="${esc(m.foto)}" alt="${esc(nombre)}" width="720" height="540">`:""}</div>
+    <div>
+      <div class="eyebrow">${esc(m.marca)} · ${esc(m.anio||"")}</div>
+      <h1>${esc(nombre)}</h1>
+      <p class="version">${esc(m.version||"")}</p>
+      <div class="tags"><span class="tag">${m.tec==="PHEV"?"Híbrido enchufable":"100% eléctrico"}</span>${m.tipo?`<span class="tag">${esc(m.tipo)}</span>`:""}${v?`<span class="tag">Vista 360°</span>`:""}</div>
+      <div class="pricebox">
+        ${p!=null?`<small>Precio referencial, puesto en Santa Cruz</small><b>${fmt(p)}</b><div class="pay">${pago}</div>`:`<small>Precio puesto en Santa Cruz</small><b>Consultar precio</b><p>Escríbanos y le enviamos su cotización detallada.</p>`}
+      </div>
+      <div class="ctas">
+        <a class="btn btn-gold" href="${WA+msg}" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
+        <button class="btn btn-line" type="button" onclick="window.print()">Descargar ficha técnica (PDF)</button>
+      </div>
+      <div class="kpis">${kpi.map(k=>`<div><b>${esc(k[0])}</b><span>${k[1]}</span></div>`).join("")}</div>
+    </div>
+  </div>
+
+  ${v?`<section id="vista360">
+    <div class="sec-title"><div><div class="eyebrow">Vista interactiva</div><h2>Véalo en 360°</h2></div>
+      <div class="tabs" role="group" aria-label="Tipo de vista">
+        ${v.exterior?`<button type="button" data-v="exterior" aria-pressed="true">Exterior 360°</button>`:""}
+        ${v.interior?`<button type="button" data-v="interior" aria-pressed="false">Interior 360°</button>`:""}
+      </div></div>
+    <div class="viewer" id="viewer"><div class="hint"><b>Vista 360° del ${esc(nombre)}</b><span>Arrastre con el dedo o el mouse para girar el vehículo.</span><button class="btn btn-gold" type="button" id="cargar360">Cargar vista 360°</button></div></div>
+    <p class="note">Vista referencial del modelo proporcionada por Autohome (China); colores, versión y textos pueden diferir del vehículo importado.</p>
+  </section>`:""}
+
+  <section>
+    <div class="sec-title"><div><div class="eyebrow">Ficha técnica</div><h2>Características</h2></div></div>
+    <div class="ficha">${dl(filas.slice(0,mitad))}${dl(filas.slice(mitad))}</div>
+    <p class="aviso"><b>Precio y datos referenciales.</b> Sujetos a confirmación de stock, versión y colores al momento de la reserva. Los datos técnicos provienen de fichas de fábrica y fuentes públicas. Este documento no constituye una cotización final.</p>
+  </section>`;
+
+  if(v){
+    let actual=v.exterior?"exterior":"interior";
+    const viewer=document.getElementById("viewer");
+    const show=t=>{actual=t;viewer.innerHTML=`<iframe src="${esc(v[t])}" title="Vista 360° ${t} del ${esc(nombre)}" allow="fullscreen; accelerometer; gyroscope" allowfullscreen loading="lazy"></iframe>`;
+      document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===t));};
+    document.getElementById("cargar360").addEventListener("click",()=>show(actual));
+    document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>show(b.dataset.v)));
+  }
+}
+document.getElementById("wa-top").href=WA+encodeURIComponent("Hola Vascruz, quisiera información sobre la importación de un vehículo eléctrico.");
+</script>
+</body>
+</html>
