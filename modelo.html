@@ -190,7 +190,7 @@ if(!m){
   if(v){
     let actual=v.exterior?"exterior":"interior";
     const viewer=document.getElementById("viewer");
-    const show=t=>{actual=t;viewer.innerHTML=`<iframe src="${esc(v[t])}" title="Vista 360° ${t} del ${esc(nombre)}" allow="fullscreen; accelerometer; gyroscope" allowfullscreen loading="lazy"></iframe>`;
+    const show=t=>{actual=t;viewer.innerHTML=`<iframe src="${esc(v[t])}" title="Vista 360° ${t} del ${esc(nombre)}" allow="fullscreen; accelerometer; gyroscope" allowfullscreen></iframe>`;
       document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===t));};
     document.getElementById("cargar360").addEventListener("click",()=>show(actual));
     document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>show(b.dataset.v)));
