@@ -1,6 +1,6 @@
 // Generado automáticamente desde el Excel de Vascruz con "Actualizar web". No editar a mano.
 window.VASCRUZ_CATALOGO = {
- "actualizado": "2026-11-14T21:47:28Z",
+ "actualizado": "2026-11-14T21:53:22Z",
  "modelos": [
   {
    "id": 1,
@@ -12,7 +12,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV compacto",
    "autonomia": 520,
    "colores": "Plata/Gris · Plata/Naranja · Plata/Morado · Gris/Gris · Gris/Naranja · Blanco/Morado",
-   "precio": 28650,
+   "precio": null,
    "foto": "img/autos/01_Deepal_S05.jpg",
    "ficha": {
     "bateria": "56,1 kWh LFP (CATL)",
@@ -36,7 +36,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV compacto",
    "autonomia": 520,
    "colores": "Plata/Gris · Plata/Naranja · Plata/Morado · Gris/Gris · Gris/Naranja · Gris/Morado · Blanco/Morado",
-   "precio": 29280,
+   "precio": null,
    "foto": "img/autos/02_Deepal_S05.jpg",
    "ficha": {
     "bateria": "56,1 kWh LFP (CATL)",
@@ -60,7 +60,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV compacto",
    "autonomia": 620,
    "colores": "Plata/Gris · Plata/Naranja · Plata/Morado · Gris/Gris · Gris/Naranja · Gris/Morado · Blanco/Morado",
-   "precio": 30790,
+   "precio": null,
    "foto": "img/autos/03_Deepal_S05.jpg",
    "ficha": {
     "bateria": "68,8 kWh LFP (CATL)",
@@ -84,7 +84,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV mediano",
    "autonomia": 630,
    "colores": "Gris/Morado · Negro/Morado · Gris/Naranja",
-   "precio": 34260,
+   "precio": null,
    "foto": "img/autos/04_Deepal_S07.jpg",
    "ficha": {
     "bateria": "77,94 kWh LFP",
@@ -132,7 +132,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV compacto",
    "autonomia": 506,
    "colores": "Gris/Negro · Blanco/Negro",
-   "precio": 24820,
+   "precio": null,
    "foto": "img/autos/06_Changan_Qiyuan_Q05.jpg",
    "ficha": {
     "bateria": "51,9 kWh LFP (CATL)",
@@ -156,7 +156,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "Hatchback",
    "autonomia": 530,
    "colores": "Beige · Morado · Plata · Verde",
-   "precio": 22360,
+   "precio": null,
    "foto": "img/autos/07_AION_UT.jpg",
    "ficha": {
     "bateria": "LFP (CATL) · consultar capacidad",
@@ -180,7 +180,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "Hatchback",
    "autonomia": 320,
    "colores": "Blanco",
-   "precio": 19300,
+   "precio": null,
    "foto": "img/autos/08_AION_UT.jpg",
    "ficha": {
     "bateria": "LFP · consultar capacidad",
@@ -204,7 +204,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "Hatchback",
    "autonomia": 420,
    "colores": "Beige · Verde",
-   "precio": 20710,
+   "precio": null,
    "foto": "img/autos/09_AION_UT.jpg",
    "ficha": {
     "bateria": "44,1 kWh LFP",
@@ -228,7 +228,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV mediano",
    "autonomia": 530,
    "colores": "Negro/Marrón · Negro/Gris · Gris/Gris",
-   "precio": 26910,
+   "precio": null,
    "foto": "img/autos/10_AION_i60.jpg",
    "ficha": {
     "bateria": "62,3 kWh LFP",
@@ -252,7 +252,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV mediano",
    "autonomia": 650,
    "colores": "Negro/Gris",
-   "precio": 28970,
+   "precio": null,
    "foto": "img/autos/11_AION_i60.jpg",
    "ficha": {
     "bateria": "75 kWh LFP",
@@ -276,7 +276,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV compacto",
    "autonomia": 401,
    "colores": "Consultar colores disponibles",
-   "precio": 23880,
+   "precio": null,
    "foto": "img/autos/12_BYD_Yuan_Up.jpg",
    "ficha": {
     "bateria": "45,12 kWh Blade (LFP)",
@@ -300,7 +300,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV compacto",
    "autonomia": 401,
    "colores": "Blanco/Beige · Gris/Beige",
-   "precio": 23060,
+   "precio": null,
    "foto": "img/autos/13_BYD_Yuan_Up.jpg",
    "ficha": {
     "bateria": "45,12 kWh Blade (LFP)",
@@ -324,7 +324,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV mediano",
    "autonomia": 605,
    "colores": "Gris Ahumado/Negro Nocturno · Gris Nube/Gris Marino",
-   "precio": 34670,
+   "precio": null,
    "foto": "img/autos/14_BYD_Sealion_06_EV.jpg",
    "ficha": {
     "bateria": "78,7 kWh Blade (LFP)",
@@ -348,7 +348,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV coupé",
    "autonomia": 610,
    "colores": "Blanco/Negro · Negro/Negro",
-   "precio": 39250,
+   "precio": null,
    "foto": "img/autos/15_BYD_Sealion_07_EV.jpg",
    "ficha": {
     "bateria": "80,6 kWh Blade (LFP)",
@@ -372,7 +372,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV coupé",
    "autonomia": 600,
    "colores": "Negro/Morado · Blanco/Morado · Gris/Morado",
-   "precio": 38600,
+   "precio": null,
    "foto": "img/autos/16_Mazda_EZ-60_EV.jpg",
    "ficha": {
     "bateria": "77,94 kWh LFP",
@@ -396,7 +396,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV coupé",
    "autonomia": 600,
    "colores": "Gris/Negro · Morado/Negro · Blanco/Negro · Negro/Negro",
-   "precio": 39710,
+   "precio": null,
    "foto": "img/autos/17_Mazda_EZ-60_EV.jpg",
    "ficha": {
     "bateria": "77,94 kWh LFP",
@@ -420,7 +420,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV coupé",
    "autonomia": 600,
    "colores": "Morado/Morado · Blanco/Morado · Gris/Morado",
-   "precio": 39540,
+   "precio": null,
    "foto": "img/autos/18_Mazda_EZ-60_EV.jpg",
    "ficha": {
     "bateria": "77,94 kWh LFP",
@@ -444,7 +444,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV mediano",
    "autonomia": 580,
    "colores": "Plata/Blanco · Morado/Blanco · Blanco/Negro · Negro-Blanco/Negro · Azul/Blanco · Verde/Blanco · Negro/Blanco",
-   "precio": 33610,
+   "precio": null,
    "foto": "img/autos/19_Nissan_NX8.jpg",
    "ficha": {
     "bateria": "73 kWh LFP (CATL)",
@@ -468,7 +468,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV mediano",
    "autonomia": 580,
    "colores": "Plata/Blanco · Morado/Blanco · Blanco/Negro · Negro-Blanco/Negro · Azul/Blanco · Verde/Blanco · Negro/Blanco",
-   "precio": 35130,
+   "precio": null,
    "foto": "img/autos/20_Nissan_NX8.jpg",
    "ficha": {
     "bateria": "73 kWh LFP (CATL)",
@@ -492,7 +492,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV mediano",
    "autonomia": 650,
    "colores": "Plata/Blanco · Morado/Blanco · Blanco/Negro · Negro-Blanco/Negro · Azul/Blanco · Verde/Blanco · Negro/Blanco",
-   "precio": 37480,
+   "precio": null,
    "foto": "img/autos/21_Nissan_NX8.jpg",
    "ficha": {
     "bateria": "81 kWh LFP (CATL)",
@@ -516,7 +516,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV mediano",
    "autonomia": 630,
    "colores": "Plata/Blanco · Morado/Blanco · Blanco/Negro · Negro-Blanco/Negro · Azul/Blanco · Verde/Blanco · Negro/Blanco",
-   "precio": 41360,
+   "precio": null,
    "foto": "img/autos/22_Nissan_NX8.jpg",
    "ficha": {
     "bateria": "81 kWh LFP (CATL)",
@@ -540,7 +540,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV compacto",
    "autonomia": 520,
    "colores": "Consultar",
-   "precio": 29970,
+   "precio": null,
    "foto": "img/autos/23_Toyota_bZ3X.jpg",
    "ficha": {
     "bateria": "58,3 kWh LFP",
@@ -564,7 +564,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV compacto",
    "autonomia": 520,
    "colores": "Consultar",
-   "precio": 31730,
+   "precio": null,
    "foto": "img/autos/24_Toyota_bZ3X.jpg",
    "ficha": {
     "bateria": "58,3 kWh LFP",
@@ -588,7 +588,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV compacto",
    "autonomia": 610,
    "colores": "Consultar",
-   "precio": 35600,
+   "precio": null,
    "foto": "img/autos/25_Toyota_bZ3X.jpg",
    "ficha": {
     "bateria": "67,9 kWh LFP",
@@ -612,7 +612,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "SUV todoterreno",
    "autonomia": null,
    "colores": "Negro/Naranja · Verde/Naranja · Plata/Naranja",
-   "precio": 46670,
+   "precio": null,
    "foto": "img/autos/26_BYD_Leopard_7.jpg",
    "ficha": {
     "bateria": "26,6 / 35,6 kWh Blade (LFP)",
@@ -636,7 +636,7 @@ window.VASCRUZ_CATALOGO = {
    "tipo": "Pickup",
    "autonomia": null,
    "colores": "Negro/Negro · Blanco/Negro · Azul/Negro",
-   "precio": 49250,
+   "precio": null,
    "foto": "img/autos/27_BYD_Shark_6.jpg",
    "ficha": {
     "bateria": "29,58 kWh Blade (LFP)",
