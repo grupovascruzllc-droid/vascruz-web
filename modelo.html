@@ -11,14 +11,11 @@
 <style>
 :root{
   --bg:#ffffff; --fg:#141414; --muted:#5f5d58; --surface:#f5f4f1; --line:#e3e0d8;
-  --gold:#a8822a; --gold-soft:#f3ead3; --band:#0e0e0e; --band-fg:#f4f1e8; --band-gold:#d2ad55;
+  --gold:#a8822a; --gold-soft:#f3ead3; --band:#ffffff; --band-fg:#141414; --band-gold:#a8822a; --band-soft:#f8f5ee; --band-line:#e6dfcd;
   --display:"Unbounded","Arial Black",system-ui,sans-serif;
   --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
 }
-@media (prefers-color-scheme:dark){:root{
-  --bg:#0f0f0f; --fg:#f1eee6; --muted:#a19d93; --surface:#181817; --line:#2b2a27;
-  --gold:#d6b25e; --gold-soft:#2a2416; --band:#070707; color-scheme:dark}}
 *{box-sizing:border-box}
 html{color-scheme:light}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
@@ -28,12 +25,12 @@ a{color:inherit}
 h1,h2,h3{font-family:var(--display);margin:0;line-height:1.15;font-weight:700;text-wrap:balance}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
-header{position:sticky;top:0;z-index:20;background:var(--band);color:var(--band-fg);border-bottom:1px solid #2a2720}
+header{position:sticky;top:0;z-index:20;background:var(--band);color:var(--band-fg);border-bottom:1px solid var(--band-line)}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
 .logo{height:42px;width:auto}
 .back{font-size:14px;font-weight:600;text-decoration:none;opacity:.85}.back:hover{opacity:1;color:var(--band-gold)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;min-height:44px;border-radius:4px;font-weight:700;font-size:14px;text-decoration:none;border:1px solid transparent;cursor:pointer;font-family:var(--body)}
-.btn-gold{background:var(--band-gold);color:#111}.btn-gold:hover{filter:brightness(1.08)}
+.btn-gold{background:#d2ad55;color:#111}.btn-gold:hover{filter:brightness(1.08)}
 .btn-line{border-color:var(--line);background:var(--bg);color:var(--fg)}.btn-line:hover{border-color:var(--gold)}
 /* Hero */
 .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;padding-block:40px 24px;align-items:start}
