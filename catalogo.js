@@ -1,6 +1,6 @@
 // Generado automáticamente desde el Excel de Vascruz con "Actualizar web". No editar a mano.
 window.VASCRUZ_CATALOGO = {
- "actualizado": "2026-11-14T21:16:05Z",
+ "actualizado": "2026-11-14T21:47:28Z",
  "modelos": [
   {
    "id": 1,
@@ -96,6 +96,30 @@ window.VASCRUZ_CATALOGO = {
     "distancia_ejes": "2.900 mm",
     "carga": "Consultar",
     "destacado": "Versión Ultra con sensor láser (LiDAR)"
+   }
+  },
+  {
+   "id": 5,
+   "marca": "BYD",
+   "modelo": "Dolphin Mini",
+   "version": "405 km libre (Seagull)",
+   "anio": "2026",
+   "tec": "BEV",
+   "tipo": "Hatchback",
+   "autonomia": 405,
+   "colores": "Blanco/Azul",
+   "precio": null,
+   "foto": "img/autos/05_BYD_Dolphin_Mini.jpg",
+   "ficha": {
+    "bateria": "38,88 kWh Blade (LFP)",
+    "bateria_destacado": "38,9 kWh",
+    "potencia": "55 kW (74 hp)",
+    "potencia_destacado": "74 HP",
+    "traccion": "Delantera (FWD)",
+    "dimensiones": "3.780 × 1.715 × 1.540 mm",
+    "distancia_ejes": "2.500 mm",
+    "carga": "30–80% en aprox. 30 min",
+    "destacado": "Compacto urbano, fácil de estacionar"
    }
   },
   {
@@ -653,6 +677,7 @@ window.VASCRUZ_CATALOGO = {
   "24_Toyota_bZ3X.jpg": "f8168726d9bea1ce6da30e31d15900a4b747de4b",
   "25_Toyota_bZ3X.jpg": "a54c598c2b2ea2e8383fd6b4de035d660a21873a",
   "26_BYD_Leopard_7.jpg": "d0af4577c1bc619af257c117ea800c7bacad81fb",
-  "27_BYD_Shark_6.jpg": "51b35194bce590bc6c8c6cba596ffc57e7733df0"
+  "27_BYD_Shark_6.jpg": "51b35194bce590bc6c8c6cba596ffc57e7733df0",
+  "05_BYD_Dolphin_Mini.jpg": "5b27eba3f52495bb199a771760f3c8ffbd04894b"
  }
 };
