@@ -261,7 +261,7 @@ footer .wrap{padding-block:24px;display:flex;justify-content:space-between;gap:1
 </main>
 <footer><div class="wrap"><span>© 2026 Vascruz Import &amp; Export SRL · Vascruz Grupo Empresarial</span><span>Av. Grigotá B/El Parí, Calle Guariyú #132 · Santa Cruz de la Sierra, Bolivia</span></div></footer>
 
-<script src="catalogo.js"></script>
+<script>/* Pide siempre el catálogo más reciente (evita versiones guardadas en caché) */document.write('<script src="catalogo.js?v='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
 <script>
 const WA="https://wa.me/59177006107?text=";
 const CAT=(window.VASCRUZ_CATALOGO&&window.VASCRUZ_CATALOGO.modelos)||[];
