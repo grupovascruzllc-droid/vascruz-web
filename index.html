@@ -261,37 +261,12 @@ footer .wrap{padding-block:24px;display:flex;justify-content:space-between;gap:1
 </main>
 <footer><div class="wrap"><span>© 2026 Vascruz Import &amp; Export SRL · Vascruz Grupo Empresarial</span><span>Av. Grigotá B/El Parí, Calle Guariyú #132 · Santa Cruz de la Sierra, Bolivia</span></div></footer>
 
+<script src="catalogo.js"></script>
 <script>
 const WA="https://wa.me/59177006107?text=";
-const V=[
-["Deepal","S05 520 Inteligencia (Zhi Xing)",2027,"BEV","SUV compacto",520,"Plata/Gris · Plata/Naranja · Plata/Morado · Gris/Gris · Gris/Naranja · Blanco/Morado",28650],
-["Deepal","S05 520 Inteligencia Premium (Zhi Zhen)",2027,"BEV","SUV compacto",520,"Plata/Gris · Plata/Naranja · Plata/Morado · Gris/Gris · Gris/Naranja · Gris/Morado · Blanco/Morado",29280],
-["Deepal","S05 620 Inteligencia Premium",2027,"BEV","SUV compacto",620,"Plata/Gris · Plata/Naranja · Plata/Morado · Gris/Gris · Gris/Naranja · Gris/Morado · Blanco/Morado",30790],
-["Deepal","S07 630 Ultra Láser",2026,"BEV","SUV mediano",630,"Gris/Morado · Negro/Morado · Gris/Naranja",34260],
-["BYD","Dolphin Mini 405 km (Seagull)",2026,"BEV","Hatchback",405,"Blanco/Azul",20130],
-["Changan","Qiyuan Q05 506 Max+",2027,"BEV","SUV compacto",506,"Gris/Negro · Blanco/Negro",24820],
-["AION","UT 530 Ningde",2027,"BEV","Hatchback",530,"Beige · Morado · Plata · Verde",22360],
-["AION","UT Starry 320",2026,"BEV","Hatchback",320,"Blanco",19300],
-["AION","UT Deluxe 420",2025,"BEV","Hatchback",420,"Beige · Verde",20710],
-["AION","i60 530 Estándar",2026,"BEV","SUV mediano",530,"Negro/Marrón · Negro/Gris · Gris/Gris",26910],
-["AION","i60 650 Estándar",2026,"BEV","SUV mediano",650,"Negro/Gris",28970],
-["BYD","Yuan Up Feichi 401 km Vitalidad",2027,"BEV","SUV compacto",401,"Consultar colores disponibles",23880],
-["BYD","Yuan Up Inteligente 401 km Vitalidad",2026,"BEV","SUV compacto",401,"Blanco/Beige · Gris/Beige",23060],
-["BYD","Sealion 06 EV 605 km Pilotaje Plus",2026,"BEV","SUV mediano",605,"Gris Ahumado/Negro Nocturno · Gris Nube/Gris Marino",34670],
-["BYD","Sealion 07 EV 610 km Pilotaje Inteligente",2026,"BEV","SUV coupé",610,"Blanco/Negro · Negro/Negro",39250],
-["Mazda","EZ-60 EV 600 MAX",2027,"BEV","SUV coupé",600,"Negro/Morado · Blanco/Morado · Gris/Morado",38600],
-["Mazda","EZ-60 EV 600 MAX Deportiva",2027,"BEV","SUV coupé",600,"Gris/Negro · Morado/Negro · Blanco/Negro · Negro/Negro",39710],
-["Mazda","EZ-60 EV 600 MAX",2026,"BEV","SUV coupé",600,"Morado/Morado · Blanco/Morado · Gris/Morado",39540],
-["Nissan","NX8 580 Pro EV",2026,"BEV","SUV mediano",580,"7 combinaciones · el precio varía según el color",33610],
-["Nissan","NX8 580 Max EV",2026,"BEV","SUV mediano",580,"7 combinaciones · el precio varía según el color",35130],
-["Nissan","NX8 650 Max EV",2026,"BEV","SUV mediano",650,"7 combinaciones · el precio varía según el color",37480],
-["Nissan","NX8 630 Master EV",2026,"BEV","SUV mediano",630,"7 combinaciones · el precio varía según el color",41360],
-["Toyota","bZ3X 520 Pro",2026,"BEV","SUV compacto",520,"Consultar colores disponibles",29970],
-["Toyota","bZ3X 520 Pro+",2026,"BEV","SUV compacto",520,"Consultar colores disponibles",31730],
-["Toyota","bZ3X 610 Max",2026,"BEV","SUV compacto",610,"Consultar colores disponibles",35600],
-["BYD","Leopard 7 Edición Internacional 4x4",2026,"PHEV","SUV todoterreno",null,"Negro/Naranja · Verde/Naranja · Plata/Naranja",46670],
-["BYD","Shark 6 Premium Estándar",2026,"PHEV","Pickup",null,"Negro/Negro · Blanco/Negro · Azul/Negro",49250]
-].map((v,i)=>[...v,i+1]).sort((a,b)=>a[7]-b[7]);
+const CAT=(window.VASCRUZ_CATALOGO&&window.VASCRUZ_CATALOGO.modelos)||[];
+// Formato interno: [marca, modelo+versión, año, tecnología, carrocería, autonomía, colores, precio, foto]
+const V=CAT.map(m=>[m.marca,[m.modelo,m.version].filter(Boolean).join(" "),m.anio,m.tec,m.tipo||"",m.autonomia,m.colores,m.precio,m.foto]).sort((a,b)=>a[7]-b[7]);
 
 const fmt=n=>"USD "+n.toLocaleString("de-DE");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -307,7 +282,7 @@ function render(){
     const name=v[0]+" "+v[1]+" ("+v[2]+")";
     const msg=encodeURIComponent("Hola Vascruz, quisiera una cotización del "+name+".");
     return `<article class="card">
-      <div class="photo"><img src="img/v${String(v[8]).padStart(2,"0")}.jpg" alt="${esc(v[0]+" "+v[1])}" loading="lazy" width="720" height="540"></div>
+      <div class="photo">${v[8]?`<img src="${esc(v[8])}" alt="${esc(v[0]+" "+v[1])}" loading="lazy" width="720" height="540">`:""}</div>
       <div class="card-top"><span class="make">${esc(v[0])} · ${v[2]}</span><span class="tag">${v[3]==="PHEV"?"Híbrido enchufable":"100% eléctrico"}</span></div>
       <h3>${esc(v[1])}</h3>
       <dl class="specs"><div><dt>Carrocería</dt><dd>${esc(v[4])}</dd></div><div><dt>Autonomía eléctrica</dt><dd>${v[5]?v[5]+" km":"Consultar"}</dd></div></dl>
