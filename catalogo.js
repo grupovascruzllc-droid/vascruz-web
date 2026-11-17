@@ -1,6 +1,6 @@
 // Generado automáticamente desde el Excel de Vascruz con "Actualizar web". No editar a mano.
 window.VASCRUZ_CATALOGO = {
- "actualizado": "2026-11-14T21:53:22Z",
+ "actualizado": "2026-11-17T03:02:19Z",
  "modelos": [
   {
    "id": 1,
@@ -102,7 +102,7 @@ window.VASCRUZ_CATALOGO = {
    "id": 5,
    "marca": "BYD",
    "modelo": "Dolphin Mini",
-   "version": "405 km libre (Seagull)",
+   "version": "405 km free edition  (Seagull)",
    "anio": "2026",
    "tec": "BEV",
    "tipo": "Hatchback",
@@ -628,6 +628,30 @@ window.VASCRUZ_CATALOGO = {
   },
   {
    "id": 27,
+   "marca": "Toyota",
+   "modelo": "BZ5",
+   "version": "PRO",
+   "anio": "2026",
+   "tec": "BEV",
+   "tipo": "SUV coupé",
+   "autonomia": 550,
+   "colores": "Consultar",
+   "precio": null,
+   "foto": "img/autos/28_Toyota_BZ5.jpg",
+   "ficha": {
+    "bateria": "65,28 kWh LFP",
+    "bateria_destacado": "65,3 kWh",
+    "potencia": "200 kW (272 CV)",
+    "potencia_destacado": "272 CV",
+    "traccion": "Delantera (FWD)",
+    "dimensiones": "4.780 × 1.866 × 1.510 mm",
+    "distancia_ejes": "2.880 mm",
+    "carga": "30–80% en aprox. 27 min",
+    "destacado": "Toyota Pilot L2 · cámara 360° · maletero 463 L"
+   }
+  },
+  {
+   "id": 28,
    "marca": "BYD",
    "modelo": "Shark 6",
    "version": "Premium Estándar LHD",
@@ -678,6 +702,7 @@ window.VASCRUZ_CATALOGO = {
   "25_Toyota_bZ3X.jpg": "a54c598c2b2ea2e8383fd6b4de035d660a21873a",
   "26_BYD_Leopard_7.jpg": "d0af4577c1bc619af257c117ea800c7bacad81fb",
   "27_BYD_Shark_6.jpg": "51b35194bce590bc6c8c6cba596ffc57e7733df0",
-  "05_BYD_Dolphin_Mini.jpg": "5b27eba3f52495bb199a771760f3c8ffbd04894b"
+  "05_BYD_Dolphin_Mini.jpg": "5b27eba3f52495bb199a771760f3c8ffbd04894b",
+  "28_Toyota_BZ5.jpg": "def6c6186220c7c19876118e21397c16fb145aef"
  }
 };

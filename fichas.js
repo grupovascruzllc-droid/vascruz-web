@@ -1864,7 +1864,7 @@ window.VASCRUZ_FICHAS = {
 "https://car3.autoimg.cn/cardfs/product/g33/M02/93/2F/800x600_0_q95_c42_autohomecar__ChxpVmqwn86AOcsZABUkIJRCFVA891.jpg"
 ]
 },
-"BYD|Dolphin Mini|405 km libre (Seagull)|2026": {
+"BYD|Dolphin Mini|405 km free edition  (Seagull)|2026": {
 "version_china": "2026款 405km 自在版",
 "autohome_spec": 77718,
 "secciones": [
@@ -11968,6 +11968,465 @@ window.VASCRUZ_FICHAS = {
 "https://car2.autoimg.cn/cardfs/product/g34/M08/BC/43/800x600_0_q95_c42_autohomecar__ChxpWGpwRuuAF-lEAC0vxuEQxwM248.jpg",
 "https://car2.autoimg.cn/cardfs/product/g33/M00/CA/A8/800x600_0_q95_c42_autohomecar__ChxpVWpxZcSAVZI9AB3FpkBvkv4507.jpg",
 "https://car2.autoimg.cn/cardfs/product/g34/M03/C3/D9/800x600_0_q95_c42_autohomecar__ChtpWGpxZCOAJ-e4ACiVafJklu4242.jpg"
+]
+},
+"Toyota|BZ5|PRO|2026": {
+"version_china": "2027款 550 PRO",
+"autohome_spec": 78978,
+"secciones": [
+[
+"Datos generales",
+[
+[
+"Segmento",
+"SUV mediano"
+],
+[
+"Tipo de energía",
+"100% eléctrico"
+],
+[
+"Carrocería",
+"SUV 5 puertas, 5 asientos"
+],
+[
+"Lanzamiento (China)",
+"26/08/2026"
+],
+[
+"Garantía de fábrica (China)",
+"3 años o 100.000 km"
+]
+]
+],
+[
+"Rendimiento",
+[
+[
+"Autonomía eléctrica CLTC",
+"550 km"
+],
+[
+"Potencia máxima",
+"200 kW"
+],
+[
+"Potencia eléctrica",
+"272 CV"
+],
+[
+"Torque máximo",
+"330 N·m"
+],
+[
+"Aceleración 0–50 km/h",
+"3,4 s"
+],
+[
+"Velocidad máxima",
+"160 km/h"
+]
+]
+],
+[
+"Batería y carga",
+[
+[
+"Tipo de batería",
+"Litio ferrofosfato (LFP)"
+],
+[
+"Capacidad de batería",
+"65,28 kWh"
+],
+[
+"Fabricante de celdas",
+"FinDreams (BYD)"
+],
+[
+"Refrigeración de batería",
+"Líquida"
+],
+[
+"Consumo eléctrico",
+"13,5 kWh/100 km"
+],
+[
+"Potencia de carga rápida",
+"90 kW"
+],
+[
+"Tiempo de carga rápida",
+"27 min"
+],
+[
+"Rango de carga rápida",
+"30–80 %"
+]
+]
+],
+[
+"Motor y tracción",
+[
+[
+"Tipo de motor eléctrico",
+"Imanes permanentes / síncrono"
+],
+[
+"Número de motores",
+"Un motor"
+],
+[
+"Ubicación del motor",
+"Delantero"
+],
+[
+"Motor delantero",
+"200 kW"
+],
+[
+"Tracción",
+"Delantera (FWD)"
+]
+]
+],
+[
+"Dimensiones y pesos",
+[
+[
+"Largo × ancho × alto",
+"4.780 × 1.866 × 1.510 mm"
+],
+[
+"Distancia entre ejes",
+"2.880 mm"
+],
+[
+"Trocha delantera",
+"1.610 mm"
+],
+[
+"Trocha trasera",
+"1.608 mm"
+],
+[
+"Ángulo de ataque",
+"16°"
+],
+[
+"Ángulo de salida",
+"22°"
+],
+[
+"Radio de giro",
+"5,6 m"
+],
+[
+"Peso en vacío",
+"1.950 kg"
+],
+[
+"Peso máximo cargado",
+"2.365 kg"
+],
+[
+"Puertas",
+"5"
+],
+[
+"Asientos",
+"5"
+],
+[
+"Maletero trasero",
+"463 L"
+],
+[
+"Coeficiente aerodinámico",
+"0,24"
+]
+]
+],
+[
+"Chasis, frenos y ruedas",
+[
+[
+"Suspensión delantera",
+"Independiente McPherson"
+],
+[
+"Dirección",
+"Asistida eléctrica"
+],
+[
+"Estructura",
+"Monocasco"
+],
+[
+"Frenos delanteros",
+"Discos ventilados"
+],
+[
+"Frenos traseros",
+"Discos"
+],
+[
+"Freno de estacionamiento",
+"Electrónico"
+],
+[
+"Neumáticos delanteros",
+"225/60 R18"
+],
+[
+"Neumáticos traseros",
+"225/60 R18"
+],
+[
+"Rueda de auxilio",
+"Kit de reparación"
+]
+]
+],
+[
+"Seguridad",
+[
+[
+"Airbags frontales",
+"Conductor: sí · Acompañante: sí"
+],
+[
+"Airbags laterales",
+"Delanteros: sí · Traseros: no"
+],
+[
+"Airbags de cortina",
+"Delanteros: sí · Traseros: sí"
+],
+[
+"Airbag central delantero",
+"Sí"
+],
+[
+"Frenos ABS",
+"Sí"
+],
+[
+"Control de estabilidad (ESP)",
+"Sí"
+],
+[
+"Monitoreo de presión de neumáticos",
+"Sí, con lectura de presión"
+],
+[
+"Anclajes ISOFIX",
+"Sí"
+],
+[
+"Frenado autónomo de emergencia",
+"Sí"
+],
+[
+"Alerta de colisión frontal",
+"Sí"
+],
+[
+"Alerta de colisión trasera",
+"Sí"
+],
+[
+"Alerta de salida de carril",
+"Sí"
+],
+[
+"Alerta al abrir puertas",
+"Sí"
+],
+[
+"Alerta de fatiga",
+"Sí"
+]
+]
+],
+[
+"Asistencias de manejo",
+[
+[
+"Sistema de asistencia",
+"Toyota Pilot"
+],
+[
+"Nivel de asistencia",
+"Nivel 2"
+],
+[
+"Control crucero",
+"Adaptativo de velocidad completa"
+],
+[
+"Centrado de carril",
+"Sí"
+],
+[
+"Mantenimiento de carril",
+"Sí"
+],
+[
+"Alerta de punto ciego",
+"Sí"
+],
+[
+"Reconocimiento de señales",
+"Sí"
+],
+[
+"Sensores de estacionamiento",
+"Delanteros: no · Traseros: sí"
+],
+[
+"Cámaras",
+"Cámara 360°"
+],
+[
+"Auto Hold",
+"Sí"
+],
+[
+"Asistente de pendiente",
+"Sí"
+],
+[
+"Modos de manejo",
+"Sport, Eco, Normal/Confort, Nieve, Personalizado"
+],
+[
+"Freno regenerativo",
+"Sí"
+]
+]
+],
+[
+"Confort y tecnología",
+[
+[
+"Pantalla central",
+"15,6\""
+],
+[
+"Tablero digital",
+"5\""
+],
+[
+"Control por voz",
+"Multimedia, Navegación, Teléfono, Aire acondicionado"
+],
+[
+"Red móvil",
+"5G"
+],
+[
+"Auto conectado (app)",
+"Sí"
+],
+[
+"Actualizaciones remotas (OTA)",
+"Sí"
+],
+[
+"Carga inalámbrica del celular",
+"Delanteros"
+],
+[
+"Techo",
+"Panorámico fijo"
+],
+[
+"Portón trasero eléctrico",
+"Sí"
+],
+[
+"Manijas ocultas",
+"Sí"
+],
+[
+"Acceso sin llave",
+"Delanteros"
+],
+[
+"Arranque sin llave",
+"Sí"
+],
+[
+"Luces bajas",
+"LED"
+],
+[
+"Luces altas",
+"LED"
+],
+[
+"Luces diurnas LED",
+"Sí"
+],
+[
+"Luces altas automáticas",
+"Sí"
+],
+[
+"Encendido automático de luces",
+"Sí"
+],
+[
+"Volante",
+"Cuero genuino"
+],
+[
+"Tapizado",
+"Símil cuero"
+],
+[
+"Ajustes asiento del conductor",
+"Adelante/atrás, respaldo, altura"
+],
+[
+"Asientos delanteros",
+"Calefacción, ventilación"
+],
+[
+"Asientos traseros abatibles",
+"Abatibles por partes"
+],
+[
+"Parlantes",
+"6 parlantes"
+],
+[
+"Aire acondicionado",
+"Automático"
+],
+[
+"Bomba de calor",
+"Sí"
+],
+[
+"Climatizador por zonas",
+"Sí"
+],
+[
+"Filtro de aire PM2.5",
+"Sí"
+]
+]
+]
+],
+"galeria": [
+"https://car3.autoimg.cn/cardfs/product/g34/M0A/93/26/800x600_0_q95_c42_autohomecar__ChxpWGqWUdmACArMADt-9GRQoS8181.jpg",
+"https://car2.autoimg.cn/cardfs/product/g33/M08/97/8D/800x600_0_q95_c42_autohomecar__ChxpVWqWUdqAItNkADl1hMAWXJk770.jpg",
+"https://car3.autoimg.cn/cardfs/product/g34/M04/93/26/800x600_0_q95_c42_autohomecar__ChxpWGqWUduAdCbmADxTxoB71C0583.jpg",
+"https://car3.autoimg.cn/cardfs/product/g34/M07/93/1A/800x600_0_q95_c42_autohomecar__ChxpV2qWUduAeFXBAEAeOc3uW_I771.jpg",
+"https://car2.autoimg.cn/cardfs/product/g33/M05/43/5D/800x600_0_q95_c42_autohomecar__ChxpVmqRTJSAcp0ZAEDV0luvXOg130.jpg",
+"https://car3.autoimg.cn/cardfs/product/g34/M03/3B/1B/800x600_0_q95_c42_autohomecar__ChtpWGqRTLyAdZPpADUTIYMX3Ds791.jpg"
 ]
 }
 };
