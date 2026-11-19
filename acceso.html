@@ -391,9 +391,9 @@ async function usuarios() {
     <td><div class="actions" style="margin:0"><button class="btn btn-gold btn-sm" data-u="${u.id}" data-r="asesor">Asesor</button><button class="btn btn-gold btn-sm" data-u="${u.id}" data-r="socio">Socio</button><button class="btn btn-red btn-sm" data-u="${u.id}" data-r="rechazado">Rechazar</button></div></td></tr>`).join("")
     || `<tr><td colspan="5" class="muted">No hay solicitudes pendientes.</td></tr>`;
   const resto = todos.filter(u => u.rol !== "pendiente");
-  const pill = (r) => `<span class="pill ${r === "asesor" || r === "socio" ? "g" : "r"}">${esc(ROLES[r] || r)}</span>`;
+  const pill = (r) => `<span class="pill ${r === "asesor" || r === "socio" || r === "admin" ? "g" : "r"}">${esc(ROLES[r] || r)}</span>`;
   $("#u-todos").innerHTML = resto.map(u => `<tr><td><b>${esc(u.nombre)}</b></td><td>${contacto(u)}</td><td>${pill(u.rol)}</td>
-    <td><select data-u="${u.id}" class="cambio" style="width:auto">${["asesor", "socio", "suspendido", "rechazado"].map(r => `<option value="${r}" ${r === u.rol ? "selected" : ""}>${ROLES[r]}</option>`).join("")}</select></td></tr>`).join("")
+    <td><select data-u="${u.id}" class="cambio" style="width:auto">${["asesor", "socio", "admin", "suspendido", "rechazado"].map(r => `<option value="${r}" ${r === u.rol ? "selected" : ""}>${ROLES[r]}</option>`).join("")}</select></td></tr>`).join("")
     || `<tr><td colspan="4" class="muted">Todavía no hay usuarios aprobados.</td></tr>`;
   document.querySelectorAll("#u-pend button").forEach(b => b.onclick = () => busy(b, async () => {
     const r = b.dataset.r;
@@ -402,7 +402,10 @@ async function usuarios() {
     await usuarios();
   }));
   document.querySelectorAll("#u-todos select.cambio").forEach(s => s.onchange = async () => {
-    await updateDoc(doc(db, "usuarios", s.dataset.u), { rol: s.value, revisado: serverTimestamp(), revisado_por: ME.email }); await usuarios();
+    if (s.value === "admin" && !confirm("¿Dar acceso de Administrador? Podrá ver todos los precios y aprobar usuarios.")) return usuarios();
+    try { await updateDoc(doc(db, "usuarios", s.dataset.u), { rol: s.value, revisado: serverTimestamp(), revisado_por: ME.email }); }
+    catch (err) { alert(err.code === "permission-denied" ? "Solo el usuario principal puede dar o quitar el acceso de Administrador." : errorEs(err)); }
+    await usuarios();
   });
 }
 async function todasProformas() {

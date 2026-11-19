@@ -2,10 +2,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
-    function isAdmin() {
+    // Usuario principal: puede nombrar administradores y dar cualquier permiso.
+    function isPrincipal() {
       return signedIn() && request.auth.token.email_verified == true &&
-        request.auth.token.email in ['grupovascruzllc@gmail.com', 'josevasquezmultifamiliar@gmail.com', 'josemariavasquezaguado@gmail.com'];
+        request.auth.token.email in ['josemariavasquezaguado@gmail.com', 'grupovascruzllc@gmail.com', 'josevasquezmultifamiliar@gmail.com'];
     }
+    // Administradores: el principal y quienes él nombre (rol "admin").
+    function isAdmin() { return isPrincipal() || (signedIn() && request.auth.token.email_verified == true && hasRol('admin')); }
     function userDoc() { return /databases/$(database)/documents/usuarios/$(request.auth.uid); }
     function hasRol(r) { return signedIn() && exists(userDoc()) && get(userDoc()).data.rol == r; }
 
@@ -17,7 +20,8 @@ service cloud.firestore {
         && request.resource.data.rol == 'pendiente'
         && request.resource.data.email == request.auth.token.email
         && request.resource.data.keys().hasOnly(['nombre', 'ci', 'telefono', 'ciudad', 'empresa', 'email', 'tipo_solicitado', 'rol', 'creado']);
-      allow update, delete: if isAdmin();
+      // Solo el principal puede dar o quitar el rol de administrador.
+      allow update, delete: if isPrincipal() || (isAdmin() && request.resource.data.rol != 'admin' && resource.data.rol != 'admin');
     }
 
     // Precios para asesores (precio puesto en Santa Cruz) y lista FOB para socios. Solo el administrador escribe.
