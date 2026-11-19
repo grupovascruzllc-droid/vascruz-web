@@ -236,11 +236,18 @@ $("#olvide").onclick = async () => {
   try { await sendPasswordResetEmail(auth, em); msg($("#m-ingresar"), "Le enviamos un correo para crear una nueva contraseña.", "ok"); }
   catch (err) { msg($("#m-ingresar"), errorEs(err), "err"); }
 };
-$("#salir").onclick = () => signOut(auth);
+// Al salir se recarga la página: así no queda nada del usuario anterior (secciones ni precios en memoria).
+$("#salir").onclick = async () => { await signOut(auth); location.reload(); };
 $("#reenviar").onclick = async () => { try { await sendEmailVerification(auth.currentUser); $("#reenviar").textContent = "Correo reenviado ✓"; } catch (err) { alert(errorEs(err)); } };
 
 // ---------- Sesión ----------
-onAuthStateChanged(auth, (u) => { if (!u) { ME = null; $("#who").hidden = true; show("v-login"); } else cargar(u); });
+let UID_ANTERIOR;
+onAuthStateChanged(auth, (u) => {
+  // Si cambia el usuario sin recargar (otra pestaña cerró la sesión o entró otra persona), empezar de cero.
+  const uid = u ? u.uid : null;
+  if (UID_ANTERIOR !== undefined && UID_ANTERIOR !== uid) { location.reload(); return; }
+  UID_ANTERIOR = uid;
+  if (!u) { ME = null; $("#who").hidden = true; show("v-login"); } else cargar(u); });
 
 async function cargar(u) {
   ME = u; show("v-cargando");
@@ -265,6 +272,8 @@ function panel(rol) {
   if (rol === "asesor" || rol === "admin") tabs.push(["p-cotizador", "Cotizador"]);
   if (rol === "socio" || rol === "admin") tabs.push(["p-fob", "Precios FOB"]);
   if (rol === "admin") tabs.push(["p-usuarios", "Asesores y socios"], ["p-proformas", "Proformas"], ["p-precios", "Actualizar precios"]);
+  // Esconder todas las secciones; luego solo se muestran las que corresponden a este rol.
+  for (const s of ["p-cotizador", "p-fob", "p-usuarios", "p-precios", "p-proformas"]) $("#" + s).hidden = true;
   const bar = $("#paneltabs"); bar.innerHTML = ""; bar.hidden = tabs.length < 2;
   const abrir = (id) => { for (const [p] of tabs) $("#" + p).hidden = p !== id; bar.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.p === id)); cargarPestana(id); };
   for (const [p, t] of tabs) { const b = document.createElement("button"); b.className = "tab"; b.dataset.p = p; b.textContent = t; b.onclick = () => abrir(p); bar.appendChild(b); }
