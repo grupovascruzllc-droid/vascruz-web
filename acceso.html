@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Acceso asesores y socios | Vascruz Import & Export SRL</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="img/logo-sm.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#fff;--fg:#141414;--muted:#5f5d58;--surface:#f8f5ee;--line:#e6dfcd;--gold:#a8822a;--gold-btn:#d2ad55;--gold-soft:#f3ead3;--red:#a23b2a;--green:#2f6b3a;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;--body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+html{color-scheme:light}*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 var(--body)}
+a{color:inherit}img{max-width:100%}
+.wrap{max-width:1100px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left))}
+header{border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:10}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px}
+.nav img{height:42px;display:block}
+.who{font-size:13px;color:var(--muted);text-align:right}
+.who b{color:var(--fg);display:block;font-size:14px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.2;font-weight:700}
+h1{font-size:clamp(22px,3.4vw,32px)}h2{font-size:20px}h3{font-size:15px}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+main{padding-block:32px 64px}
+.card{border:1px solid var(--line);border-radius:8px;padding:22px;background:#fff}
+.narrow{max-width:520px;margin:0 auto}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0}
+.tab{font:600 14px var(--body);padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;color:var(--fg)}
+.tab[aria-selected="true"]{background:var(--fg);color:#fff;border-color:var(--fg)}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 5px}
+input,select,textarea{width:100%;font:inherit;font-size:15px;padding:10px 12px;border:1px solid #d6d0c2;border-radius:5px;background:#fff;color:var(--fg)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media (max-width:600px){.row2{grid-template-columns:1fr}}
+.radio{display:flex;gap:10px;flex-wrap:wrap}
+.radio label{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:6px;padding:12px;margin:0;flex:1 1 200px;cursor:pointer;font-weight:500}
+.radio input{width:auto;margin-top:4px}
+.radio b{display:block}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:5px;font:700 14px var(--body);border:1px solid transparent;cursor:pointer;text-decoration:none;color:#111}
+.btn-gold{background:var(--gold-btn)}.btn-gold:hover{filter:brightness(1.06)}
+.btn-line{border-color:#cfc8b8;background:#fff}
+.btn-sm{padding:7px 11px;font-size:13px}
+.btn-red{background:#fff;border-color:#e2b8af;color:var(--red)}
+.btn[disabled]{opacity:.55;cursor:wait}
+.full{width:100%;margin-top:18px}
+.msg{margin-top:14px;padding:11px 14px;border-radius:5px;font-size:14px}
+.msg.err{background:#fbecea;color:var(--red)}.msg.ok{background:#eaf4ec;color:var(--green)}.msg.info{background:var(--surface);color:var(--muted)}
+.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color:var(--gold);text-decoration:underline;cursor:pointer}
+.muted{color:var(--muted);font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl{overflow-x:auto}
+.pill{display:inline-block;font:500 11px var(--mono);padding:3px 8px;border-radius:3px;background:var(--gold-soft);color:var(--gold)}
+.pill.g{background:#eaf4ec;color:var(--green)}.pill.r{background:#fbecea;color:var(--red)}
+.thumb{width:84px;aspect-ratio:4/3;object-fit:cover;border-radius:4px;background:var(--surface)}
+.cot{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:860px){.cot{grid-template-columns:1fr}}
+.prev img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;background:var(--surface)}
+.prev .big{font:700 26px var(--display);margin:6px 0}
+.plan{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:12px}
+.plan div{padding:10px;border-right:1px solid var(--line);font-size:12px;color:var(--muted)}.plan div:last-child{border:0}
+.plan b{display:block;color:var(--fg);font-size:15px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.secthead{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.space{height:24px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a href="index.html"><img src="img/logo-sm.png" alt="Vascruz Import &amp; Export SRL"></a>
+  <div class="who" id="who" hidden><b id="who-name"></b><span id="who-rol"></span> · <button class="link" id="salir">Salir</button></div>
+</div></header>
+
+<main class="wrap">
+
+<!-- Cargando -->
+<section id="v-cargando"><p class="muted">Cargando…</p></section>
+
+<!-- Ingresar / Registrarse -->
+<section id="v-login" hidden>
+  <div class="narrow">
+    <div class="eyebrow">Acceso privado</div>
+    <h1 style="margin-top:8px">Asesores y socios de importación</h1>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-t="ingresar">Ingresar</button>
+      <button class="tab" role="tab" aria-selected="false" data-t="registro">Registrarse</button>
+    </div>
+
+    <form class="card" id="f-ingresar" novalidate>
+      <label for="li-email">Correo</label><input id="li-email" type="email" autocomplete="email" required>
+      <label for="li-pass">Contraseña</label><input id="li-pass" type="password" autocomplete="current-password" required>
+      <button class="btn btn-gold full" type="submit">Ingresar</button>
+      <p style="margin:14px 0 0"><button type="button" class="link" id="olvide">Olvidé mi contraseña</button></p>
+      <div class="msg" id="m-ingresar" hidden></div>
+    </form>
+
+    <form class="card" id="f-registro" novalidate hidden>
+      <label>¿Cómo quiere trabajar con Vascruz?</label>
+      <div class="radio">
+        <label><input type="radio" name="tipo" value="asesor" checked><span><b>Asesor de importación</b><span class="muted">Vende vehículos por Vascruz y entrega proformas a sus clientes.</span></span></label>
+        <label><input type="radio" name="tipo" value="socio"><span><b>Socio de importación</b><span class="muted">Importadora que compra a precio FOB.</span></span></label>
+      </div>
+      <label for="r-nombre">Nombre completo</label><input id="r-nombre" autocomplete="name" required>
+      <div class="row2">
+        <div><label for="r-ci">CI o NIT</label><input id="r-ci" required></div>
+        <div><label for="r-tel">Celular / WhatsApp</label><input id="r-tel" type="tel" autocomplete="tel" placeholder="+591 …" required></div>
+      </div>
+      <div class="row2">
+        <div><label for="r-ciudad">Ciudad</label><input id="r-ciudad" required></div>
+        <div><label for="r-empresa">Empresa <span class="muted">(opcional)</span></label><input id="r-empresa" autocomplete="organization"></div>
+      </div>
+      <label for="r-email">Correo</label><input id="r-email" type="email" autocomplete="email" required>
+      <div class="row2">
+        <div><label for="r-pass">Contraseña</label><input id="r-pass" type="password" autocomplete="new-password" minlength="6" required></div>
+        <div><label for="r-pass2">Repita la contraseña</label><input id="r-pass2" type="password" autocomplete="new-password" required></div>
+      </div>
+      <button class="btn btn-gold full" type="submit">Enviar solicitud</button>
+      <p class="muted" style="margin:12px 0 0">Vascruz revisará sus datos y le dará acceso. Le avisaremos por WhatsApp o correo.</p>
+      <div class="msg" id="m-registro" hidden></div>
+    </form>
+  </div>
+</section>
+
+<!-- Pendiente / rechazado -->
+<section id="v-espera" hidden>
+  <div class="narrow card">
+    <div class="eyebrow" id="esp-eye">Solicitud recibida</div>
+    <h2 style="margin:8px 0 10px" id="esp-tit">Su solicitud está en revisión</h2>
+    <p class="muted" id="esp-txt">Vascruz revisará sus datos y activará su acceso. Cuando esté aprobado, vuelva a ingresar con su correo y contraseña.</p>
+    <div class="msg info" id="esp-verif" hidden>Le enviamos un correo para confirmar su dirección. Ábralo y pulse el enlace. <button class="link" id="reenviar">Reenviar correo</button></div>
+    <a class="btn btn-line" style="margin-top:14px" href="https://wa.me/59177006107" target="_blank" rel="noopener">Escribir a Vascruz por WhatsApp</a>
+  </div>
+</section>
+
+<!-- Panel principal (asesor, socio o administrador) -->
+<section id="v-panel" hidden>
+  <div class="tabs" role="tablist" id="paneltabs"></div>
+
+  <!-- Cotizador (asesores) -->
+  <div id="p-cotizador" hidden>
+    <div class="secthead"><div><div class="eyebrow">Asesores de importación</div><h1 style="margin-top:6px">Cotizador</h1></div><span class="muted" id="cot-act"></span></div>
+    <div class="cot">
+      <form class="card" id="f-cot" novalidate>
+        <label for="c-auto">Vehículo</label><select id="c-auto" required></select>
+        <label for="c-color">Color</label><select id="c-color"></select>
+        <label for="c-cliente">Nombre del cliente</label><input id="c-cliente" required>
+        <div class="row2">
+          <div><label for="c-doc">CI o NIT del cliente <span class="muted">(opcional)</span></label><input id="c-doc"></div>
+          <div><label for="c-tel">Celular del cliente <span class="muted">(opcional)</span></label><input id="c-tel" type="tel"></div>
+        </div>
+        <label for="c-nota">Nota para el cliente <span class="muted">(opcional)</span></label><textarea id="c-nota" rows="2"></textarea>
+        <button class="btn btn-gold full" type="submit">Generar proforma</button>
+        <div class="msg" id="m-cot" hidden></div>
+      </form>
+      <div class="card prev" id="cot-prev"></div>
+    </div>
+    <div class="space"></div>
+    <div class="card" id="cot-listo" hidden></div>
+    <div class="space"></div>
+    <h2>Mis proformas</h2>
+    <div class="tbl" style="margin-top:10px"><table><thead><tr><th>N.°</th><th>Fecha</th><th>Cliente</th><th>Vehículo</th><th class="num">Precio</th><th></th></tr></thead><tbody id="mis-prof"></tbody></table></div>
+  </div>
+
+  <!-- Lista FOB (socios) -->
+  <div id="p-fob" hidden>
+    <div class="secthead"><div><div class="eyebrow">Socios de importación</div><h1 style="margin-top:6px">Precios FOB</h1></div>
+      <div class="actions" style="margin:0"><span class="muted" id="fob-act"></span><button class="btn btn-line btn-sm" onclick="window.print()">Imprimir lista</button></div></div>
+    <p class="muted" style="margin-top:0">Precio FOB en USD (puesto en puerto de China). Confidencial: para uso exclusivo de socios de Vascruz.</p>
+    <div class="tbl"><table><thead><tr><th></th><th>Vehículo</th><th>Tipo</th><th class="num">Autonomía</th><th>Colores</th><th class="num">FOB</th></tr></thead><tbody id="fob-body"></tbody></table></div>
+  </div>
+
+  <!-- Administrador: solicitudes y usuarios -->
+  <div id="p-usuarios" hidden>
+    <div class="secthead"><div><div class="eyebrow">Administrador</div><h1 style="margin-top:6px">Asesores y socios</h1></div></div>
+    <h2>Solicitudes pendientes</h2>
+    <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Nombre</th><th>Contacto</th><th>Solicita</th><th>Fecha</th><th>Aprobar como</th></tr></thead><tbody id="u-pend"></tbody></table></div>
+    <div class="space"></div>
+    <h2>Usuarios</h2>
+    <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Nombre</th><th>Contacto</th><th>Acceso</th><th>Cambiar</th></tr></thead><tbody id="u-todos"></tbody></table></div>
+  </div>
+
+  <!-- Administrador: precios -->
+  <div id="p-precios" hidden>
+    <div class="secthead"><div><div class="eyebrow">Administrador</div><h1 style="margin-top:6px">Actualizar precios privados</h1></div></div>
+    <div class="card narrow" style="margin:0;max-width:640px">
+      <p style="margin-top:0">Elija su Excel <b>Vascruz_Costos_Importacion_y_Cotizador.xlsx</b> (carpeta "Cotizaciones vascruz" del Escritorio). Se leerán el <b>precio puesto en Santa Cruz</b> (para asesores) y el <b>FOB</b> (para socios) de los vehículos con "Sí" en "Incluir en catálogo".</p>
+      <p class="muted">El Excel se lee en esta computadora; solo se guardan los precios, protegidos. Antes, guarde el Excel en Excel para que los precios estén calculados.</p>
+      <input type="file" id="xls" accept=".xlsx">
+      <div id="xls-res"></div>
+    </div>
+  </div>
+
+  <!-- Administrador: todas las proformas -->
+  <div id="p-proformas" hidden>
+    <div class="secthead"><div><div class="eyebrow">Administrador</div><h1 style="margin-top:6px">Proformas emitidas</h1></div></div>
+    <div class="tbl"><table><thead><tr><th>N.°</th><th>Fecha</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th class="num">Precio</th><th></th></tr></thead><tbody id="all-prof"></tbody></table></div>
+  </div>
+</section>
+</main>
+
+<script src="catalogo.js"></script>
+<script type="module">
+import {
+  auth, db, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification,
+  sendPasswordResetEmail, signOut, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, getDocs,
+  serverTimestamp, usd, esc, nombreAuto, errorEs
+} from "./fb.js?v=1";
+
+const $ = (s) => document.querySelector(s);
+const CAT = (window.VASCRUZ_CATALOGO && window.VASCRUZ_CATALOGO.modelos) || [];
+const catById = Object.fromEntries(CAT.map(m => [String(m.id), m]));
+const ROLES = { asesor: "Asesor de importación", socio: "Socio de importación", admin: "Administrador", pendiente: "Pendiente", rechazado: "Rechazado", suspendido: "Suspendido" };
+let ME = null, PERFIL = null, ES_ADMIN = false, PRECIOS = null, FOB = null;
+
+function show(id) { for (const v of ["v-cargando", "v-login", "v-espera", "v-panel"]) $("#" + v).hidden = v !== id; }
+function msg(el, txt, cls) { el.textContent = txt; el.className = "msg " + cls; el.hidden = !txt; }
+function fecha(ts) { const d = ts && ts.toDate ? ts.toDate() : (ts ? new Date(ts) : null); return d ? d.toLocaleDateString("es-BO", { day: "2-digit", month: "2-digit", year: "numeric" }) : ""; }
+async function busy(btn, fn) { btn.disabled = true; try { await fn(); } finally { btn.disabled = false; } }
+
+// ---------- Ingresar / registrarse ----------
+document.querySelectorAll("#v-login .tab").forEach(t => t.onclick = () => {
+  document.querySelectorAll("#v-login .tab").forEach(x => x.setAttribute("aria-selected", x === t));
+  $("#f-ingresar").hidden = t.dataset.t !== "ingresar"; $("#f-registro").hidden = t.dataset.t !== "registro";
+});
+$("#f-ingresar").onsubmit = (e) => { e.preventDefault(); const b = e.submitter || e.target.querySelector("button[type=submit]");
+  busy(b, async () => { try { msg($("#m-ingresar"), "", ""); await signInWithEmailAndPassword(auth, $("#li-email").value.trim(), $("#li-pass").value); }
+    catch (err) { msg($("#m-ingresar"), errorEs(err), "err"); } }); };
+$("#olvide").onclick = async () => {
+  const em = $("#li-email").value.trim();
+  if (!em) return msg($("#m-ingresar"), "Escriba su correo arriba y vuelva a pulsar \"Olvidé mi contraseña\".", "info");
+  try { await sendPasswordResetEmail(auth, em); msg($("#m-ingresar"), "Le enviamos un correo para crear una nueva contraseña.", "ok"); }
+  catch (err) { msg($("#m-ingresar"), errorEs(err), "err"); }
+};
+$("#f-registro").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySelector("button[type=submit]"); const m = $("#m-registro");
+  const v = (id) => $(id).value.trim();
+  const datos = { nombre: v("#r-nombre"), ci: v("#r-ci"), telefono: v("#r-tel"), ciudad: v("#r-ciudad"), empresa: v("#r-empresa") };
+  if (!datos.nombre || !datos.ci || !datos.telefono || !datos.ciudad) return msg(m, "Complete nombre, CI o NIT, celular y ciudad.", "err");
+  if ($("#r-pass").value !== $("#r-pass2").value) return msg(m, "Las contraseñas no coinciden.", "err");
+  busy(b, async () => {
+    try {
+      msg(m, "", "");
+      window.__registrando = true;
+      const cred = await createUserWithEmailAndPassword(auth, v("#r-email"), $("#r-pass").value);
+      await setDoc(doc(db, "usuarios", cred.user.uid), { ...datos, email: cred.user.email, tipo_solicitado: document.querySelector("input[name=tipo]:checked").value, rol: "pendiente", creado: serverTimestamp() });
+      try { await sendEmailVerification(cred.user); } catch (_) {}
+      window.__registrando = false;
+      await cargar(cred.user);
+    } catch (err) { window.__registrando = false; msg(m, errorEs(err), "err"); }
+  });
+};
+$("#salir").onclick = () => signOut(auth);
+$("#reenviar").onclick = async () => { try { await sendEmailVerification(auth.currentUser); $("#reenviar").textContent = "Correo reenviado ✓"; } catch (err) { alert(errorEs(err)); } };
+
+// ---------- Sesión ----------
+onAuthStateChanged(auth, (u) => { if (window.__registrando) return; if (!u) { ME = null; $("#who").hidden = true; show("v-login"); } else cargar(u); });
+
+async function cargar(u) {
+  ME = u; show("v-cargando");
+  let snap = null; try { snap = await getDoc(doc(db, "usuarios", u.uid)); } catch (_) {}
+  PERFIL = snap && snap.exists() ? snap.data() : null;
+  ES_ADMIN = false;
+  try { await getDocs(query(collection(db, "usuarios"), where("rol", "==", "pendiente"))); ES_ADMIN = true; } catch (_) {}
+  const rol = ES_ADMIN ? "admin" : (PERFIL ? PERFIL.rol : "pendiente");
+  $("#who").hidden = false; $("#who-name").textContent = (PERFIL && PERFIL.nombre) || u.email; $("#who-rol").textContent = ROLES[rol] || rol;
+  if (rol === "asesor" || rol === "socio" || rol === "admin") return panel(rol);
+  // Pendiente, rechazado o suspendido
+  const r = PERFIL ? PERFIL.rol : "pendiente";
+  $("#esp-eye").textContent = r === "pendiente" ? "Solicitud recibida" : "Acceso no disponible";
+  $("#esp-tit").textContent = r === "pendiente" ? "Su solicitud está en revisión" : (r === "suspendido" ? "Su acceso está suspendido" : "Su solicitud no fue aprobada");
+  $("#esp-txt").textContent = r === "pendiente" ? "Vascruz revisará sus datos y activará su acceso. Cuando esté aprobado, vuelva a ingresar con su correo y contraseña." : "Si cree que es un error, escríbanos por WhatsApp.";
+  $("#esp-verif").hidden = !!u.emailVerified || r !== "pendiente";
+  show("v-espera");
+}
+
+function panel(rol) {
+  const tabs = [];
+  if (rol === "asesor" || rol === "admin") tabs.push(["p-cotizador", "Cotizador"]);
+  if (rol === "socio" || rol === "admin") tabs.push(["p-fob", "Precios FOB"]);
+  if (rol === "admin") tabs.push(["p-usuarios", "Asesores y socios"], ["p-proformas", "Proformas"], ["p-precios", "Actualizar precios"]);
+  const bar = $("#paneltabs"); bar.innerHTML = ""; bar.hidden = tabs.length < 2;
+  const abrir = (id) => { for (const [p] of tabs) $("#" + p).hidden = p !== id; bar.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.p === id)); cargarPestana(id); };
+  for (const [p, t] of tabs) { const b = document.createElement("button"); b.className = "tab"; b.dataset.p = p; b.textContent = t; b.onclick = () => abrir(p); bar.appendChild(b); }
+  show("v-panel");
+  abrir(rol === "admin" && PENDIENTES_PRIMERO ? "p-usuarios" : tabs[0][0]);
+}
+const PENDIENTES_PRIMERO = true;
+
+async function cargarPestana(id) {
+  try {
+    if (id === "p-cotizador") await cotizador();
+    if (id === "p-fob") await listaFob();
+    if (id === "p-usuarios") await usuarios();
+    if (id === "p-proformas") await todasProformas();
+  } catch (err) { alert(errorEs(err)); }
+}
+
+// ---------- Cotizador ----------
+async function cotizador() {
+  if (!PRECIOS) { const s = await getDoc(doc(db, "privado", "asesores")); PRECIOS = s.exists() ? s.data() : { precios: {} }; }
+  $("#cot-act").textContent = PRECIOS.actualizado ? "Precios al " + fecha(PRECIOS.actualizado) : "";
+  const sel = $("#c-auto");
+  if (!sel.options.length) {
+    const lista = CAT.filter(m => PRECIOS.precios && PRECIOS.precios[m.id]);
+    if (!lista.length) { $("#cot-prev").innerHTML = "<p class='muted'>Aún no hay precios cargados. El administrador debe usar \"Actualizar precios\".</p>"; }
+    sel.innerHTML = lista.map(m => `<option value="${m.id}">${esc(nombreAuto(m))} — ${usd(PRECIOS.precios[m.id])}</option>`).join("");
+    sel.onchange = () => { colores(); vista(); }; $("#c-color").onchange = vista;
+    colores(); vista();
+  }
+  misProformas();
+}
+function auto() { return catById[$("#c-auto").value]; }
+function colores() {
+  const m = auto(); const cs = m && m.colores && !/consultar/i.test(m.colores) ? m.colores.split("·").map(s => s.trim()).filter(Boolean) : [];
+  $("#c-color").innerHTML = (cs.length ? cs : ["A elegir (según disponibilidad)"]).map(c => `<option>${esc(c)}</option>`).join("");
+}
+function pagos(p) { const a = Math.round(p * .5), b = Math.round(p * .3); return [a, b, Math.round(p) - a - b]; }
+function vista() {
+  const m = auto(); if (!m) return; const p = PRECIOS.precios[m.id]; const [a, b, c] = pagos(p);
+  $("#cot-prev").innerHTML = `${m.foto ? `<img src="${esc(m.foto)}" alt="">` : ""}
+    <div class="eyebrow" style="margin-top:12px">${esc(m.marca)} · ${esc(m.anio || "")}</div>
+    <h2 style="margin-top:4px">${esc(m.modelo)} ${esc(m.version || "")}</h2>
+    <p class="muted" style="margin:4px 0 0">${esc([m.tec === "BEV" ? "100% eléctrico" : m.tec === "PHEV" ? "Híbrido enchufable" : m.tec, m.tipo, m.autonomia ? m.autonomia + " km de autonomía" : ""].filter(Boolean).join(" · "))}</p>
+    <div class="muted" style="margin-top:12px">Precio puesto en Santa Cruz</div><div class="big">${usd(p)}</div>
+    <div class="plan"><div>Reserva 50%<b>${usd(a)}</b></div><div>Chasis 30%<b>${usd(b)}</b></div><div>Iquique 20%<b>${usd(c)}</b></div></div>`;
+}
+$("#f-cot").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySelector("button[type=submit]"); const mm = $("#m-cot");
+  const m = auto(); const cliente = $("#c-cliente").value.trim();
+  if (!m) return msg(mm, "Elija un vehículo.", "err"); if (!cliente) return msg(mm, "Escriba el nombre del cliente.", "err");
+  busy(b, async () => {
+    try {
+      msg(mm, "", "");
+      const p = PRECIOS.precios[m.id]; const hoy = new Date();
+      const numero = "VC-" + hoy.toISOString().slice(2, 10).replace(/-/g, "") + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+      const veh = { id: m.id, marca: m.marca, modelo: m.modelo, version: m.version || "", anio: m.anio || "", tec: m.tec || "", tipo: m.tipo || "", autonomia: m.autonomia || null, foto: m.foto || "", ficha: m.ficha || {} };
+      const ref = await addDoc(collection(db, "proformas"), {
+        numero, fecha: serverTimestamp(), fecha_txt: hoy.toLocaleDateString("es-BO"), validez_dias: 15,
+        asesor_uid: ME.uid, asesor_nombre: (PERFIL && PERFIL.nombre) || ME.email, asesor_tel: (PERFIL && PERFIL.telefono) || "", asesor_email: ME.email,
+        cliente_nombre: cliente, cliente_doc: $("#c-doc").value.trim(), cliente_tel: $("#c-tel").value.trim(), nota: $("#c-nota").value.trim(),
+        vehiculo: veh, color: $("#c-color").value, precio: p, pagos: pagos(p)
+      });
+      const url = location.origin + location.pathname.replace(/acceso\.html$/, "") + "proforma.html?id=" + ref.id;
+      const texto = `Hola ${cliente}, le comparto su proforma de Vascruz Import & Export SRL: ${nombreAuto(m)} — ${usd(p)} puesto en Santa Cruz.\n${url}`;
+      const telCli = $("#c-tel").value.replace(/[^\d]/g, "");
+      $("#cot-listo").hidden = false;
+      $("#cot-listo").innerHTML = `<div class="eyebrow">Proforma ${esc(numero)} lista</div><h2 style="margin:6px 0">Compártala con su cliente</h2>
+        <p class="muted" style="margin:0;word-break:break-all">${esc(url)}</p>
+        <div class="actions"><a class="btn btn-gold" href="https://wa.me/${telCli}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        <a class="btn btn-line" href="${esc(url)}" target="_blank" rel="noopener">Ver / descargar PDF</a>
+        <button class="btn btn-line" id="copiar">Copiar enlace</button></div>`;
+      $("#copiar").onclick = () => navigator.clipboard.writeText(url).then(() => $("#copiar").textContent = "Enlace copiado ✓");
+      $("#cot-listo").scrollIntoView({ behavior: "smooth", block: "center" });
+      e.target.reset(); colores(); vista(); misProformas();
+    } catch (err) { msg(mm, errorEs(err), "err"); }
+  });
+};
+function filaProf(d, conAsesor) {
+  const p = d.data(); const v = p.vehiculo || {};
+  return `<tr><td><span class="pill">${esc(p.numero)}</span></td><td>${esc(p.fecha_txt || fecha(p.fecha))}</td>${conAsesor ? `<td>${esc(p.asesor_nombre)}</td>` : ""}
+    <td>${esc(p.cliente_nombre)}</td><td>${esc(nombreAuto(v))}</td><td class="num">${usd(p.precio)}</td>
+    <td><a class="btn btn-line btn-sm" href="proforma.html?id=${d.id}" target="_blank" rel="noopener">Abrir</a></td></tr>`;
+}
+function ordenar(docs) { return docs.sort((a, b) => ((b.data().fecha?.seconds) || 9e12) - ((a.data().fecha?.seconds) || 9e12)); }
+async function misProformas() {
+  const s = await getDocs(query(collection(db, "proformas"), where("asesor_uid", "==", ME.uid)));
+  $("#mis-prof").innerHTML = ordenar(s.docs).map(d => filaProf(d, false)).join("") || `<tr><td colspan="6" class="muted">Todavía no generó proformas.</td></tr>`;
+}
+
+// ---------- Lista FOB ----------
+async function listaFob() {
+  if (!FOB) { const s = await getDoc(doc(db, "privado", "socios")); FOB = s.exists() ? s.data() : { fob: {} }; }
+  $("#fob-act").textContent = FOB.actualizado ? "Actualizado al " + fecha(FOB.actualizado) : "";
+  const filas = CAT.filter(m => FOB.fob && FOB.fob[m.id]);
+  $("#fob-body").innerHTML = filas.map(m => `<tr><td>${m.foto ? `<img class="thumb" src="${esc(m.foto)}" alt="">` : ""}</td>
+    <td><b>${esc(m.marca)} ${esc(m.modelo)}</b><br><span class="muted">${esc(m.version || "")} · ${esc(m.anio || "")}</span></td>
+    <td>${esc(m.tec || "")}<br><span class="muted">${esc(m.tipo || "")}</span></td><td class="num">${m.autonomia ? m.autonomia + " km" : "—"}</td>
+    <td class="muted">${esc(m.colores || "")}</td><td class="num"><b>${usd(FOB.fob[m.id])}</b></td></tr>`).join("")
+    || `<tr><td colspan="6" class="muted">Aún no hay precios cargados.</td></tr>`;
+}
+
+// ---------- Administrador ----------
+async function usuarios() {
+  const s = await getDocs(collection(db, "usuarios"));
+  const todos = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ((b.creado?.seconds) || 0) - ((a.creado?.seconds) || 0));
+  const contacto = (u) => `${esc(u.email)}<br><span class="muted">${esc(u.telefono || "")} · CI/NIT ${esc(u.ci || "")}<br>${esc(u.ciudad || "")}${u.empresa ? " · " + esc(u.empresa) : ""}</span>`;
+  const pend = todos.filter(u => u.rol === "pendiente");
+  $("#u-pend").innerHTML = pend.map(u => `<tr><td><b>${esc(u.nombre)}</b></td><td>${contacto(u)}</td><td>${esc(ROLES[u.tipo_solicitado] || u.tipo_solicitado)}</td><td>${fecha(u.creado)}</td>
+    <td><div class="actions" style="margin:0"><button class="btn btn-gold btn-sm" data-u="${u.id}" data-r="asesor">Asesor</button><button class="btn btn-gold btn-sm" data-u="${u.id}" data-r="socio">Socio</button><button class="btn btn-red btn-sm" data-u="${u.id}" data-r="rechazado">Rechazar</button></div></td></tr>`).join("")
+    || `<tr><td colspan="5" class="muted">No hay solicitudes pendientes.</td></tr>`;
+  const resto = todos.filter(u => u.rol !== "pendiente");
+  const pill = (r) => `<span class="pill ${r === "asesor" || r === "socio" ? "g" : "r"}">${esc(ROLES[r] || r)}</span>`;
+  $("#u-todos").innerHTML = resto.map(u => `<tr><td><b>${esc(u.nombre)}</b></td><td>${contacto(u)}</td><td>${pill(u.rol)}</td>
+    <td><select data-u="${u.id}" class="cambio" style="width:auto">${["asesor", "socio", "suspendido", "rechazado"].map(r => `<option value="${r}" ${r === u.rol ? "selected" : ""}>${ROLES[r]}</option>`).join("")}</select></td></tr>`).join("")
+    || `<tr><td colspan="4" class="muted">Todavía no hay usuarios aprobados.</td></tr>`;
+  document.querySelectorAll("#u-pend button").forEach(b => b.onclick = () => busy(b, async () => {
+    const r = b.dataset.r;
+    if (r === "rechazado" && !confirm("¿Rechazar esta solicitud?")) return;
+    await updateDoc(doc(db, "usuarios", b.dataset.u), { rol: r, revisado: serverTimestamp(), revisado_por: ME.email });
+    await usuarios();
+  }));
+  document.querySelectorAll("#u-todos select.cambio").forEach(s => s.onchange = async () => {
+    await updateDoc(doc(db, "usuarios", s.dataset.u), { rol: s.value, revisado: serverTimestamp(), revisado_por: ME.email }); await usuarios();
+  });
+}
+async function todasProformas() {
+  const s = await getDocs(collection(db, "proformas"));
+  $("#all-prof").innerHTML = ordenar(s.docs).map(d => filaProf(d, true)).join("") || `<tr><td colspan="7" class="muted">Aún no hay proformas.</td></tr>`;
+}
+$("#xls").onchange = async (e) => {
+  const f = e.target.files[0]; if (!f) return; const out = $("#xls-res");
+  out.innerHTML = `<div class="msg info">Leyendo ${esc(f.name)}…</div>`;
+  try {
+    const { leerExcelPrivado } = await import("./xlsx-lector.js?v=1");
+    const r = await leerExcelPrivado(await f.arrayBuffer());
+    if (r.errores.length) { out.innerHTML = `<div class="msg err">Revise el Excel (no se guardó nada):<br>${r.errores.map(esc).join("<br>")}<br>Si acaba de cambiar precios, abra el Excel, guárdelo y vuelva a intentar.</div>`; return; }
+    if (!r.n) { out.innerHTML = `<div class="msg err">No hay vehículos con "Sí" en "Incluir en catálogo".</div>`; return; }
+    const filas = Object.keys(r.precios).map(id => { const m = catById[id]; return `<tr><td>${esc(m ? nombreAuto(m) : "ID " + id)}</td><td class="num">${usd(r.fob[id])}</td><td class="num">${usd(r.precios[id])}</td></tr>`; }).join("");
+    out.innerHTML = `<p style="margin-top:14px"><b>${r.n} vehículos</b> leídos. Revise y confirme:</p>
+      <div class="tbl"><table><thead><tr><th>Vehículo</th><th class="num">FOB (socios)</th><th class="num">Precio SCZ (asesores)</th></tr></thead><tbody>${filas}</tbody></table></div>
+      <button class="btn btn-gold full" id="guardar-precios">Guardar precios</button>`;
+    $("#guardar-precios").onclick = (ev) => busy(ev.target, async () => {
+      const ahora = serverTimestamp();
+      await setDoc(doc(db, "privado", "asesores"), { precios: r.precios, actualizado: ahora, por: ME.email });
+      await setDoc(doc(db, "privado", "socios"), { fob: r.fob, actualizado: ahora, por: ME.email });
+      PRECIOS = null; FOB = null; $("#c-auto").innerHTML = "";
+      out.innerHTML = `<div class="msg ok">✅ Precios guardados. Asesores y socios ya ven los precios nuevos.</div>`;
+      e.target.value = "";
+    });
+  } catch (err) { out.innerHTML = `<div class="msg err">${esc(errorEs(err))}</div>`; }
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn() && request.auth.token.email_verified == true &&
+        request.auth.token.email in ['grupovascruzllc@gmail.com', 'josevasquezmultifamiliar@gmail.com'];
+    }
+    function userDoc() { return /databases/$(database)/documents/usuarios/$(request.auth.uid); }
+    function hasRol(r) { return signedIn() && exists(userDoc()) && get(userDoc()).data.rol == r; }
+
+    // Registro de asesores y socios: cada uno crea su ficha en estado "pendiente"; solo el administrador aprueba.
+    match /usuarios/{uid} {
+      allow get: if isAdmin() || (signedIn() && request.auth.uid == uid);
+      allow list: if isAdmin();
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.rol == 'pendiente'
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.keys().hasOnly(['nombre', 'ci', 'telefono', 'ciudad', 'empresa', 'email', 'tipo_solicitado', 'rol', 'creado']);
+      allow update, delete: if isAdmin();
+    }
+
+    // Precios para asesores (precio puesto en Santa Cruz) y lista FOB para socios. Solo el administrador escribe.
+    match /privado/asesores { allow read: if isAdmin() || hasRol('asesor'); allow write: if isAdmin(); }
+    match /privado/socios   { allow read: if isAdmin() || hasRol('socio');  allow write: if isAdmin(); }
+
+    // Proformas: las crea el asesor; el cliente la abre con su enlace (código no adivinable).
+    match /proformas/{id} {
+      allow create: if (hasRol('asesor') || isAdmin()) && request.resource.data.asesor_uid == request.auth.uid;
+      allow get: if true;
+      allow list: if isAdmin() || (signedIn() && resource.data.asesor_uid == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+  }
+}
