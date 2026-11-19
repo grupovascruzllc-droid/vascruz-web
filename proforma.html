@@ -144,6 +144,11 @@ try {
     <div class="firma"><div><b>${esc(p.asesor_nombre)}</b>Asesor de Vascruz${p.asesor_tel ? " · " + esc(p.asesor_tel) : ""}</div><div style="text-align:right"><b>Vascruz Import &amp; Export SRL</b>Santa Cruz de la Sierra, Bolivia</div></div>
   </div>`;
   }
+  // "Imprimir / PDF": abre directamente el diálogo de impresión (ahí se elige "Guardar como PDF")
+  if (params.get("imprimir") === "1") {
+    await Promise.all([...out.querySelectorAll("img")].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })));
+    setTimeout(() => window.print(), 300);
+  }
 } catch (e) { fail("No encontramos esta proforma. Verifique el enlace o consulte a su asesor."); }
 </script>
 </body>

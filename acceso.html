@@ -431,16 +431,20 @@ $("#f-cot").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySele
       $("#cot-listo").hidden = false;
       const urlDet = url + "&v=detalle";
       const textoDet = `Hola ${cliente}, le comparto la cotización detallada de Vascruz Import & Export SRL: ${nombreAuto(m)} — ${usd(p)} puesto en Santa Cruz, con el desglose de todos los gastos de importación.\n${urlDet}`;
-      $("#cot-listo").innerHTML = `<div class="eyebrow">Proforma ${esc(numero)} lista</div><h2 style="margin:6px 0">Compártala con su cliente</h2>
-        <p class="muted" style="margin:0;word-break:break-all">${esc(url)}</p>
-        <h3 style="margin-top:14px">Proforma resumida <span class="muted" style="font:500 13px var(--body)">· precio y forma de pago</span></h3>
-        <div class="actions" style="margin-top:8px"><a class="btn btn-gold" href="https://wa.me/${telCli}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Enviar por WhatsApp</a>
-        <a class="btn btn-line" href="${esc(url)}" target="_blank" rel="noopener">Ver / descargar PDF</a>
-        <button class="btn btn-line" id="copiar">Copiar enlace</button></div>
-        ${detalleDe(m) ? `<h3 style="margin-top:16px">Cotización detallada <span class="muted" style="font:500 13px var(--body)">· igual al cotizador de Excel, con todos los gastos</span></h3>
-        <div class="actions" style="margin-top:8px"><a class="btn btn-gold" href="https://wa.me/${telCli}?text=${encodeURIComponent(textoDet)}" target="_blank" rel="noopener">Enviar detallada por WhatsApp</a>
-        <a class="btn btn-line" href="${esc(urlDet)}" target="_blank" rel="noopener">Ver / descargar PDF detallado</a>
-        <button class="btn btn-line" id="copiar-det">Copiar enlace detallado</button></div>` : ""}`;
+      const bloque = (tit, sub, u, txt, idc) => `<div class="card" style="padding:18px">
+          <h3>${tit}</h3><p class="muted" style="margin:4px 0 0">${sub}</p>
+          <div class="actions"><a class="btn btn-gold btn-sm" href="https://wa.me/${telCli}?text=${encodeURIComponent(txt)}" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+          <a class="btn btn-line btn-sm" href="${esc(u)}" target="_blank" rel="noopener">Ver</a>
+          <a class="btn btn-line btn-sm" href="${esc(u + "&imprimir=1")}" target="_blank" rel="noopener">Imprimir / PDF</a>
+          <button class="btn btn-line btn-sm" id="${idc}">Copiar enlace</button></div></div>`;
+      const puedeDetalle = ROL === "asesor" || ROL === "admin";
+      $("#cot-listo").innerHTML = `<div class="eyebrow">Proforma ${esc(numero)} lista</div><h2 style="margin:6px 0 14px">Compártala con su cliente</h2>
+        <div class="cot">
+          ${bloque("Proforma resumida", "Precio puesto en Santa Cruz y forma de pago.", url, texto, "copiar")}
+          ${puedeDetalle ? (detalleDe(m)
+            ? bloque("Cotización detallada", "Igual al cotizador de Excel, con todos los gastos de importación.", urlDet, textoDet, "copiar-det")
+            : `<div class="card" style="padding:18px"><h3>Cotización detallada</h3><p class="muted" style="margin:4px 0 0">Todavía no está disponible para este vehículo: falta cargar el desglose desde el Excel de Vascruz.</p></div>`) : ""}
+        </div>`;
       if ($("#copiar-det")) $("#copiar-det").onclick = () => navigator.clipboard.writeText(urlDet).then(() => $("#copiar-det").textContent = "Enlace copiado ✓");
       $("#copiar").onclick = () => navigator.clipboard.writeText(url).then(() => $("#copiar").textContent = "Enlace copiado ✓");
       $("#cot-listo").scrollIntoView({ behavior: "smooth", block: "center" });
