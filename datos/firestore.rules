@@ -28,6 +28,8 @@ service cloud.firestore {
     // Los socios también cotizan a nombre de Vascruz, por eso leen el precio puesto en Santa Cruz.
     match /privado/asesores { allow read: if isAdmin() || hasRol('asesor') || hasRol('socio'); allow write: if isAdmin(); }
     match /privado/socios   { allow read: if isAdmin() || hasRol('socio');  allow write: if isAdmin(); }
+    // Desglose de costos (cotización detallada) y comisión por vehículo: solo asesores de importación.
+    match /privado/detalle  { allow read: if isAdmin() || hasRol('asesor'); allow write: if isAdmin(); }
 
     // Proformas: las crea el asesor o el socio; el cliente la abre con su enlace (código no adivinable).
     match /proformas/{id} {

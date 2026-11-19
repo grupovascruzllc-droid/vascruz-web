@@ -64,7 +64,16 @@ h2{font:700 20px var(--display);margin:4px 0 2px}
 
 <script type="module">
 import { db, doc, getDoc, usd, esc, nombreAuto } from "./fb.js?v=1";
-const id = new URLSearchParams(location.search).get("id");
+import { tablaDetalle, CSS_DETALLE } from "./detalle.js?v=1";
+document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}
+.ficha{display:grid;grid-template-columns:1fr 1fr;gap:2px 24px;font-size:13px;margin-top:14px}
+.ficha div{padding:3px 0;border-bottom:1px dotted var(--line)}.ficha span{color:var(--muted);display:inline-block;min-width:96px}
+@media (max-width:640px){.ficha{grid-template-columns:1fr}}
+@media print{.det{font-size:11px;margin-top:8px}.det td,.det th{padding:4px 8px}.det tr.gran td{padding:6px 8px}.ficha{font-size:11.5px;margin-top:8px}.det.pagos{margin-top:8px}}
+</style>`);
+const params = new URLSearchParams(location.search);
+const id = params.get("id");
+const DETALLADA = params.get("v") === "detalle";
 const out = document.getElementById("out");
 const fail = (t) => out.innerHTML = `<div class="err"><img src="img/logo-sm.png" alt="" style="height:56px"><p>${t}</p><a class="btn btn-gold" href="https://wa.me/59177006107">Escribir a Vascruz</a></div>`;
 try {
@@ -83,6 +92,32 @@ try {
   const telAs = String(p.asesor_tel || "").replace(/[^\d]/g, "") || "59177006107";
   document.getElementById("wa").href = `https://wa.me/${telAs}?text=${encodeURIComponent("Hola, tengo una consulta sobre la proforma " + p.numero + " (" + nombreAuto(v) + ").")}`;
   document.getElementById("bar").hidden = false;
+  const cabecera = `<div class="top"><img src="img/logo-sm.png" alt="Vascruz Import &amp; Export SRL">
+      <div class="emp"><b>Vascruz Import &amp; Export SRL</b><br>Importadora de vehículos eléctricos · China → Bolivia<br>Av. Grigotá B/El Parí, Calle Guariyú #132, entre 2do y 3er anillo · Santa Cruz de la Sierra<br>Cel./WhatsApp: +591 77006107 · grupovascruzllc@gmail.com · vascruz.com</div></div>`;
+  if (DETALLADA && p.detalle) {
+    // Cotización detallada: mismo formato que la hoja "Cotizador" del Excel
+    document.title = `Cotización ${p.numero} — ${nombreAuto(v)} | Vascruz`;
+    out.innerHTML = `<div class="hoja">
+      ${cabecera}
+      <div class="tit"><h1 style="font-size:19px">COTIZACIÓN — VEHÍCULO ${v.tec === "PHEV" ? "HÍBRIDO ENCHUFABLE" : "ELÉCTRICO"} IMPORTADO DE CHINA</h1><div class="num">N.° ${esc(p.numero)}</div></div>
+      <div class="meta">
+        <div><span>Fecha:</span> ${fmt(fch)}</div><div><span>Válida hasta:</span> ${fmt(new Date(fch.getTime() + 7 * 864e5))}</div>
+        <div><span>Cliente:</span> <b>${esc(p.cliente_nombre)}</b></div><div><span>Asesor:</span> ${esc(p.asesor_nombre)}</div>
+        ${p.cliente_doc ? `<div><span>CI / NIT:</span> ${esc(p.cliente_doc)}</div>` : ""}${p.cliente_tel ? `<div><span>Celular:</span> ${esc(p.cliente_tel)}</div>` : ""}
+      </div>
+      <div class="ficha">
+        <div><span>Vehículo:</span> <b>${esc(nombreAuto(v))}</b></div><div><span>Tecnología:</span> ${esc(tec)}</div>
+        <div><span>Carrocería:</span> ${esc(v.tipo || "")}</div><div><span>Autonomía:</span> ${v.autonomia ? v.autonomia + " km" : "—"}</div>
+        <div><span>Color:</span> ${esc(p.color || "")}</div><div><span>Incluye:</span> Idioma español y cargador</div>
+      </div>
+      ${tablaDetalle(p.detalle, p.precio, p.pagos)}
+      ${p.nota ? `<div class="nota">${esc(p.nota)}</div>` : ""}
+      <div class="cond">• Cotización referencial en dólares americanos, sujeta a variación de flete, gastos portuarios y tributos al momento de la nacionalización.<br>
+        • Precio por vehículo puesto en Santa Cruz de la Sierra. Incluye idioma español y cargador según especificación del proveedor.<br>
+        • Validez de la cotización: 7 días calendario.</div>
+      <div class="firma"><div><b>${esc(p.asesor_nombre)}</b>Asesor de Vascruz${p.asesor_tel ? " · " + esc(p.asesor_tel) : ""}</div><div style="text-align:right"><b>José María Vásquez Aguado</b>Gerente General — Vascruz Import &amp; Export SRL</div></div>
+    </div>`;
+  } else {
   out.innerHTML = `<div class="hoja">
     <div class="top"><img src="img/logo-sm.png" alt="Vascruz Import &amp; Export SRL">
       <div class="emp"><b>Vascruz Import &amp; Export SRL</b><br>Av. Grigotá B/El Parí, Calle Guariyú #132<br>entre 2do y 3er anillo, Santa Cruz de la Sierra, Bolivia<br>WhatsApp +591 77006107 · grupovascruzllc@gmail.com · vascruz.com</div></div>
@@ -108,6 +143,7 @@ try {
     <div class="cond"><b>Condiciones:</b> Precio en dólares americanos (USD), con el vehículo nuevo importado de fábrica y entregado en Santa Cruz de la Sierra. Vehículos eléctricos e híbridos enchufables nuevos con 0% de gravamen arancelario e ICE según normativa vigente. Sujeto a disponibilidad de stock, versión y color al momento de la reserva. Esta proforma no constituye factura ni contrato.</div>
     <div class="firma"><div><b>${esc(p.asesor_nombre)}</b>Asesor de Vascruz${p.asesor_tel ? " · " + esc(p.asesor_tel) : ""}</div><div style="text-align:right"><b>Vascruz Import &amp; Export SRL</b>Santa Cruz de la Sierra, Bolivia</div></div>
   </div>`;
+  }
 } catch (e) { fail("No encontramos esta proforma. Verifique el enlace o consulte a su asesor."); }
 </script>
 </body>

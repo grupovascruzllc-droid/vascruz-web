@@ -147,11 +147,13 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
           <div><label for="c-tel">Celular del cliente <span class="muted">(opcional)</span></label><input id="c-tel" type="tel"></div>
         </div>
         <label for="c-nota">Nota para el cliente <span class="muted">(opcional)</span></label><textarea id="c-nota" rows="2"></textarea>
+        <button class="btn btn-line full" type="button" id="ver-det" hidden>Ver cotización detallada</button>
         <button class="btn btn-gold full" type="submit">Generar proforma</button>
         <div class="msg" id="m-cot" hidden></div>
       </form>
       <div class="card prev" id="cot-prev"></div>
     </div>
+    <div class="card" id="cot-det" hidden style="margin-top:22px"></div>
     <div class="space"></div>
     <div class="card" id="cot-listo" hidden></div>
     <div class="space"></div>
@@ -168,6 +170,13 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
     <p class="muted" style="margin-top:0">Precio FOB en USD (puesto en puerto de China). Confidencial: para uso exclusivo de socios de Vascruz. <span class="no-print">Pulse una foto para verla en grande.</span></p>
     <p class="muted print-only" id="fob-para"></p>
     <div class="tbl"><table><thead><tr><th></th><th>Vehículo</th><th>Tipo</th><th class="num">Autonomía</th><th>Colores</th><th class="num">FOB</th></tr></thead><tbody id="fob-body"></tbody></table></div>
+  </div>
+
+  <!-- Mis comisiones (asesores) -->
+  <div id="p-comisiones" hidden>
+    <div class="secthead"><div><div class="eyebrow">Asesores de importación</div><h1 style="margin-top:6px">Mis comisiones</h1></div><span class="muted" id="com-act"></span></div>
+    <p class="muted" style="margin-top:0">Lo que usted gana por cada vehículo vendido (comisión de asesor externo, en USD), según la tabla de comisiones de Vascruz.</p>
+    <div id="com-body"></div>
   </div>
 
   <!-- Administrador: solicitudes y usuarios -->
@@ -244,12 +253,14 @@ import {
   sendPasswordResetEmail, signOut, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, getDocs,
   serverTimestamp, usd, esc, nombreAuto, errorEs, crearCuenta
 } from "./fb.js?v=2";
+import { tablaDetalle, CSS_DETALLE, usd2 } from "./detalle.js?v=1";
+document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}</style>`);
 
 const $ = (s) => document.querySelector(s);
 const CAT = (window.VASCRUZ_CATALOGO && window.VASCRUZ_CATALOGO.modelos) || [];
 const catById = Object.fromEntries(CAT.map(m => [String(m.id), m]));
 const ROLES = { asesor: "Asesor de importación", socio: "Socio de importación", admin: "Administrador", pendiente: "Pendiente", rechazado: "Rechazado", suspendido: "Suspendido" };
-let ME = null, PERFIL = null, ES_ADMIN = false, PRECIOS = null, FOB = null, ROL = null;
+let ME = null, PERFIL = null, ES_ADMIN = false, PRECIOS = null, FOB = null, ROL = null, DETALLE = null;
 
 function show(id) { for (const v of ["v-cargando", "v-login", "v-espera", "v-panel"]) $("#" + v).hidden = v !== id; }
 function msg(el, txt, cls) { el.textContent = txt; el.className = "msg " + cls; el.hidden = !txt; }
@@ -302,10 +313,11 @@ function panel(rol) {
   const tabs = [];
   // Asesores y socios cotizan a nombre de Vascruz (precio puesto en Santa Cruz); los socios además ven el FOB.
   if (rol === "asesor" || rol === "socio" || rol === "admin") tabs.push(["p-cotizador", "Cotizador"]);
+  if (rol === "asesor" || rol === "admin") tabs.push(["p-comisiones", rol === "admin" ? "Comisiones" : "Mis comisiones"]);
   if (rol === "socio" || rol === "admin") tabs.push(["p-fob", "Precios FOB"]);
   if (rol === "admin") tabs.push(["p-usuarios", "Asesores y socios"], ["p-proformas", "Proformas"], ["p-precios", "Actualizar precios"]);
   // Esconder todas las secciones; luego solo se muestran las que corresponden a este rol.
-  for (const s of ["p-cotizador", "p-fob", "p-usuarios", "p-precios", "p-proformas"]) $("#" + s).hidden = true;
+  for (const s of ["p-cotizador", "p-comisiones", "p-fob", "p-usuarios", "p-precios", "p-proformas"]) $("#" + s).hidden = true;
   const bar = $("#paneltabs"); bar.innerHTML = ""; bar.hidden = tabs.length < 2;
   const abrir = (id) => { for (const [p] of tabs) $("#" + p).hidden = p !== id; bar.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.p === id)); cargarPestana(id); };
   for (const [p, t] of tabs) { const b = document.createElement("button"); b.className = "tab"; b.dataset.p = p; b.textContent = t; b.onclick = () => abrir(p); bar.appendChild(b); }
@@ -317,6 +329,7 @@ const PENDIENTES_PRIMERO = true;
 async function cargarPestana(id) {
   try {
     if (id === "p-cotizador") await cotizador();
+    if (id === "p-comisiones") await misComisiones();
     if (id === "p-fob") await listaFob();
     if (id === "p-usuarios") await usuarios();
     if (id === "p-proformas") await todasProformas();
@@ -327,6 +340,9 @@ async function cargarPestana(id) {
 async function cotizador() {
   if (!PRECIOS) { const s = await getDoc(doc(db, "privado", "asesores")); PRECIOS = s.exists() ? s.data() : { precios: {} }; }
   $("#cot-act").textContent = PRECIOS.actualizado ? "Precios al " + fecha(PRECIOS.actualizado) : "";
+  // Cotización detallada: solo asesores de importación y administradores
+  if ((ROL === "asesor" || ROL === "admin") && !DETALLE) await cargarDetalle();
+  $("#ver-det").hidden = !(DETALLE && DETALLE.desglose && Object.keys(DETALLE.desglose).length);
   const sel = $("#c-auto");
   if (!sel.options.length) {
     const lista = CAT.filter(m => PRECIOS.precios && PRECIOS.precios[m.id]);
@@ -337,6 +353,45 @@ async function cotizador() {
   }
   misProformas();
 }
+async function cargarDetalle() {
+  try { const s = await getDoc(doc(db, "privado", "detalle")); DETALLE = s.exists() ? s.data() : { desglose: {}, comisiones: {} }; }
+  catch (_) { DETALLE = { desglose: {}, comisiones: {} }; }
+}
+function detalleDe(m) { return m && DETALLE && DETALLE.desglose ? DETALLE.desglose[m.id] : null; }
+function vistaDetalle() {
+  const m = auto(), d = detalleDe(m), box = $("#cot-det");
+  if (box.hidden) return;
+  if (!d) { box.innerHTML = `<p class="muted" style="margin:0">Este vehículo aún no tiene el desglose cargado. El administrador debe actualizar los precios desde el Excel.</p>`; return; }
+  const p = PRECIOS.precios[m.id];
+  box.innerHTML = `<div class="secthead" style="margin-bottom:0"><div><div class="eyebrow">Cotización detallada · uso del asesor</div>
+    <h2 style="margin-top:4px">${esc(nombreAuto(m))}</h2></div><span class="muted">${d.cont ? d.cont + " vehículos por contenedor" : ""}</span></div>
+    ${tablaDetalle(d, p, pagos(p))}
+    <p class="muted" style="margin:12px 0 0">Para enviársela al cliente: complete sus datos arriba, pulse "Generar proforma" y luego "Cotización detallada".</p>`;
+}
+$("#ver-det").onclick = () => {
+  const box = $("#cot-det"); box.hidden = !box.hidden;
+  $("#ver-det").textContent = box.hidden ? "Ver cotización detallada" : "Ocultar cotización detallada";
+  vistaDetalle(); if (!box.hidden) box.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+// ---------- Mis comisiones ----------
+async function misComisiones() {
+  if (!DETALLE) await cargarDetalle();
+  if (!PRECIOS) { const s = await getDoc(doc(db, "privado", "asesores")); PRECIOS = s.exists() ? s.data() : { precios: {} }; }
+  const com = (DETALLE && DETALLE.comisiones) || {};
+  $("#com-act").textContent = DETALLE && DETALLE.actualizado ? "Actualizado al " + fecha(DETALLE.actualizado) : "";
+  const lista = CAT.filter(m => com[m.id] !== undefined);
+  if (!lista.length) { $("#com-body").innerHTML = `<p class="muted">Aún no hay comisiones cargadas. El administrador debe actualizar los precios desde el Excel.</p>`; return; }
+  const grupos = {};
+  lista.forEach(m => { const t = m.tipo || "Otros"; (grupos[t] = grupos[t] || []).push(m); });
+  $("#com-body").innerHTML = Object.keys(grupos).sort().map(t => `
+    <h2 style="margin:22px 0 8px">${esc(t)}</h2>
+    <div class="tbl"><table><thead><tr><th>Vehículo</th><th class="num">Precio puesto en SCZ</th><th class="num">Su comisión</th></tr></thead><tbody>
+      ${grupos[t].map(m => `<tr><td><b>${esc(m.marca)} ${esc(m.modelo)}</b><br><span class="muted">${esc(m.version || "")} · ${esc(m.anio || "")}</span></td>
+        <td class="num">${usd(PRECIOS.precios && PRECIOS.precios[m.id])}</td><td class="num"><b>${usd(com[m.id])}</b></td></tr>`).join("")}
+    </tbody></table></div>`).join("");
+}
+
 function auto() { return catById[$("#c-auto").value]; }
 function colores() {
   const m = auto(); const cs = m && m.colores && !/consultar/i.test(m.colores) ? m.colores.split("·").map(s => s.trim()).filter(Boolean) : [];
@@ -351,6 +406,7 @@ function vista() {
     <p class="muted" style="margin:4px 0 0">${esc([m.tec === "BEV" ? "100% eléctrico" : m.tec === "PHEV" ? "Híbrido enchufable" : m.tec, m.tipo, m.autonomia ? m.autonomia + " km de autonomía" : ""].filter(Boolean).join(" · "))}</p>
     <div class="muted" style="margin-top:12px">Precio puesto en Santa Cruz</div><div class="big">${usd(p)}</div>
     <div class="plan"><div>Reserva 50%<b>${usd(a)}</b></div><div>Chasis 30%<b>${usd(b)}</b></div><div>Iquique 20%<b>${usd(c)}</b></div></div>`;
+  vistaDetalle();
 }
 $("#f-cot").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySelector("button[type=submit]"); const mm = $("#m-cot");
   const m = auto(); const cliente = $("#c-cliente").value.trim();
@@ -365,17 +421,27 @@ $("#f-cot").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySele
         numero, fecha: serverTimestamp(), fecha_txt: hoy.toLocaleDateString("es-BO"), validez_dias: 15,
         asesor_uid: ME.uid, asesor_nombre: (PERFIL && PERFIL.nombre) || ME.email, asesor_tel: (PERFIL && PERFIL.telefono) || "", asesor_email: ME.email, asesor_rol: ROL,
         cliente_nombre: cliente, cliente_doc: $("#c-doc").value.trim(), cliente_tel: $("#c-tel").value.trim(), nota: $("#c-nota").value.trim(),
-        vehiculo: veh, color: $("#c-color").value, precio: p, pagos: pagos(p)
+        vehiculo: veh, color: $("#c-color").value, precio: p, pagos: pagos(p),
+        // Desglose para la cotización detallada (solo lo agregan asesores y administradores)
+        ...(detalleDe(m) ? { detalle: detalleDe(m) } : {})
       });
       const url = location.origin + location.pathname.replace(/acceso\.html$/, "") + "proforma.html?id=" + ref.id;
       const texto = `Hola ${cliente}, le comparto su proforma de Vascruz Import & Export SRL: ${nombreAuto(m)} — ${usd(p)} puesto en Santa Cruz.\n${url}`;
       const telCli = $("#c-tel").value.replace(/[^\d]/g, "");
       $("#cot-listo").hidden = false;
+      const urlDet = url + "&v=detalle";
+      const textoDet = `Hola ${cliente}, le comparto la cotización detallada de Vascruz Import & Export SRL: ${nombreAuto(m)} — ${usd(p)} puesto en Santa Cruz, con el desglose de todos los gastos de importación.\n${urlDet}`;
       $("#cot-listo").innerHTML = `<div class="eyebrow">Proforma ${esc(numero)} lista</div><h2 style="margin:6px 0">Compártala con su cliente</h2>
         <p class="muted" style="margin:0;word-break:break-all">${esc(url)}</p>
-        <div class="actions"><a class="btn btn-gold" href="https://wa.me/${telCli}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        <h3 style="margin-top:14px">Proforma resumida <span class="muted" style="font:500 13px var(--body)">· precio y forma de pago</span></h3>
+        <div class="actions" style="margin-top:8px"><a class="btn btn-gold" href="https://wa.me/${telCli}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Enviar por WhatsApp</a>
         <a class="btn btn-line" href="${esc(url)}" target="_blank" rel="noopener">Ver / descargar PDF</a>
-        <button class="btn btn-line" id="copiar">Copiar enlace</button></div>`;
+        <button class="btn btn-line" id="copiar">Copiar enlace</button></div>
+        ${detalleDe(m) ? `<h3 style="margin-top:16px">Cotización detallada <span class="muted" style="font:500 13px var(--body)">· igual al cotizador de Excel, con todos los gastos</span></h3>
+        <div class="actions" style="margin-top:8px"><a class="btn btn-gold" href="https://wa.me/${telCli}?text=${encodeURIComponent(textoDet)}" target="_blank" rel="noopener">Enviar detallada por WhatsApp</a>
+        <a class="btn btn-line" href="${esc(urlDet)}" target="_blank" rel="noopener">Ver / descargar PDF detallado</a>
+        <button class="btn btn-line" id="copiar-det">Copiar enlace detallado</button></div>` : ""}`;
+      if ($("#copiar-det")) $("#copiar-det").onclick = () => navigator.clipboard.writeText(urlDet).then(() => $("#copiar-det").textContent = "Enlace copiado ✓");
       $("#copiar").onclick = () => navigator.clipboard.writeText(url).then(() => $("#copiar").textContent = "Enlace copiado ✓");
       $("#cot-listo").scrollIntoView({ behavior: "smooth", block: "center" });
       e.target.reset(); colores(); vista(); misProformas();
@@ -386,7 +452,7 @@ function filaProf(d, conAsesor) {
   const p = d.data(); const v = p.vehiculo || {};
   return `<tr><td><span class="pill">${esc(p.numero)}</span></td><td>${esc(p.fecha_txt || fecha(p.fecha))}</td>${conAsesor ? `<td>${esc(p.asesor_nombre)}${p.asesor_rol === "socio" ? ` <span class="pill">Socio</span>` : ""}</td>` : ""}
     <td>${esc(p.cliente_nombre)}</td><td>${esc(nombreAuto(v))}</td><td class="num">${usd(p.precio)}</td>
-    <td><a class="btn btn-line btn-sm" href="proforma.html?id=${d.id}" target="_blank" rel="noopener">Abrir</a></td></tr>`;
+    <td><div class="actions" style="margin:0;flex-wrap:nowrap"><a class="btn btn-line btn-sm" href="proforma.html?id=${d.id}" target="_blank" rel="noopener">Abrir</a>${p.detalle ? `<a class="btn btn-line btn-sm" href="proforma.html?id=${d.id}&v=detalle" target="_blank" rel="noopener">Detallada</a>` : ""}</div></td></tr>`;
 }
 function ordenar(docs) { return docs.sort((a, b) => ((b.data().fecha?.seconds) || 9e12) - ((a.data().fecha?.seconds) || 9e12)); }
 async function misProformas() {
@@ -533,7 +599,8 @@ $("#xls").onchange = async (e) => {
       const ahora = serverTimestamp();
       await setDoc(doc(db, "privado", "asesores"), { precios: r.precios, actualizado: ahora, por: ME.email });
       await setDoc(doc(db, "privado", "socios"), { fob: r.fob, actualizado: ahora, por: ME.email });
-      PRECIOS = null; FOB = null; $("#c-auto").innerHTML = "";
+      await setDoc(doc(db, "privado", "detalle"), { desglose: r.desglose, comisiones: r.comisiones, actualizado: ahora, por: ME.email });
+      PRECIOS = null; FOB = null; DETALLE = null; $("#c-auto").innerHTML = "";
       out.innerHTML = `<div class="msg ok">✅ Precios guardados. Asesores y socios ya ven los precios nuevos.</div>`;
       e.target.value = "";
     });

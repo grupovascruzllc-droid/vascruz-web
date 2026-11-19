@@ -230,6 +230,37 @@ async function unzipXlsx(buf) {
 //  - asesores: precio puesto en Santa Cruz de cada vehículo (aunque en la web pública diga "Consultar precio")
 //  - socios: precio FOB
 // Solo toma las filas con "Sí" en "Incluir en catálogo". Clave = ID del Excel (el mismo de la web).
+// Desglose de costos (hoja "Cálculo de Costos") y comisión del asesor externo (hoja "Comisiones"),
+// igual que la hoja "Cotizador" del Excel. Solo para vehículos con "Sí" en "Incluir en catálogo".
+function buildDetalle(base, calc, comis) {
+  var desglose = {}, comisiones = {}, errores = [];
+  var filaCalc = {}, filaCom = {};
+  for (var r = 5; r <= 400; r++) { var a = cell(calc, r, 1); if (a !== null) filaCalc[String(a)] = r; }
+  for (var r2 = 4; r2 <= 400; r2++) { var b = cell(comis, r2, 1); if (b !== null) filaCom[String(b)] = r2; }
+  var n2 = function (v) { return typeof v === "number" && isFinite(v) ? Math.round(v * 100) / 100 : 0; };
+  for (var r3 = 4; cell(base, r3, 1) !== null; r3++) {
+    if (!isYes(cell(base, r3, 16))) continue;
+    var id = String(cell(base, r3, 1));
+    var nombre = [cell(base, r3, 2), cell(base, r3, 3), cell(base, r3, 4)].filter(Boolean).join(" ");
+    var rc = filaCalc[id];
+    if (!rc) { errores.push(nombre + ": no está en la hoja Cálculo de Costos."); continue; }
+    var c = function (col) { return n2(cell(calc, rc, col)); };
+    var fob = c(5);
+    if (!fob) { errores.push(nombre + ": sin FOB en Cálculo de Costos."); continue; }
+    desglose[id] = {
+      tec: textOrNull(cell(base, r3, 7)) || "", cont: c(4),
+      fob: fob, agente: c(13), flete: c(6), seguro: c(7), puerto: c(14), almIqq: c(15), descons: c(16),
+      ibmetro: textOrNull(cell(base, r3, 7)) === "PHEV" ? c(17) : 0, cig: c(19), gestion: c(26), pagoExt: c(18),
+      tributos: c(12), despachante: c(20), almAduana: c(21)
+    };
+    var rm = filaCom[id];
+    var com = rm ? cell(comis, rm, 5) : null;
+    if (typeof com === "number" && isFinite(com)) comisiones[id] = Math.round(com);
+    else errores.push(nombre + ": sin comisión de asesor en la hoja Comisiones.");
+  }
+  return { desglose: desglose, comisiones: comisiones, errores: errores };
+}
+
 export async function leerExcelPrivado(arrayBuffer) {
   const f = await unzipXlsx(arrayBuffer);
   const map = parseSheetMap(f["xl/workbook.xml"], f["xl/_rels/workbook.xml.rels"]);
@@ -241,6 +272,7 @@ export async function leerExcelPrivado(arrayBuffer) {
     return parseSheet(f[path], shared);
   };
   const base = hoja("Base de Datos"), lista = hoja("Lista de Precios");
+  const det = buildDetalle(base, hoja("Cálculo de Costos"), hoja("Comisiones"));
   const precios = {}, fob = {}, errores = [];
   let n = 0;
   for (let r = 4; cell(base, r, 1) !== null; r++) {
@@ -255,5 +287,5 @@ export async function leerExcelPrivado(arrayBuffer) {
     if (typeof fo === "number" && fo > 0) fob[id] = Math.round(fo); else errores.push(nombre + ": sin FOB.");
     n++;
   }
-  return { n, precios, fob, errores };
+  return { n, precios, fob, desglose: det.desglose, comisiones: det.comisiones, errores: errores.concat(det.errores) };
 }
