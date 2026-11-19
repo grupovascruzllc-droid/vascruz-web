@@ -217,8 +217,11 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
       <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Nombre</th><th>Contacto</th><th>Solicita</th><th>Fecha</th><th>Aprobar como</th></tr></thead><tbody id="u-pend"></tbody></table></div>
       <div class="space"></div>
     </div>
-    <h2>Usuarios</h2>
-    <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Nombre</th><th>Contacto</th><th>Acceso</th><th>Cambiar</th></tr></thead><tbody id="u-todos"></tbody></table></div>
+    <div class="secthead" style="margin-bottom:0"><h2>Usuarios</h2>
+      <label style="display:flex;gap:8px;align-items:center;margin:0;font-weight:500"><input type="checkbox" id="ver-elim" style="width:auto"> Ver eliminados</label></div>
+    <p class="muted" style="margin:4px 0 0">Si alguien olvida su contraseña, pulse "Restablecer": le llega un correo para crear una nueva. Si un asesor se retira, pulse "Suspender" o "Eliminar" y cree el acceso de la persona nueva arriba.</p>
+    <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Nombre</th><th>Contacto</th><th>Acceso</th><th>Acciones</th></tr></thead><tbody id="u-todos"></tbody></table></div>
+    <div class="card" id="u-aviso" hidden style="margin-top:14px"></div>
   </div>
 
   <!-- Administrador: precios -->
@@ -240,6 +243,26 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
 </section>
 </main>
 
+<!-- Editar usuario (administrador) -->
+<div class="visor" id="dlg-editar" hidden role="dialog" aria-modal="true" aria-label="Editar usuario">
+  <form class="card" id="f-editar" novalidate style="width:min(560px,100%);max-height:90vh;overflow:auto">
+    <h2>Editar usuario</h2>
+    <p class="muted" style="margin:4px 0 0" id="e-correo"></p>
+    <label for="e-nombre">Nombre completo</label><input id="e-nombre" required>
+    <div class="row2">
+      <div><label for="e-ci">CI o NIT</label><input id="e-ci"></div>
+      <div><label for="e-tel">Celular / WhatsApp</label><input id="e-tel" type="tel"></div>
+    </div>
+    <div class="row2">
+      <div><label for="e-ciudad">Ciudad</label><input id="e-ciudad"></div>
+      <div><label for="e-empresa">Empresa</label><input id="e-empresa"></div>
+    </div>
+    <label for="e-rol">Acceso</label><select id="e-rol"></select>
+    <div class="actions"><button class="btn btn-gold" type="submit">Guardar cambios</button><button class="btn btn-line" type="button" id="e-cancelar">Cancelar</button></div>
+    <div class="msg" id="m-editar" hidden></div>
+  </form>
+</div>
+
 <!-- Visor de fotos -->
 <div class="visor" id="visor" hidden role="dialog" aria-modal="true" aria-label="Foto del vehículo">
   <button class="cerrar" id="visor-cerrar" aria-label="Cerrar">✕</button>
@@ -259,7 +282,7 @@ document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}</style>`);
 const $ = (s) => document.querySelector(s);
 const CAT = (window.VASCRUZ_CATALOGO && window.VASCRUZ_CATALOGO.modelos) || [];
 const catById = Object.fromEntries(CAT.map(m => [String(m.id), m]));
-const ROLES = { asesor: "Asesor de importación", socio: "Socio de importación", admin: "Administrador", pendiente: "Pendiente", rechazado: "Rechazado", suspendido: "Suspendido" };
+const ROLES = { asesor: "Asesor de importación", socio: "Socio de importación", admin: "Administrador", pendiente: "Pendiente", rechazado: "Rechazado", suspendido: "Suspendido", eliminado: "Eliminado" };
 let ME = null, PERFIL = null, ES_ADMIN = false, PRECIOS = null, FOB = null, ROL = null, DETALLE = null;
 
 function show(id) { for (const v of ["v-cargando", "v-login", "v-espera", "v-panel"]) $("#" + v).hidden = v !== id; }
@@ -526,24 +549,98 @@ async function usuarios() {
   $("#u-pend").innerHTML = pend.map(u => `<tr><td><b>${esc(u.nombre)}</b></td><td>${contacto(u)}</td><td>${esc(ROLES[u.tipo_solicitado] || u.tipo_solicitado)}</td><td>${fecha(u.creado)}</td>
     <td><div class="actions" style="margin:0"><button class="btn btn-gold btn-sm" data-u="${u.id}" data-r="asesor">Asesor</button><button class="btn btn-gold btn-sm" data-u="${u.id}" data-r="socio">Socio</button><button class="btn btn-red btn-sm" data-u="${u.id}" data-r="rechazado">Rechazar</button></div></td></tr>`).join("")
     || `<tr><td colspan="5" class="muted">No hay solicitudes pendientes.</td></tr>`;
-  const resto = todos.filter(u => u.rol !== "pendiente");
+  USUARIOS = Object.fromEntries(todos.map(u => [u.id, u]));
+  const verElim = $("#ver-elim").checked;
+  const resto = todos.filter(u => u.rol !== "pendiente" && (verElim ? u.rol === "eliminado" : u.rol !== "eliminado"));
   const pill = (r) => `<span class="pill ${r === "asesor" || r === "socio" || r === "admin" ? "g" : "r"}">${esc(ROLES[r] || r)}</span>`;
+  const btn = (accion, id, txt, cls = "btn-line") => `<button class="btn ${cls} btn-sm" data-a="${accion}" data-u="${id}">${txt}</button>`;
   $("#u-todos").innerHTML = resto.map(u => `<tr><td><b>${esc(u.nombre)}</b></td><td>${contacto(u)}</td><td>${pill(u.rol)}</td>
-    <td><select data-u="${u.id}" class="cambio" style="width:auto">${["asesor", "socio", "admin", "suspendido", "rechazado"].map(r => `<option value="${r}" ${r === u.rol ? "selected" : ""}>${ROLES[r]}</option>`).join("")}</select></td></tr>`).join("")
-    || `<tr><td colspan="4" class="muted">Todavía no hay usuarios aprobados.</td></tr>`;
+    <td><div class="actions" style="margin:0">
+      ${u.rol === "eliminado" ? btn("restaurar", u.id, "Restaurar", "btn-gold") : `
+      ${btn("wa", u.id, "Enviar acceso por WhatsApp", "btn-gold")}
+      ${btn("editar", u.id, "Editar")}
+      ${btn("reset", u.id, "Restablecer contraseña")}
+      ${u.rol === "suspendido" ? btn("activar", u.id, "Reactivar") : u.rol === "admin" ? "" : btn("suspender", u.id, "Suspender")}
+      ${u.rol === "admin" ? "" : btn("eliminar", u.id, "Eliminar", "btn-red")}`}
+    </div></td></tr>`).join("")
+    || `<tr><td colspan="4" class="muted">${verElim ? "No hay usuarios eliminados." : "Todavía no hay usuarios."}</td></tr>`;
   document.querySelectorAll("#u-pend button").forEach(b => b.onclick = () => busy(b, async () => {
     const r = b.dataset.r;
     if (r === "rechazado" && !confirm("¿Rechazar esta solicitud?")) return;
     await updateDoc(doc(db, "usuarios", b.dataset.u), { rol: r, revisado: serverTimestamp(), revisado_por: ME.email });
     await usuarios();
   }));
-  document.querySelectorAll("#u-todos select.cambio").forEach(s => s.onchange = async () => {
-    if (s.value === "admin" && !confirm("¿Dar acceso de Administrador? Podrá ver todos los precios y aprobar usuarios.")) return usuarios();
-    try { await updateDoc(doc(db, "usuarios", s.dataset.u), { rol: s.value, revisado: serverTimestamp(), revisado_por: ME.email }); }
-    catch (err) { alert(err.code === "permission-denied" ? "Solo el usuario principal puede dar o quitar el acceso de Administrador." : errorEs(err)); }
-    await usuarios();
-  });
+  document.querySelectorAll("#u-todos button[data-a]").forEach(b => b.onclick = () => busy(b, () => accionUsuario(b.dataset.a, USUARIOS[b.dataset.u])));
 }
+let USUARIOS = {};
+$("#ver-elim").onchange = () => usuarios();
+
+const URL_ACCESO = location.origin + location.pathname;
+function avisoUsuario(html) { const box = $("#u-aviso"); box.hidden = false; box.innerHTML = html; box.scrollIntoView({ behavior: "smooth", block: "center" }); }
+function waUsuario(u, texto) { return `https://wa.me/${String(u.telefono || "").replace(/[^\d]/g, "")}?text=${encodeURIComponent(texto)}`; }
+
+async function cambiarRol(u, rol) {
+  const cambios = { rol, revisado: serverTimestamp(), revisado_por: ME.email };
+  // Al suspender se recuerda el acceso que tenía, para reactivarlo igual
+  if (rol === "suspendido" && (u.rol === "asesor" || u.rol === "socio")) cambios.rol_anterior = u.rol;
+  try { await updateDoc(doc(db, "usuarios", u.id), cambios); }
+  catch (err) { alert(err.code === "permission-denied" ? "Solo el usuario principal puede cambiar el acceso de un Administrador." : errorEs(err)); }
+  await usuarios();
+}
+
+async function accionUsuario(a, u) {
+  if (!u) return;
+  if (a === "wa") {
+    const texto = `Hola ${u.nombre}, este es su acceso a Vascruz Import & Export SRL como ${ROLES[u.rol] || "usuario"}:\n\nIngrese aquí: ${URL_ACCESO}\nUsuario: ${u.email}\n\nSi no recuerda su contraseña, pulse "Olvidé mi contraseña" en la página de ingreso o pídanos que se la restablezcamos. Este acceso es personal e intransferible.`;
+    if (!u.telefono) return alert("Este usuario no tiene celular registrado. Pulse \"Editar\" para agregarlo.");
+    window.open(waUsuario(u, texto), "_blank", "noopener");
+  }
+  if (a === "reset") {
+    if (!confirm(`¿Enviar a ${u.email} un correo para crear una contraseña nueva?`)) return;
+    try { await sendPasswordResetEmail(auth, u.email); }
+    catch (err) { return alert(errorEs(err)); }
+    const texto = `Hola ${u.nombre}, le enviamos un correo a ${u.email} para que cree su nueva contraseña de Vascruz. Ábralo y pulse el enlace (si no lo ve, revise Spam o Promociones). Luego ingrese aquí: ${URL_ACCESO}`;
+    avisoUsuario(`<div class="msg ok" style="margin:0">✅ Correo enviado a <b>${esc(u.email)}</b> para crear una contraseña nueva.</div>
+      <div class="actions">${u.telefono ? `<a class="btn btn-gold btn-sm" href="${esc(waUsuario(u, texto))}" target="_blank" rel="noopener">Avisarle por WhatsApp</a>` : ""}</div>`);
+  }
+  if (a === "editar") abrirEditar(u);
+  if (a === "suspender" && confirm(`¿Suspender el acceso de ${u.nombre}? No podrá entrar hasta que lo reactive.`)) await cambiarRol(u, "suspendido");
+  if (a === "activar") await cambiarRol(u, u.rol_anterior || (u.tipo_solicitado === "socio" ? "socio" : "asesor"));
+  if (a === "eliminar" && confirm(`¿Eliminar a ${u.nombre}? Pierde el acceso de inmediato y sale de la lista (podrá restaurarlo desde "Ver eliminados").`)) {
+    try { await updateDoc(doc(db, "usuarios", u.id), { rol: "eliminado", rol_anterior: u.rol, revisado: serverTimestamp(), revisado_por: ME.email }); }
+    catch (err) { alert(errorEs(err)); }
+    await usuarios();
+  }
+  if (a === "restaurar") await cambiarRol(u, u.rol_anterior && u.rol_anterior !== "eliminado" ? u.rol_anterior : "suspendido");
+}
+
+// Editar datos del usuario
+let EDITANDO = null;
+function abrirEditar(u) {
+  EDITANDO = u;
+  $("#e-correo").textContent = "Usuario (correo): " + u.email;
+  $("#e-nombre").value = u.nombre || ""; $("#e-ci").value = u.ci || ""; $("#e-tel").value = u.telefono || "";
+  $("#e-ciudad").value = u.ciudad || ""; $("#e-empresa").value = u.empresa || "";
+  const roles = u.rol === "admin" ? ["admin"] : ["asesor", "socio", "suspendido"];
+  $("#e-rol").innerHTML = roles.map(r => `<option value="${r}" ${r === u.rol ? "selected" : ""}>${ROLES[r]}</option>`).join("");
+  msg($("#m-editar"), "", ""); $("#dlg-editar").hidden = false; $("#e-nombre").focus();
+}
+const cerrarEditar = () => { $("#dlg-editar").hidden = true; EDITANDO = null; };
+$("#e-cancelar").onclick = cerrarEditar;
+$("#dlg-editar").addEventListener("click", (e) => { if (e.target.id === "dlg-editar") cerrarEditar(); });
+$("#f-editar").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySelector("button[type=submit]");
+  const v = (id) => $(id).value.trim();
+  if (!v("#e-nombre")) return msg($("#m-editar"), "Escriba el nombre.", "err");
+  busy(b, async () => {
+    try {
+      const cambios = { nombre: v("#e-nombre"), ci: v("#e-ci"), telefono: v("#e-tel"), ciudad: v("#e-ciudad"), empresa: v("#e-empresa"),
+        revisado: serverTimestamp(), revisado_por: ME.email };
+      if ($("#e-rol").value !== EDITANDO.rol) cambios.rol = $("#e-rol").value;
+      await updateDoc(doc(db, "usuarios", EDITANDO.id), cambios);
+      cerrarEditar(); await usuarios();
+    } catch (err) { msg($("#m-editar"), errorEs(err), "err"); }
+  });
+};
 // Crear usuario (solo administrador)
 function generarClave() {
   const letras = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz", nums = "23456789";
