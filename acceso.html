@@ -67,6 +67,26 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .secthead{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .space{height:24px}
+/* Fotos que se agrandan al pulsarlas */
+button.foto{padding:0;border:0;background:none;cursor:zoom-in;display:block;border-radius:4px}
+button.foto:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.visor{position:fixed;inset:0;z-index:50;background:rgba(15,13,10,.86);display:flex;align-items:center;justify-content:center;padding:16px}
+.visor figure{margin:0;max-width:min(1000px,100%);text-align:center}
+.visor img{max-width:100%;max-height:78vh;border-radius:6px;background:#222;display:block;margin:0 auto}
+.visor figcaption{color:#fff;margin-top:12px;font-size:15px}
+.visor figcaption b{display:block;font:700 18px var(--display)}
+.visor .cerrar{position:absolute;top:14px;right:16px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;font-size:22px;cursor:pointer;color:#111}
+.print-only{display:none}
+@media print{
+  header,#paneltabs,.no-print,.visor{display:none!important}
+  main{padding:0}
+  .print-only{display:block}
+  .thumb{width:60px}
+  table{font-size:11px}
+  th,td{padding:6px 5px}
+  tr{break-inside:avoid}
+}
 </style>
 </head>
 <body>
@@ -141,8 +161,11 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
   <!-- Lista FOB (socios) -->
   <div id="p-fob" hidden>
     <div class="secthead"><div><div class="eyebrow">Socios de importación</div><h1 style="margin-top:6px">Precios FOB</h1></div>
-      <div class="actions" style="margin:0"><span class="muted" id="fob-act"></span><button class="btn btn-line btn-sm" onclick="window.print()">Imprimir lista</button></div></div>
-    <p class="muted" style="margin-top:0">Precio FOB en USD (puesto en puerto de China). Confidencial: para uso exclusivo de socios de Vascruz.</p>
+      <div class="actions no-print" style="margin:0"><span class="muted" id="fob-act"></span>
+        <button class="btn btn-line btn-sm" id="fob-xls">Descargar Excel</button>
+        <button class="btn btn-line btn-sm" id="fob-print">Imprimir / Guardar PDF</button></div></div>
+    <p class="muted" style="margin-top:0">Precio FOB en USD (puesto en puerto de China). Confidencial: para uso exclusivo de socios de Vascruz. <span class="no-print">Pulse una foto para verla en grande.</span></p>
+    <p class="muted print-only" id="fob-para"></p>
     <div class="tbl"><table><thead><tr><th></th><th>Vehículo</th><th>Tipo</th><th class="num">Autonomía</th><th>Colores</th><th class="num">FOB</th></tr></thead><tbody id="fob-body"></tbody></table></div>
   </div>
 
@@ -206,6 +229,12 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
   </div>
 </section>
 </main>
+
+<!-- Visor de fotos -->
+<div class="visor" id="visor" hidden role="dialog" aria-modal="true" aria-label="Foto del vehículo">
+  <button class="cerrar" id="visor-cerrar" aria-label="Cerrar">✕</button>
+  <figure><img id="visor-img" alt=""><figcaption id="visor-txt"></figcaption></figure>
+</div>
 
 <script src="catalogo.js"></script>
 <script type="module">
@@ -367,12 +396,52 @@ async function listaFob() {
   if (!FOB) { const s = await getDoc(doc(db, "privado", "socios")); FOB = s.exists() ? s.data() : { fob: {} }; }
   $("#fob-act").textContent = FOB.actualizado ? "Actualizado al " + fecha(FOB.actualizado) : "";
   const filas = CAT.filter(m => FOB.fob && FOB.fob[m.id]);
-  $("#fob-body").innerHTML = filas.map(m => `<tr><td>${m.foto ? `<img class="thumb" src="${esc(m.foto)}" alt="">` : ""}</td>
+  FOB_FILAS = filas;
+  $("#fob-para").textContent = "Preparado para " + ((PERFIL && PERFIL.nombre) || ME.email) + " · " + $("#fob-act").textContent + " · Vascruz Import & Export SRL";
+  $("#fob-body").innerHTML = filas.map(m => `<tr><td>${m.foto ? `<button type="button" class="foto" data-id="${esc(m.id)}" aria-label="Ver foto de ${esc(nombreAuto(m))}"><img class="thumb" src="${esc(m.foto)}" alt=""></button>` : ""}</td>
     <td><b>${esc(m.marca)} ${esc(m.modelo)}</b><br><span class="muted">${esc(m.version || "")} · ${esc(m.anio || "")}</span></td>
     <td>${esc(m.tec || "")}<br><span class="muted">${esc(m.tipo || "")}</span></td><td class="num">${m.autonomia ? m.autonomia + " km" : "—"}</td>
     <td class="muted">${esc(m.colores || "")}</td><td class="num"><b>${usd(FOB.fob[m.id])}</b></td></tr>`).join("")
     || `<tr><td colspan="6" class="muted">Aún no hay precios cargados.</td></tr>`;
 }
+let FOB_FILAS = [];
+
+// Visor: pulsar una foto la muestra en grande
+function abrirVisor(m) {
+  $("#visor-img").src = m.foto; $("#visor-img").alt = nombreAuto(m);
+  $("#visor-txt").innerHTML = `<b>${esc(m.marca)} ${esc(m.modelo)}</b>${esc([m.version, m.anio].filter(Boolean).join(" · "))}`;
+  $("#visor").hidden = false; $("#visor-cerrar").focus();
+}
+function cerrarVisor() { $("#visor").hidden = true; $("#visor-img").removeAttribute("src"); }
+$("#fob-body").addEventListener("click", (e) => { const b = e.target.closest("button.foto"); if (b && catById[b.dataset.id]) abrirVisor(catById[b.dataset.id]); });
+$("#visor").addEventListener("click", (e) => { if (e.target.id === "visor" || e.target.id === "visor-cerrar") cerrarVisor(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#visor").hidden) cerrarVisor(); });
+
+// Imprimir o guardar como PDF (el diálogo de impresión del navegador tiene "Guardar como PDF")
+$("#fob-print").onclick = () => window.print();
+
+// Descargar la lista FOB en Excel
+$("#fob-xls").onclick = () => busy($("#fob-xls"), async () => {
+  try {
+    if (!FOB_FILAS.length) return alert("Aún no hay precios cargados.");
+    const { crearXlsx } = await import("./xlsx-escritor.js?v=1");
+    const para = (PERFIL && PERFIL.nombre) || ME.email;
+    const filas = [
+      ["Vascruz Import & Export SRL — Precios FOB (USD, puesto en puerto de China)"],
+      ["Confidencial · Preparado para " + para + " · " + ($("#fob-act").textContent || "")],
+      ["Marca", "Modelo", "Versión", "Año", "Tecnología", "Tipo", "Autonomía (km)", "Colores", "FOB (USD)"],
+      ...FOB_FILAS.map(m => [m.marca || "", m.modelo || "", m.version || "", m.anio ? (isNaN(m.anio) ? m.anio : Number(m.anio)) : "",
+        m.tec === "BEV" ? "100% eléctrico" : m.tec === "PHEV" ? "Híbrido enchufable" : (m.tec || ""), m.tipo || "",
+        m.autonomia || "", m.colores || "", Math.round(FOB.fob[m.id])])
+    ];
+    const blob = crearXlsx({ hoja: "Precios FOB", filas, encabezado: 3, titulo: [0], moneda: [8], anchos: [12, 18, 34, 7, 18, 16, 15, 46, 14] });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Vascruz_Precios_FOB_" + new Date().toISOString().slice(0, 10) + ".xlsx";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  } catch (err) { alert("No se pudo generar el Excel: " + errorEs(err)); }
+});
 
 // ---------- Administrador ----------
 async function usuarios() {
