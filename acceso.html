@@ -85,10 +85,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
   <div class="narrow">
     <div class="eyebrow">Acceso privado</div>
     <h1 style="margin-top:8px">Asesores y socios de importación</h1>
-    <div class="tabs" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" data-t="ingresar">Ingresar</button>
-      <button class="tab" role="tab" aria-selected="false" data-t="registro">Registrarse</button>
-    </div>
+    <p class="muted" style="margin:10px 0 18px">Ingrese con el usuario y la contraseña que le entregó Vascruz.</p>
 
     <form class="card" id="f-ingresar" novalidate>
       <label for="li-email">Correo</label><input id="li-email" type="email" autocomplete="email" required>
@@ -97,31 +94,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
       <p style="margin:14px 0 0"><button type="button" class="link" id="olvide">Olvidé mi contraseña</button></p>
       <div class="msg" id="m-ingresar" hidden></div>
     </form>
-
-    <form class="card" id="f-registro" novalidate hidden>
-      <label>¿Cómo quiere trabajar con Vascruz?</label>
-      <div class="radio">
-        <label><input type="radio" name="tipo" value="asesor" checked><span><b>Asesor de importación</b><span class="muted">Vende vehículos por Vascruz y entrega proformas a sus clientes.</span></span></label>
-        <label><input type="radio" name="tipo" value="socio"><span><b>Socio de importación</b><span class="muted">Importadora que compra a precio FOB.</span></span></label>
-      </div>
-      <label for="r-nombre">Nombre completo</label><input id="r-nombre" autocomplete="name" required>
-      <div class="row2">
-        <div><label for="r-ci">CI o NIT</label><input id="r-ci" required></div>
-        <div><label for="r-tel">Celular / WhatsApp</label><input id="r-tel" type="tel" autocomplete="tel" placeholder="+591 …" required></div>
-      </div>
-      <div class="row2">
-        <div><label for="r-ciudad">Ciudad</label><input id="r-ciudad" required></div>
-        <div><label for="r-empresa">Empresa <span class="muted">(opcional)</span></label><input id="r-empresa" autocomplete="organization"></div>
-      </div>
-      <label for="r-email">Correo</label><input id="r-email" type="email" autocomplete="email" required>
-      <div class="row2">
-        <div><label for="r-pass">Contraseña</label><input id="r-pass" type="password" autocomplete="new-password" minlength="6" required></div>
-        <div><label for="r-pass2">Repita la contraseña</label><input id="r-pass2" type="password" autocomplete="new-password" required></div>
-      </div>
-      <button class="btn btn-gold full" type="submit">Enviar solicitud</button>
-      <p class="muted" style="margin:12px 0 0">Vascruz revisará sus datos y le dará acceso. Le avisaremos por WhatsApp o correo.</p>
-      <div class="msg" id="m-registro" hidden></div>
-    </form>
+    <p class="muted" style="margin-top:16px">¿Quiere trabajar con Vascruz como asesor o socio? <a href="https://wa.me/59177006107?text=Hola%20Vascruz%2C%20quisiera%20trabajar%20como%20asesor%20o%20socio%20de%20importaci%C3%B3n." target="_blank" rel="noopener">Escríbanos por WhatsApp</a>.</p>
   </div>
 </section>
 
@@ -176,9 +149,41 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
   <!-- Administrador: solicitudes y usuarios -->
   <div id="p-usuarios" hidden>
     <div class="secthead"><div><div class="eyebrow">Administrador</div><h1 style="margin-top:6px">Asesores y socios</h1></div></div>
-    <h2>Solicitudes pendientes</h2>
-    <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Nombre</th><th>Contacto</th><th>Solicita</th><th>Fecha</th><th>Aprobar como</th></tr></thead><tbody id="u-pend"></tbody></table></div>
+
+    <form class="card" id="f-crear" novalidate style="max-width:760px">
+      <h2>Crear usuario</h2>
+      <p class="muted" style="margin:6px 0 0">Solo usted crea los accesos. Al terminar, envíe el usuario y la contraseña a la persona por WhatsApp.</p>
+      <label>Tipo de acceso</label>
+      <div class="radio">
+        <label><input type="radio" name="n-tipo" value="asesor" checked><span><b>Asesor de importación</b><span class="muted">Cotizador y proformas con precio puesto en Santa Cruz.</span></span></label>
+        <label><input type="radio" name="n-tipo" value="socio"><span><b>Socio de importación</b><span class="muted">Lista de precios FOB.</span></span></label>
+      </div>
+      <label for="n-nombre">Nombre completo</label><input id="n-nombre" autocomplete="off" required>
+      <div class="row2">
+        <div><label for="n-ci">CI o NIT</label><input id="n-ci" autocomplete="off" required></div>
+        <div><label for="n-tel">Celular / WhatsApp</label><input id="n-tel" type="tel" autocomplete="off" placeholder="+591 …" required></div>
+      </div>
+      <div class="row2">
+        <div><label for="n-ciudad">Ciudad</label><input id="n-ciudad" autocomplete="off" required></div>
+        <div><label for="n-empresa">Empresa <span class="muted">(opcional)</span></label><input id="n-empresa" autocomplete="off"></div>
+      </div>
+      <div class="row2">
+        <div><label for="n-email">Correo (será su usuario)</label><input id="n-email" type="email" autocomplete="off" required></div>
+        <div><label for="n-pass">Contraseña inicial</label>
+          <div style="display:flex;gap:6px"><input id="n-pass" autocomplete="new-password" minlength="8" required><button type="button" class="btn btn-line btn-sm" id="n-gen" title="Generar contraseña">Generar</button></div></div>
+      </div>
+      <button class="btn btn-gold full" type="submit">Crear usuario</button>
+      <div class="msg" id="m-crear" hidden></div>
+    </form>
+    <div class="card" id="crear-listo" hidden style="max-width:760px;margin-top:14px"></div>
     <div class="space"></div>
+
+    <div id="pend-box">
+      <h2>Solicitudes pendientes</h2>
+      <p class="muted" style="margin:4px 0 0">Solicitudes antiguas, de cuando había registro abierto.</p>
+      <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Nombre</th><th>Contacto</th><th>Solicita</th><th>Fecha</th><th>Aprobar como</th></tr></thead><tbody id="u-pend"></tbody></table></div>
+      <div class="space"></div>
+    </div>
     <h2>Usuarios</h2>
     <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Nombre</th><th>Contacto</th><th>Acceso</th><th>Cambiar</th></tr></thead><tbody id="u-todos"></tbody></table></div>
   </div>
@@ -207,8 +212,8 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 import {
   auth, db, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification,
   sendPasswordResetEmail, signOut, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, getDocs,
-  serverTimestamp, usd, esc, nombreAuto, errorEs
-} from "./fb.js?v=1";
+  serverTimestamp, usd, esc, nombreAuto, errorEs, crearCuenta
+} from "./fb.js?v=2";
 
 const $ = (s) => document.querySelector(s);
 const CAT = (window.VASCRUZ_CATALOGO && window.VASCRUZ_CATALOGO.modelos) || [];
@@ -221,11 +226,7 @@ function msg(el, txt, cls) { el.textContent = txt; el.className = "msg " + cls; 
 function fecha(ts) { const d = ts && ts.toDate ? ts.toDate() : (ts ? new Date(ts) : null); return d ? d.toLocaleDateString("es-BO", { day: "2-digit", month: "2-digit", year: "numeric" }) : ""; }
 async function busy(btn, fn) { btn.disabled = true; try { await fn(); } finally { btn.disabled = false; } }
 
-// ---------- Ingresar / registrarse ----------
-document.querySelectorAll("#v-login .tab").forEach(t => t.onclick = () => {
-  document.querySelectorAll("#v-login .tab").forEach(x => x.setAttribute("aria-selected", x === t));
-  $("#f-ingresar").hidden = t.dataset.t !== "ingresar"; $("#f-registro").hidden = t.dataset.t !== "registro";
-});
+// ---------- Ingresar ----------
 $("#f-ingresar").onsubmit = (e) => { e.preventDefault(); const b = e.submitter || e.target.querySelector("button[type=submit]");
   busy(b, async () => { try { msg($("#m-ingresar"), "", ""); await signInWithEmailAndPassword(auth, $("#li-email").value.trim(), $("#li-pass").value); }
     catch (err) { msg($("#m-ingresar"), errorEs(err), "err"); } }); };
@@ -235,28 +236,11 @@ $("#olvide").onclick = async () => {
   try { await sendPasswordResetEmail(auth, em); msg($("#m-ingresar"), "Le enviamos un correo para crear una nueva contraseña.", "ok"); }
   catch (err) { msg($("#m-ingresar"), errorEs(err), "err"); }
 };
-$("#f-registro").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySelector("button[type=submit]"); const m = $("#m-registro");
-  const v = (id) => $(id).value.trim();
-  const datos = { nombre: v("#r-nombre"), ci: v("#r-ci"), telefono: v("#r-tel"), ciudad: v("#r-ciudad"), empresa: v("#r-empresa") };
-  if (!datos.nombre || !datos.ci || !datos.telefono || !datos.ciudad) return msg(m, "Complete nombre, CI o NIT, celular y ciudad.", "err");
-  if ($("#r-pass").value !== $("#r-pass2").value) return msg(m, "Las contraseñas no coinciden.", "err");
-  busy(b, async () => {
-    try {
-      msg(m, "", "");
-      window.__registrando = true;
-      const cred = await createUserWithEmailAndPassword(auth, v("#r-email"), $("#r-pass").value);
-      await setDoc(doc(db, "usuarios", cred.user.uid), { ...datos, email: cred.user.email, tipo_solicitado: document.querySelector("input[name=tipo]:checked").value, rol: "pendiente", creado: serverTimestamp() });
-      try { await sendEmailVerification(cred.user); } catch (_) {}
-      window.__registrando = false;
-      await cargar(cred.user);
-    } catch (err) { window.__registrando = false; msg(m, errorEs(err), "err"); }
-  });
-};
 $("#salir").onclick = () => signOut(auth);
 $("#reenviar").onclick = async () => { try { await sendEmailVerification(auth.currentUser); $("#reenviar").textContent = "Correo reenviado ✓"; } catch (err) { alert(errorEs(err)); } };
 
 // ---------- Sesión ----------
-onAuthStateChanged(auth, (u) => { if (window.__registrando) return; if (!u) { ME = null; $("#who").hidden = true; show("v-login"); } else cargar(u); });
+onAuthStateChanged(auth, (u) => { if (!u) { ME = null; $("#who").hidden = true; show("v-login"); } else cargar(u); });
 
 async function cargar(u) {
   ME = u; show("v-cargando");
@@ -270,7 +254,7 @@ async function cargar(u) {
   // Pendiente, rechazado o suspendido
   const r = PERFIL ? PERFIL.rol : "pendiente";
   $("#esp-eye").textContent = r === "pendiente" ? "Solicitud recibida" : "Acceso no disponible";
-  $("#esp-tit").textContent = r === "pendiente" ? "Su solicitud está en revisión" : (r === "suspendido" ? "Su acceso está suspendido" : "Su solicitud no fue aprobada");
+  $("#esp-tit").textContent = r === "pendiente" ? "Su solicitud está en revisión" : (r === "suspendido" ? "Su acceso está suspendido" : "Su acceso no está activo");
   $("#esp-txt").textContent = r === "pendiente" ? "Vascruz revisará sus datos y activará su acceso. Cuando esté aprobado, vuelva a ingresar con su correo y contraseña." : "Si cree que es un error, escríbanos por WhatsApp.";
   $("#esp-verif").hidden = !!u.emailVerified || r !== "pendiente";
   show("v-espera");
@@ -387,6 +371,7 @@ async function usuarios() {
   const todos = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ((b.creado?.seconds) || 0) - ((a.creado?.seconds) || 0));
   const contacto = (u) => `${esc(u.email)}<br><span class="muted">${esc(u.telefono || "")} · CI/NIT ${esc(u.ci || "")}<br>${esc(u.ciudad || "")}${u.empresa ? " · " + esc(u.empresa) : ""}</span>`;
   const pend = todos.filter(u => u.rol === "pendiente");
+  $("#pend-box").hidden = !pend.length;
   $("#u-pend").innerHTML = pend.map(u => `<tr><td><b>${esc(u.nombre)}</b></td><td>${contacto(u)}</td><td>${esc(ROLES[u.tipo_solicitado] || u.tipo_solicitado)}</td><td>${fecha(u.creado)}</td>
     <td><div class="actions" style="margin:0"><button class="btn btn-gold btn-sm" data-u="${u.id}" data-r="asesor">Asesor</button><button class="btn btn-gold btn-sm" data-u="${u.id}" data-r="socio">Socio</button><button class="btn btn-red btn-sm" data-u="${u.id}" data-r="rechazado">Rechazar</button></div></td></tr>`).join("")
     || `<tr><td colspan="5" class="muted">No hay solicitudes pendientes.</td></tr>`;
@@ -408,6 +393,45 @@ async function usuarios() {
     await usuarios();
   });
 }
+// Crear usuario (solo administrador)
+function generarClave() {
+  const letras = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz", nums = "23456789";
+  const r = (s) => s[crypto.getRandomValues(new Uint32Array(1))[0] % s.length];
+  return "Vc" + Array.from({ length: 6 }, () => r(letras)).join("") + r(nums) + r(nums);
+}
+$("#n-gen").onclick = () => { $("#n-pass").value = generarClave(); };
+$("#f-crear").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySelector("button[type=submit]"); const m = $("#m-crear");
+  const v = (id) => $(id).value.trim();
+  const datos = { nombre: v("#n-nombre"), ci: v("#n-ci"), telefono: v("#n-tel"), ciudad: v("#n-ciudad"), empresa: v("#n-empresa") };
+  const email = v("#n-email").toLowerCase(), pass = $("#n-pass").value, rol = document.querySelector("input[name=n-tipo]:checked").value;
+  if (!datos.nombre || !datos.ci || !datos.telefono || !datos.ciudad) return msg(m, "Complete nombre, CI o NIT, celular y ciudad.", "err");
+  if (!/^\S+@\S+\.\S+$/.test(email)) return msg(m, "Escriba un correo válido.", "err");
+  if (pass.length < 8) return msg(m, "La contraseña inicial debe tener al menos 8 caracteres. Puede pulsar \"Generar\".", "err");
+  busy(b, async () => {
+    let uid = null;
+    try {
+      msg(m, "Creando usuario…", "info");
+      uid = await crearCuenta(email, pass);
+      await setDoc(doc(db, "usuarios", uid), { ...datos, email, rol, creado: serverTimestamp(), creado_por: ME.email });
+    } catch (err) {
+      if (err.code === "auth/email-already-in-use") return msg(m, "Ese correo ya tiene una cuenta. Búsquelo en la lista de usuarios de abajo para cambiar su acceso.", "err");
+      return msg(m, (uid ? "La cuenta se creó pero no se pudo guardar su ficha: " : "") + errorEs(err) + (err.code === "permission-denied" ? " Revise que las reglas nuevas de Firebase estén publicadas." : ""), "err");
+    }
+    msg(m, "", "");
+    const url = location.origin + location.pathname;
+    const texto = `Hola ${datos.nombre}, bienvenido a Vascruz Import & Export SRL. Ya tiene su acceso como ${ROLES[rol]}:\n\nIngrese aquí: ${url}\nUsuario: ${email}\nContraseña: ${pass}\n\nEste acceso es personal e intransferible. Si quiere cambiar su contraseña, pulse "Olvidé mi contraseña" en la página de ingreso.`;
+    const tel = datos.telefono.replace(/[^\d]/g, "");
+    $("#crear-listo").hidden = false;
+    $("#crear-listo").innerHTML = `<div class="eyebrow">Usuario creado</div><h2 style="margin:6px 0">${esc(datos.nombre)} · ${esc(ROLES[rol])}</h2>
+      <p class="muted" style="margin:0">Usuario: <b>${esc(email)}</b><br>Contraseña inicial: <b>${esc(pass)}</b></p>
+      <div class="actions"><a class="btn btn-gold" href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Enviar acceso por WhatsApp</a>
+      <button class="btn btn-line" id="copiar-acceso">Copiar mensaje</button></div>`;
+    $("#copiar-acceso").onclick = () => navigator.clipboard.writeText(texto).then(() => $("#copiar-acceso").textContent = "Mensaje copiado ✓");
+    e.target.reset();
+    await usuarios();
+  });
+};
+
 async function todasProformas() {
   const s = await getDocs(collection(db, "proformas"));
   $("#all-prof").innerHTML = ordenar(s.docs).map(d => filaProf(d, true)).join("") || `<tr><td colspan="7" class="muted">Aún no hay proformas.</td></tr>`;

@@ -12,14 +12,14 @@ service cloud.firestore {
     function userDoc() { return /databases/$(database)/documents/usuarios/$(request.auth.uid); }
     function hasRol(r) { return signedIn() && exists(userDoc()) && get(userDoc()).data.rol == r; }
 
-    // Registro de asesores y socios: cada uno crea su ficha en estado "pendiente"; solo el administrador aprueba.
+    // Asesores y socios: no hay registro abierto. Solo el administrador crea las fichas desde su panel
+    // (como asesor o socio; el rol de administrador solo lo da el usuario principal).
     match /usuarios/{uid} {
       allow get: if isAdmin() || (signedIn() && request.auth.uid == uid);
       allow list: if isAdmin();
-      allow create: if signedIn() && request.auth.uid == uid
-        && request.resource.data.rol == 'pendiente'
-        && request.resource.data.email == request.auth.token.email
-        && request.resource.data.keys().hasOnly(['nombre', 'ci', 'telefono', 'ciudad', 'empresa', 'email', 'tipo_solicitado', 'rol', 'creado']);
+      allow create: if isAdmin()
+        && request.resource.data.rol in ['asesor', 'socio']
+        && request.resource.data.keys().hasOnly(['nombre', 'ci', 'telefono', 'ciudad', 'empresa', 'email', 'rol', 'creado', 'creado_por']);
       // Solo el principal puede dar o quitar el rol de administrador.
       allow update, delete: if isPrincipal() || (isAdmin() && request.resource.data.rol != 'admin' && resource.data.rol != 'admin');
     }

@@ -1,6 +1,6 @@
 // Conexión con Firebase (usuarios y precios privados de Vascruz).
 // Estos datos de conexión son públicos por diseño: la protección la dan las reglas de seguridad de la base de datos.
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   sendEmailVerification, sendPasswordResetEmail, signOut
@@ -10,14 +10,30 @@ import {
   getDocs, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-const app = initializeApp({
+const CONFIG = {
   apiKey: "AIzaSyCd7ccK2wu2x8Iw_1bCU-PG5adlvBAlaFM",
   authDomain: "vascruz-web.firebaseapp.com",
   projectId: "vascruz-web",
   storageBucket: "vascruz-web.firebasestorage.app",
   messagingSenderId: "100359411607",
   appId: "1:100359411607:web:1e8394de63d267fabe56d2"
-});
+};
+const app = initializeApp(CONFIG);
+
+// El administrador crea la cuenta de un asesor o socio sin cerrar su propia sesión:
+// se usa una conexión aparte solo para crear el usuario y luego se cierra.
+export async function crearCuenta(email, pass) {
+  const tmp = initializeApp(CONFIG, "crear-" + Date.now());
+  try {
+    const a = getAuth(tmp);
+    const cred = await createUserWithEmailAndPassword(a, email, pass);
+    const uid = cred.user.uid;
+    await signOut(a);
+    return uid;
+  } finally {
+    await deleteApp(tmp);
+  }
+}
 
 export const auth = getAuth(app);
 auth.languageCode = "es";
