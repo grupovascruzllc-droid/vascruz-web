@@ -106,7 +106,7 @@ try {
     </div>
     ${p.nota ? `<div class="nota">${esc(p.nota)}</div>` : ""}
     <div class="cond"><b>Condiciones:</b> Precio en dólares americanos (USD), con el vehículo nuevo importado de fábrica y entregado en Santa Cruz de la Sierra. Vehículos eléctricos e híbridos enchufables nuevos con 0% de gravamen arancelario e ICE según normativa vigente. Sujeto a disponibilidad de stock, versión y color al momento de la reserva. Esta proforma no constituye factura ni contrato.</div>
-    <div class="firma"><div><b>${esc(p.asesor_nombre)}</b>Asesor de importación${p.asesor_tel ? " · " + esc(p.asesor_tel) : ""}</div><div style="text-align:right"><b>Vascruz Import &amp; Export SRL</b>Santa Cruz de la Sierra, Bolivia</div></div>
+    <div class="firma"><div><b>${esc(p.asesor_nombre)}</b>Asesor de Vascruz${p.asesor_tel ? " · " + esc(p.asesor_tel) : ""}</div><div style="text-align:right"><b>Vascruz Import &amp; Export SRL</b>Santa Cruz de la Sierra, Bolivia</div></div>
   </div>`;
 } catch (e) { fail("No encontramos esta proforma. Verifique el enlace o consulte a su asesor."); }
 </script>

@@ -82,8 +82,9 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
   header,#paneltabs,.no-print,.visor{display:none!important}
   main{padding:0}
   .print-only{display:block}
-  .thumb{width:60px}
+  #fob-body .thumb{width:150px}
   table{font-size:11px}
+  thead{display:table-header-group}
   th,td{padding:6px 5px}
   tr{break-inside:avoid}
 }
@@ -135,7 +136,7 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
 
   <!-- Cotizador (asesores) -->
   <div id="p-cotizador" hidden>
-    <div class="secthead"><div><div class="eyebrow">Asesores de importación</div><h1 style="margin-top:6px">Cotizador</h1></div><span class="muted" id="cot-act"></span></div>
+    <div class="secthead"><div><div class="eyebrow">Cotizaciones Vascruz</div><h1 style="margin-top:6px">Cotizador</h1></div><span class="muted" id="cot-act"></span></div>
     <div class="cot">
       <form class="card" id="f-cot" novalidate>
         <label for="c-auto">Vehículo</label><select id="c-auto" required></select>
@@ -179,7 +180,7 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
       <label>Tipo de acceso</label>
       <div class="radio">
         <label><input type="radio" name="n-tipo" value="asesor" checked><span><b>Asesor de importación</b><span class="muted">Cotizador y proformas con precio puesto en Santa Cruz.</span></span></label>
-        <label><input type="radio" name="n-tipo" value="socio"><span><b>Socio de importación</b><span class="muted">Lista de precios FOB.</span></span></label>
+        <label><input type="radio" name="n-tipo" value="socio"><span><b>Socio de importación</b><span class="muted">Lista de precios FOB, y cotizador con proformas a nombre de Vascruz.</span></span></label>
       </div>
       <label for="n-nombre">Nombre completo</label><input id="n-nombre" autocomplete="off" required>
       <div class="row2">
@@ -248,7 +249,7 @@ const $ = (s) => document.querySelector(s);
 const CAT = (window.VASCRUZ_CATALOGO && window.VASCRUZ_CATALOGO.modelos) || [];
 const catById = Object.fromEntries(CAT.map(m => [String(m.id), m]));
 const ROLES = { asesor: "Asesor de importación", socio: "Socio de importación", admin: "Administrador", pendiente: "Pendiente", rechazado: "Rechazado", suspendido: "Suspendido" };
-let ME = null, PERFIL = null, ES_ADMIN = false, PRECIOS = null, FOB = null;
+let ME = null, PERFIL = null, ES_ADMIN = false, PRECIOS = null, FOB = null, ROL = null;
 
 function show(id) { for (const v of ["v-cargando", "v-login", "v-espera", "v-panel"]) $("#" + v).hidden = v !== id; }
 function msg(el, txt, cls) { el.textContent = txt; el.className = "msg " + cls; el.hidden = !txt; }
@@ -285,6 +286,7 @@ async function cargar(u) {
   ES_ADMIN = false;
   try { await getDocs(query(collection(db, "usuarios"), where("rol", "==", "pendiente"))); ES_ADMIN = true; } catch (_) {}
   const rol = ES_ADMIN ? "admin" : (PERFIL ? PERFIL.rol : "pendiente");
+  ROL = rol;
   $("#who").hidden = false; $("#who-name").textContent = (PERFIL && PERFIL.nombre) || u.email; $("#who-rol").textContent = ROLES[rol] || rol;
   if (rol === "asesor" || rol === "socio" || rol === "admin") return panel(rol);
   // Pendiente, rechazado o suspendido
@@ -298,7 +300,8 @@ async function cargar(u) {
 
 function panel(rol) {
   const tabs = [];
-  if (rol === "asesor" || rol === "admin") tabs.push(["p-cotizador", "Cotizador"]);
+  // Asesores y socios cotizan a nombre de Vascruz (precio puesto en Santa Cruz); los socios además ven el FOB.
+  if (rol === "asesor" || rol === "socio" || rol === "admin") tabs.push(["p-cotizador", "Cotizador"]);
   if (rol === "socio" || rol === "admin") tabs.push(["p-fob", "Precios FOB"]);
   if (rol === "admin") tabs.push(["p-usuarios", "Asesores y socios"], ["p-proformas", "Proformas"], ["p-precios", "Actualizar precios"]);
   // Esconder todas las secciones; luego solo se muestran las que corresponden a este rol.
@@ -360,7 +363,7 @@ $("#f-cot").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySele
       const veh = { id: m.id, marca: m.marca, modelo: m.modelo, version: m.version || "", anio: m.anio || "", tec: m.tec || "", tipo: m.tipo || "", autonomia: m.autonomia || null, foto: m.foto || "", ficha: m.ficha || {} };
       const ref = await addDoc(collection(db, "proformas"), {
         numero, fecha: serverTimestamp(), fecha_txt: hoy.toLocaleDateString("es-BO"), validez_dias: 15,
-        asesor_uid: ME.uid, asesor_nombre: (PERFIL && PERFIL.nombre) || ME.email, asesor_tel: (PERFIL && PERFIL.telefono) || "", asesor_email: ME.email,
+        asesor_uid: ME.uid, asesor_nombre: (PERFIL && PERFIL.nombre) || ME.email, asesor_tel: (PERFIL && PERFIL.telefono) || "", asesor_email: ME.email, asesor_rol: ROL,
         cliente_nombre: cliente, cliente_doc: $("#c-doc").value.trim(), cliente_tel: $("#c-tel").value.trim(), nota: $("#c-nota").value.trim(),
         vehiculo: veh, color: $("#c-color").value, precio: p, pagos: pagos(p)
       });
@@ -381,7 +384,7 @@ $("#f-cot").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySele
 };
 function filaProf(d, conAsesor) {
   const p = d.data(); const v = p.vehiculo || {};
-  return `<tr><td><span class="pill">${esc(p.numero)}</span></td><td>${esc(p.fecha_txt || fecha(p.fecha))}</td>${conAsesor ? `<td>${esc(p.asesor_nombre)}</td>` : ""}
+  return `<tr><td><span class="pill">${esc(p.numero)}</span></td><td>${esc(p.fecha_txt || fecha(p.fecha))}</td>${conAsesor ? `<td>${esc(p.asesor_nombre)}${p.asesor_rol === "socio" ? ` <span class="pill">Socio</span>` : ""}</td>` : ""}
     <td>${esc(p.cliente_nombre)}</td><td>${esc(nombreAuto(v))}</td><td class="num">${usd(p.precio)}</td>
     <td><a class="btn btn-line btn-sm" href="proforma.html?id=${d.id}" target="_blank" rel="noopener">Abrir</a></td></tr>`;
 }
