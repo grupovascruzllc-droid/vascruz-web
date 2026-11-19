@@ -4,7 +4,7 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function isAdmin() {
       return signedIn() && request.auth.token.email_verified == true &&
-        request.auth.token.email in ['grupovascruzllc@gmail.com', 'josevasquezmultifamiliar@gmail.com'];
+        request.auth.token.email in ['grupovascruzllc@gmail.com', 'josevasquezmultifamiliar@gmail.com', 'josemariavasquezaguado@gmail.com'];
     }
     function userDoc() { return /databases/$(database)/documents/usuarios/$(request.auth.uid); }
     function hasRol(r) { return signedIn() && exists(userDoc()) && get(userDoc()).data.rol == r; }
