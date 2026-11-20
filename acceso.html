@@ -74,6 +74,13 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .secthead{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .space{height:24px}
+/* Enviar catálogo */
+.cat-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.cat-item{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:6px;padding:8px;margin:0;font-weight:500;cursor:pointer;background:#fff}
+.cat-item:has(input:checked){border-color:var(--gold);background:var(--gold-soft)}
+.cat-item input{width:auto;flex:none}
+.cat-item img{width:64px;aspect-ratio:4/3;object-fit:cover;border-radius:4px;flex:none;background:var(--surface)}
+.cat-item b{display:block;font-size:13.5px;line-height:1.25}.cat-item small{color:var(--muted);font-size:12px}
 /* Fotos que se agrandan al pulsarlas */
 button.foto{padding:0;border:0;background:none;cursor:zoom-in;display:block;border-radius:4px}
 button.foto:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
@@ -179,6 +186,33 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
     <div class="tbl"><table><thead><tr><th></th><th>Vehículo</th><th>Tipo</th><th class="num">Autonomía</th><th>Colores</th><th class="num">FOB</th></tr></thead><tbody id="fob-body"></tbody></table></div>
   </div>
 
+  <!-- Enviar catálogo (asesores) -->
+  <div id="p-catalogo" hidden>
+    <div class="secthead"><div><div class="eyebrow">Asesores de importación</div><h1 style="margin-top:6px">Enviar catálogo</h1></div></div>
+    <p class="muted" style="margin-top:0">Elija los vehículos para su cliente. Se crea un catálogo con el nombre de Vascruz y el suyo como asesor: lo envía por WhatsApp como enlace o PDF, y cuando el cliente pulse WhatsApp le escribirá a usted.</p>
+    <div class="card">
+      <label style="margin-top:0">Tipo de vehículo</label>
+      <div class="tabs" id="cat-tipos" style="margin:6px 0 10px"></div>
+      <div class="actions" style="margin:0;align-items:center"><button type="button" class="btn btn-line btn-sm" id="cat-todos">Seleccionar los que se ven</button>
+        <button type="button" class="btn btn-line btn-sm" id="cat-ninguno">Quitar selección</button><b id="cat-cuenta" style="margin-left:auto"></b></div>
+      <div class="cat-lista" id="cat-lista"></div>
+    </div>
+    <form class="card" id="f-catalogo" novalidate style="margin-top:14px">
+      <div class="row2">
+        <div><label for="k-cliente" style="margin-top:0">Nombre del cliente <span class="muted">(opcional)</span></label><input id="k-cliente"></div>
+        <div><label for="k-tel" style="margin-top:0">Celular del cliente <span class="muted">(opcional)</span></label><input id="k-tel" type="tel" placeholder="+591 …"></div>
+      </div>
+      <label for="k-nota">Mensaje para el cliente <span class="muted">(opcional)</span></label><textarea id="k-nota" rows="2"></textarea>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" id="k-precios" style="width:auto"> Incluir precios (precio puesto en Santa Cruz)</label>
+      <button class="btn btn-gold full" type="submit">Crear catálogo</button>
+      <div class="msg" id="m-catalogo" hidden></div>
+    </form>
+    <div class="card" id="cat-listo" hidden style="margin-top:14px"></div>
+    <div class="space"></div>
+    <h2>Mis catálogos</h2>
+    <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Fecha</th><th>Cliente</th><th class="num">Vehículos</th><th></th></tr></thead><tbody id="mis-cat"></tbody></table></div>
+  </div>
+
   <!-- Mis comisiones (asesores) -->
   <div id="p-comisiones" hidden>
     <div class="secthead"><div><div class="eyebrow">Asesores de importación</div><h1 style="margin-top:6px">Mis comisiones</h1></div><span class="muted" id="com-act"></span></div>
@@ -281,8 +315,8 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
 import {
   auth, db, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification,
   sendPasswordResetEmail, signOut, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, getDocs,
-  serverTimestamp, usd, esc, nombreAuto, errorEs, crearCuenta
-} from "./fb.js?v=2";
+  serverTimestamp, usd, esc, nombreAuto, errorEs, crearCuenta, telWa
+} from "./fb.js?v=3";
 import { tablaDetalle, CSS_DETALLE, usd2 } from "./detalle.js?v=1";
 document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}</style>`);
 
@@ -343,11 +377,12 @@ function panel(rol) {
   const tabs = [];
   // Asesores y socios cotizan a nombre de Vascruz (precio puesto en Santa Cruz); los socios además ven el FOB.
   if (rol === "asesor" || rol === "socio" || rol === "admin") tabs.push(["p-cotizador", "Cotizador"]);
+  if (rol === "asesor" || rol === "admin") tabs.push(["p-catalogo", "Enviar catálogo"]);
   if (rol === "asesor" || rol === "admin") tabs.push(["p-comisiones", rol === "admin" ? "Comisiones" : "Mis comisiones"]);
   if (rol === "socio" || rol === "admin") tabs.push(["p-fob", "Precios FOB"]);
   if (rol === "admin") tabs.push(["p-usuarios", "Asesores y socios"], ["p-proformas", "Proformas"], ["p-precios", "Actualizar precios"]);
   // Esconder todas las secciones; luego solo se muestran las que corresponden a este rol.
-  for (const s of ["p-cotizador", "p-comisiones", "p-fob", "p-usuarios", "p-precios", "p-proformas"]) $("#" + s).hidden = true;
+  for (const s of ["p-cotizador", "p-catalogo", "p-comisiones", "p-fob", "p-usuarios", "p-precios", "p-proformas"]) $("#" + s).hidden = true;
   const bar = $("#paneltabs"); bar.innerHTML = ""; bar.hidden = tabs.length < 2;
   const abrir = (id) => { for (const [p] of tabs) $("#" + p).hidden = p !== id; bar.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.p === id)); cargarPestana(id); };
   for (const [p, t] of tabs) { const b = document.createElement("button"); b.className = "tab"; b.dataset.p = p; b.textContent = t; b.onclick = () => abrir(p); bar.appendChild(b); }
@@ -359,6 +394,7 @@ const PENDIENTES_PRIMERO = true;
 async function cargarPestana(id) {
   try {
     if (id === "p-cotizador") await cotizador();
+    if (id === "p-catalogo") await enviarCatalogo();
     if (id === "p-comisiones") await misComisiones();
     if (id === "p-fob") await listaFob();
     if (id === "p-usuarios") await usuarios();
@@ -403,6 +439,62 @@ $("#ver-det").onclick = () => {
   $("#ver-det").textContent = box.hidden ? "Ver cotización detallada" : "Ocultar cotización detallada";
   vistaDetalle(); if (!box.hidden) box.scrollIntoView({ behavior: "smooth", block: "start" });
 };
+
+// ---------- Enviar catálogo ----------
+const SEL_CAT = new Set(); let TIPO_CAT = "Todos";
+async function enviarCatalogo() {
+  if (!PRECIOS) { const s = await getDoc(doc(db, "privado", "asesores")); PRECIOS = s.exists() ? s.data() : { precios: {} }; }
+  const tipos = ["Todos", ...new Set(CAT.map(m => m.tipo).filter(Boolean))];
+  $("#cat-tipos").innerHTML = tipos.map(t => `<button type="button" class="tab" aria-selected="${t === TIPO_CAT}" data-t="${esc(t)}">${esc(t)}</button>`).join("");
+  $("#cat-tipos").querySelectorAll(".tab").forEach(b => b.onclick = () => { TIPO_CAT = b.dataset.t; enviarCatalogo(); });
+  const visibles = CAT.filter(m => TIPO_CAT === "Todos" || m.tipo === TIPO_CAT);
+  $("#cat-lista").innerHTML = visibles.map(m => `<label class="cat-item"><input type="checkbox" value="${esc(m.id)}" ${SEL_CAT.has(String(m.id)) ? "checked" : ""}>
+    ${m.foto ? `<img src="${esc(m.foto)}" alt="" loading="lazy">` : ""}<span><b>${esc(m.marca)} ${esc(m.modelo)}</b><small>${esc(m.version || "")} · ${esc(m.anio || "")}</small></span></label>`).join("");
+  $("#cat-lista").querySelectorAll("input").forEach(i => i.onchange = () => { i.checked ? SEL_CAT.add(i.value) : SEL_CAT.delete(i.value); cuentaCat(); });
+  $("#cat-todos").onclick = () => { visibles.forEach(m => SEL_CAT.add(String(m.id))); enviarCatalogo(); };
+  $("#cat-ninguno").onclick = () => { SEL_CAT.clear(); enviarCatalogo(); };
+  cuentaCat(); misCatalogos();
+}
+function cuentaCat() { $("#cat-cuenta").textContent = SEL_CAT.size ? SEL_CAT.size + (SEL_CAT.size === 1 ? " vehículo elegido" : " vehículos elegidos") : "Ningún vehículo elegido"; }
+$("#f-catalogo").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySelector("button[type=submit]"); const mm = $("#m-catalogo");
+  if (!SEL_CAT.size) return msg(mm, "Elija al menos un vehículo.", "err");
+  const ids = CAT.map(m => String(m.id)).filter(i => SEL_CAT.has(i));
+  const cliente = $("#k-cliente").value.trim(), telCli = telWa($("#k-tel").value);
+  const precios = {};
+  if ($("#k-precios").checked) ids.forEach(i => { const p = PRECIOS.precios && PRECIOS.precios[i]; if (p) precios[i] = p; });
+  busy(b, async () => {
+    try {
+      msg(mm, "", "");
+      const ref = await addDoc(collection(db, "catalogos"), {
+        asesor_uid: ME.uid, asesor_nombre: (PERFIL && PERFIL.nombre) || ME.email, asesor_tel: (PERFIL && PERFIL.telefono) || "", asesor_email: ME.email,
+        cliente_nombre: cliente, cliente_tel: $("#k-tel").value.trim(), nota: $("#k-nota").value.trim(), ids, precios, creado: serverTimestamp()
+      });
+      const url = location.origin + location.pathname.replace(/acceso\.html$/, "") + "catalogo.html?id=" + ref.id;
+      const texto = `Hola${cliente ? " " + cliente : ""}, le comparto el catálogo de vehículos de Vascruz Import & Export SRL que preparé para usted (${ids.length} ${ids.length === 1 ? "vehículo" : "vehículos"}). Cualquier consulta, escríbame por aquí.\n${url}`;
+      $("#cat-listo").hidden = false;
+      $("#cat-listo").innerHTML = `<div class="eyebrow">Catálogo listo · ${ids.length} ${ids.length === 1 ? "vehículo" : "vehículos"}</div><h2 style="margin:6px 0">Envíelo a su cliente</h2>
+        <p class="muted" style="margin:0;word-break:break-all">${esc(url)}</p>
+        <div class="actions"><a class="btn btn-gold" href="https://wa.me/${telCli}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        <a class="btn btn-line" href="${esc(url)}" target="_blank" rel="noopener">Ver</a>
+        <a class="btn btn-line" href="${esc(url + "&imprimir=1")}" target="_blank" rel="noopener">Imprimir / PDF</a>
+        <button class="btn btn-line" id="copiar-cat">Copiar enlace</button></div>`;
+      $("#copiar-cat").onclick = () => navigator.clipboard.writeText(url).then(() => $("#copiar-cat").textContent = "Enlace copiado ✓");
+      $("#cat-listo").scrollIntoView({ behavior: "smooth", block: "center" });
+      e.target.reset(); misCatalogos();
+    } catch (err) { msg(mm, errorEs(err), "err"); }
+  });
+};
+async function misCatalogos() {
+  try {
+    const s = await getDocs(query(collection(db, "catalogos"), where("asesor_uid", "==", ME.uid)));
+    const docs = s.docs.sort((a, b) => ((b.data().creado?.seconds) || 9e12) - ((a.data().creado?.seconds) || 9e12));
+    $("#mis-cat").innerHTML = docs.map(d => { const c = d.data(); const n = (c.ids || []).length;
+      return `<tr><td>${fecha(c.creado)}</td><td>${esc(c.cliente_nombre || "—")}</td><td class="num">${n}</td>
+        <td><div class="actions" style="margin:0;flex-wrap:nowrap"><a class="btn btn-line btn-sm" href="catalogo.html?id=${d.id}" target="_blank" rel="noopener">Ver</a>
+        <a class="btn btn-line btn-sm" href="catalogo.html?id=${d.id}&imprimir=1" target="_blank" rel="noopener">PDF</a></div></td></tr>`; }).join("")
+      || `<tr><td colspan="4" class="muted">Todavía no creó catálogos.</td></tr>`;
+  } catch (_) { $("#mis-cat").innerHTML = `<tr><td colspan="4" class="muted">No se pudieron cargar sus catálogos.</td></tr>`; }
+}
 
 // ---------- Mis comisiones ----------
 async function misComisiones() {
@@ -457,7 +549,7 @@ $("#f-cot").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySele
       });
       const url = location.origin + location.pathname.replace(/acceso\.html$/, "") + "proforma.html?id=" + ref.id;
       const texto = `Hola ${cliente}, le comparto su proforma de Vascruz Import & Export SRL: ${nombreAuto(m)} — ${usd(p)} puesto en Santa Cruz.\n${url}`;
-      const telCli = $("#c-tel").value.replace(/[^\d]/g, "");
+      const telCli = telWa($("#c-tel").value);
       $("#cot-listo").hidden = false;
       const urlDet = url + "&v=detalle";
       const textoDet = `Hola ${cliente}, le comparto la cotización detallada de Vascruz Import & Export SRL: ${nombreAuto(m)} — ${usd(p)} puesto en Santa Cruz, con el desglose de todos los gastos de importación.\n${urlDet}`;
@@ -584,7 +676,7 @@ $("#ver-elim").onchange = () => usuarios();
 
 const URL_ACCESO = location.origin + location.pathname;
 function avisoUsuario(html) { const box = $("#u-aviso"); box.hidden = false; box.innerHTML = html; box.scrollIntoView({ behavior: "smooth", block: "center" }); }
-function waUsuario(u, texto) { return `https://wa.me/${String(u.telefono || "").replace(/[^\d]/g, "")}?text=${encodeURIComponent(texto)}`; }
+function waUsuario(u, texto) { return `https://wa.me/${telWa(u.telefono)}?text=${encodeURIComponent(texto)}`; }
 
 async function cambiarRol(u, rol) {
   const cambios = { rol, revisado: serverTimestamp(), revisado_por: ME.email };
@@ -675,7 +767,7 @@ $("#f-crear").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySe
     msg(m, "", "");
     const url = location.origin + location.pathname;
     const texto = `Hola ${datos.nombre}, bienvenido a Vascruz Import & Export SRL. Ya tiene su acceso como ${ROLES[rol]}:\n\nIngrese aquí: ${url}\nUsuario: ${email}\nContraseña: ${pass}\n\nEste acceso es personal e intransferible. Si quiere cambiar su contraseña, pulse "Olvidé mi contraseña" en la página de ingreso.`;
-    const tel = datos.telefono.replace(/[^\d]/g, "");
+    const tel = telWa(datos.telefono);
     $("#crear-listo").hidden = false;
     $("#crear-listo").innerHTML = `<div class="eyebrow">Usuario creado</div><h2 style="margin:6px 0">${esc(datos.nombre)} · ${esc(ROLES[rol])}</h2>
       <p class="muted" style="margin:0">Usuario: <b>${esc(email)}</b><br>Contraseña inicial: <b>${esc(pass)}</b></p>

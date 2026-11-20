@@ -63,7 +63,7 @@ h2{font:700 20px var(--display);margin:4px 0 2px}
 <div id="out"><p style="text-align:center;padding:60px;color:#5f5d58">Cargando proforma…</p></div>
 
 <script type="module">
-import { db, doc, getDoc, usd, esc, nombreAuto } from "./fb.js?v=1";
+import { db, doc, getDoc, usd, esc, nombreAuto, telWa } from "./fb.js?v=3";
 import { tablaDetalle, CSS_DETALLE } from "./detalle.js?v=1";
 document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}
 .ficha{display:grid;grid-template-columns:1fr 1fr;gap:2px 24px;font-size:13px;margin-top:14px}
@@ -115,7 +115,7 @@ try {
     ["Tracción", f.traccion], ["Dimensiones (L × A × H)", f.dimensiones], ["Color", p.color]].filter(r => r[1]);
   const pg = p.pagos || [];
   document.title = `Proforma ${p.numero} — ${nombreAuto(v)} | Vascruz`;
-  const telAs = String(p.asesor_tel || "").replace(/[^\d]/g, "") || "59177006107";
+  const telAs = telWa(p.asesor_tel) || "59177006107";
   document.getElementById("wa").href = `https://wa.me/${telAs}?text=${encodeURIComponent("Hola, tengo una consulta sobre la proforma " + p.numero + " (" + nombreAuto(v) + ").")}`;
   document.getElementById("bar").hidden = false;
   const cabecera = `<div class="top"><img src="img/logo-sm.png" alt="Vascruz Import &amp; Export SRL">

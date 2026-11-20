@@ -236,5 +236,28 @@ if(!m){
 }
 document.getElementById("wa-top").href=WA+encodeURIComponent("Hola Vascruz, quisiera información sobre la importación de un vehículo eléctrico.");
 </script>
+<script type="module">
+// Si el cliente llega desde el catálogo de un asesor (?cat=...), los botones de WhatsApp le escriben a ese asesor.
+const cat = new URLSearchParams(location.search).get("cat");
+if (cat) {
+  try {
+    const { db, doc, getDoc, telWa } = await import("./fb.js?v=3");
+    const s = await getDoc(doc(db, "catalogos", cat));
+    if (s.exists()) {
+      const c = s.data(), tel = telWa(c.asesor_tel);
+      if (tel) {
+        document.querySelectorAll('a[href^="https://wa.me/59177006107"]').forEach(a => {
+          const u = new URL(a.href); const t = u.searchParams.get("text") || "";
+          a.href = "https://wa.me/" + tel + "?text=" + encodeURIComponent(t.replace(/^Hola Vascruz/, "Hola " + c.asesor_nombre));
+        });
+        const volver = document.createElement("a");
+        volver.href = "catalogo.html?id=" + encodeURIComponent(cat); volver.textContent = "← Volver a mi catálogo";
+        volver.style.cssText = "display:block;max-width:1100px;margin:12px auto 0;padding:0 16px;font-weight:600;color:#a8822a";
+        document.getElementById("app").before(volver);
+      }
+    }
+  } catch (_) {}
+}
+</script>
 </body>
 </html>

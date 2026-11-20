@@ -31,6 +31,14 @@ service cloud.firestore {
     // Desglose de costos (cotización detallada) y comisión por vehículo: solo asesores de importación.
     match /privado/detalle  { allow read: if isAdmin() || hasRol('asesor'); allow write: if isAdmin(); }
 
+    // Catálogos que el asesor envía a sus clientes: el cliente los abre con su enlace (código no adivinable).
+    match /catalogos/{id} {
+      allow create: if (hasRol('asesor') || isAdmin()) && request.resource.data.asesor_uid == request.auth.uid;
+      allow get: if true;
+      allow list: if isAdmin() || (signedIn() && resource.data.asesor_uid == request.auth.uid);
+      allow update, delete: if isAdmin() || (signedIn() && resource.data.asesor_uid == request.auth.uid);
+    }
+
     // Proformas: las crea el asesor o el socio; el cliente la abre con su enlace (código no adivinable).
     match /proformas/{id} {
       allow create: if (hasRol('asesor') || hasRol('socio') || isAdmin()) && request.resource.data.asesor_uid == request.auth.uid;

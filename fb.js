@@ -53,6 +53,11 @@ export function esc(s) {
 export function nombreAuto(m) {
   return [m.marca, m.modelo, m.version].filter(Boolean).join(" ") + (m.anio ? " (" + m.anio + ")" : "");
 }
+// Número para WhatsApp: solo dígitos y, si es un celular de Bolivia de 8 cifras, se le agrega el código 591.
+export function telWa(t) {
+  const d = String(t || "").replace(/[^\d]/g, "");
+  return d.length === 8 ? "591" + d : d;
+}
 // Mensajes de error de Firebase en español
 export function errorEs(e) {
   const c = (e && e.code) || "";
