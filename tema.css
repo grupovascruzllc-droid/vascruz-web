@@ -1,0 +1,92 @@
+/* =====================================================================
+   VASCRUZ · Estilo compartido de las páginas interiores
+   (fichas de vehículos, zona de asesores, catálogos y proformas)
+   Mismos colores, letras y botones que la portada.
+   Modo claro / oscuro automático, con botón para elegir.
+   Las páginas con la clase "solo-claro" (documentos para imprimir) son siempre claras.
+   ===================================================================== */
+:root{
+  --bg:#ffffff; --fg:#111111; --muted:#5f5d58; --surface:#f7f5f0; --surface-2:#efebe2; --line:#e7e2d6; --card:#ffffff;
+  --gold:#a8822a; --gold-2:#d2ad55; --gold-3:#f0d58c; --gold-soft:#f3ead3; --gold-btn:#d2ad55;
+  --band:#ffffff; --band-fg:#111111; --band-gold:#a8822a; --band-soft:#f7f5f0; --band-line:#e7e2d6;
+  --grad:linear-gradient(115deg,#8f6b1f 0%,#c9a14a 30%,#f0d58c 50%,#c9a14a 70%,#8f6b1f 100%);
+  --shadow:0 18px 50px -24px rgba(17,17,17,.28);
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.solo-claro){
+  --bg:#0b0b0c; --fg:#f3f0e8; --muted:#a6a298; --surface:#131315; --surface-2:#1a1a1d; --line:#2a292d; --card:#121214;
+  --gold:#d9b765; --gold-2:#d9b765; --gold-3:#f3dc9a; --gold-soft:#2a2416;
+  --band:#0b0b0c; --band-fg:#f3f0e8; --band-gold:#d9b765; --band-soft:#131315; --band-line:#2a292d;
+  --shadow:0 18px 50px -24px rgba(0,0,0,.8); color-scheme:dark}}
+:root[data-theme="dark"]:not(.solo-claro){
+  --bg:#0b0b0c; --fg:#f3f0e8; --muted:#a6a298; --surface:#131315; --surface-2:#1a1a1d; --line:#2a292d; --card:#121214;
+  --gold:#d9b765; --gold-2:#d9b765; --gold-3:#f3dc9a; --gold-soft:#2a2416;
+  --band:#0b0b0c; --band-fg:#f3f0e8; --band-gold:#d9b765; --band-soft:#131315; --band-line:#2a292d;
+  --shadow:0 18px 50px -24px rgba(0,0,0,.8); color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);transition:background-color .35s,color .35s}
+h1,h2,h3{letter-spacing:-.01em}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;letter-spacing:.18em}
+.eyebrow::before{content:"";width:24px;height:1px;background:currentColor}
+:focus-visible{outline:2px solid var(--gold-2);outline-offset:3px}
+
+/* Cabecera con efecto vidrio */
+header{background:color-mix(in srgb,var(--bg) 84%,transparent)!important;color:var(--fg)!important;backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid var(--line)!important}
+header .nav{gap:12px}
+.nav-der{display:flex;align-items:center;gap:10px;margin-left:auto}
+
+/* Botón de tema (lo agrega tema.js) */
+.tema{width:42px;height:42px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--fg);display:grid;place-items:center;cursor:pointer;transition:border-color .2s,transform .2s;padding:0}
+.tema:hover{border-color:var(--gold-2);transform:rotate(-12deg)}
+.tema svg{width:19px;height:19px}
+
+/* Botones dorados con destello, como en la portada */
+.btn{border-radius:999px;transition:transform .25s,box-shadow .25s,background-color .25s,color .25s,border-color .25s}
+.btn-gold{position:relative;overflow:hidden;background:linear-gradient(135deg,#f0d58c,#c9a14a 55%,#a8822a)!important;border-color:transparent!important;color:#111!important;box-shadow:0 10px 26px -12px rgba(201,161,74,.8)}
+.btn-gold::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%);transition:transform .8s;pointer-events:none}
+.btn-gold:hover{transform:translateY(-2px);filter:none}.btn-gold:hover::after{transform:translateX(120%)}
+.btn-line{background:transparent!important;border-color:var(--line)!important;color:var(--fg)!important}
+.btn-line:hover{border-color:var(--gold-2)!important}
+.btn-red{background:transparent!important}
+
+/* Tarjetas, pestañas, tablas y formularios */
+.card,.pricebox,.kpis,.viewer,.asesor,.auto,.calc{border-radius:18px}
+.card{background:var(--card)!important;border-color:var(--line)!important}
+.tab,.tabs button,.chip{border-radius:999px;border-color:var(--line);background:var(--card);color:var(--fg);transition:border-color .2s,background-color .2s,color .2s}
+.tab:hover,.tabs button:hover{border-color:var(--gold-2)}
+.tab[aria-selected="true"],.tabs button[aria-pressed="true"]{background:var(--fg)!important;color:var(--bg)!important;border-color:var(--fg)!important}
+input,select,textarea{background:var(--card)!important;color:var(--fg)!important;border-color:var(--line)!important;border-radius:12px!important}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold-2)!important}
+th,td{border-color:var(--line)!important}
+.kpis div,.ficha div,.fsec div{border-color:var(--line)}
+.radio label,.cat-item{background:var(--card);border-color:var(--line)}
+.msg.info{background:var(--surface)}
+.thumb,.prev img{border-radius:10px}
+.hero .photo{border-radius:18px}.gal img{border-radius:12px}
+.gal img{transition:transform .6s}.gal img:hover{transform:scale(1.03)}
+.pill{border-radius:999px}
+
+/* Mensajes y etiquetas de color (se adaptan al modo oscuro) */
+:root{--red:#a23b2a;--green:#2f6b3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.solo-claro){--red:#e88b77;--green:#7fcb8f}}
+:root[data-theme="dark"]:not(.solo-claro){--red:#e88b77;--green:#7fcb8f}
+.msg.err,.pill.r{background:color-mix(in srgb,var(--red) 14%,var(--card))!important;color:var(--red)!important}
+.msg.ok,.pill.g{background:color-mix(in srgb,var(--green) 14%,var(--card))!important;color:var(--green)!important}
+.btn-red{border-color:color-mix(in srgb,var(--red) 45%,transparent)!important;color:var(--red)!important}
+.viewer{background:var(--surface)}
+.viewer .hint{background:var(--surface);color:var(--fg)}
+
+/* Cotización detallada dentro del panel: colores según el tema */
+html:not(.solo-claro) .det td{border-color:var(--line)}
+html:not(.solo-claro) .det tr.sub td{background:var(--surface)}
+html:not(.solo-claro) .det tr.tot td{background:color-mix(in srgb,var(--gold-2) 22%,var(--card));color:var(--fg)}
+html:not(.solo-claro) .det td.et{color:var(--muted)}
+
+/* Imprimir: siempre en claro */
+@media print{
+  :root{--bg:#fff!important;--fg:#111!important;--muted:#5f5d58!important;--line:#e7e2d6!important;--card:#fff!important;--surface:#f7f5f0!important;color-scheme:light}
+  .tema{display:none!important}
+  main,.hoja,#out{animation:none!important}
+}
