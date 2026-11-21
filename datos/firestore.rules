@@ -18,7 +18,7 @@ service cloud.firestore {
       allow get: if isAdmin() || (signedIn() && request.auth.uid == uid);
       allow list: if isAdmin();
       allow create: if isAdmin()
-        && request.resource.data.rol in ['asesor', 'socio']
+        && request.resource.data.rol in ['asesor', 'socio', 'cliente']
         && request.resource.data.keys().hasOnly(['nombre', 'ci', 'telefono', 'ciudad', 'empresa', 'email', 'rol', 'creado', 'creado_por']);
       // Solo el principal puede dar o quitar el rol de administrador.
       allow update, delete: if isPrincipal() || (isAdmin() && request.resource.data.rol != 'admin' && resource.data.rol != 'admin');
@@ -45,6 +45,13 @@ service cloud.firestore {
       allow get: if true;
       allow list: if isAdmin() || (signedIn() && resource.data.asesor_uid == request.auth.uid);
       allow update, delete: if isAdmin();
+    }
+
+    // Pedidos de clientes (seguimiento de su importación): solo el administrador los crea y actualiza;
+    // cada cliente activo ve únicamente los suyos.
+    match /pedidos/{id} {
+      allow read: if isAdmin() || (hasRol('cliente') && resource.data.cliente_uid == request.auth.uid);
+      allow create, update, delete: if isAdmin();
     }
   }
 }

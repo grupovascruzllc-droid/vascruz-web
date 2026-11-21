@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Vascruz Asesores">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#ffffff">
-<title>Acceso asesores y socios | Vascruz Import & Export SRL</title>
+<title>Acceso asesores, socios y clientes | Vascruz Import & Export SRL</title>
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="img/logo-sm.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -121,8 +121,8 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
 <section id="v-login" hidden>
   <div class="narrow">
     <div class="eyebrow">Acceso privado</div>
-    <h1 style="margin-top:8px">Asesores y socios de importación</h1>
-    <p class="muted" style="margin:10px 0 18px">Ingrese con el usuario y la contraseña que le entregó Vascruz.</p>
+    <h1 style="margin-top:8px">Asesores, socios y clientes</h1>
+    <p class="muted" style="margin:10px 0 18px">Ingrese con el usuario y la contraseña que le entregó Vascruz. Si es cliente, aquí verá el seguimiento de su importación.</p>
 
     <form class="card" id="f-ingresar" novalidate>
       <label for="li-email">Correo</label><input id="li-email" type="email" autocomplete="email" required>
@@ -224,7 +224,7 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
 
   <!-- Administrador: solicitudes y usuarios -->
   <div id="p-usuarios" hidden>
-    <div class="secthead"><div><div class="eyebrow">Administrador</div><h1 style="margin-top:6px">Asesores y socios</h1></div></div>
+    <div class="secthead"><div><div class="eyebrow">Administrador</div><h1 style="margin-top:6px">Usuarios</h1></div></div>
 
     <form class="card" id="f-crear" novalidate style="max-width:760px">
       <h2>Crear usuario</h2>
@@ -233,6 +233,7 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
       <div class="radio">
         <label><input type="radio" name="n-tipo" value="asesor" checked><span><b>Asesor de importación</b><span class="muted">Cotizador y proformas con precio puesto en Santa Cruz.</span></span></label>
         <label><input type="radio" name="n-tipo" value="socio"><span><b>Socio de importación</b><span class="muted">Lista de precios FOB, y cotizador con proformas a nombre de Vascruz.</span></span></label>
+        <label><input type="radio" name="n-tipo" value="cliente"><span><b>Cliente</b><span class="muted">Ve el seguimiento de su importación: etapas, contenedor, chasis y videos.</span></span></label>
       </div>
       <label for="n-nombre">Nombre completo</label><input id="n-nombre" autocomplete="off" required>
       <div class="row2">
@@ -278,6 +279,20 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
     </div>
   </div>
 
+  <!-- Cliente: seguimiento de su importación -->
+  <div id="p-mipedido" hidden>
+    <div class="secthead"><div><div class="eyebrow">Seguimiento Vascruz</div><h1 style="margin-top:6px">Mi importación</h1></div></div>
+    <div id="mi-pedido"></div>
+  </div>
+
+  <!-- Administrador: pedidos y seguimiento de clientes -->
+  <div id="p-pedidos" hidden>
+    <div class="secthead"><div><div class="eyebrow">Administrador</div><h1 style="margin-top:6px">Pedidos de clientes</h1></div><button class="btn btn-gold" id="ped-nuevo" type="button">+ Nuevo pedido</button></div>
+    <div class="msg info" id="ped-aviso" hidden>Para registrar un pedido, primero cree el usuario del cliente en "Usuarios" eligiendo el tipo <b>Cliente</b>.</div>
+    <div class="card" id="ped-form" hidden style="margin-bottom:18px"></div>
+    <div class="tbl"><table><thead><tr><th>Cliente</th><th>Vehículo / chasis</th><th>Contenedor</th><th>Etapa</th><th></th></tr></thead><tbody id="ped-lista"></tbody></table></div>
+  </div>
+
   <!-- Administrador: todas las proformas -->
   <div id="p-proformas" hidden>
     <div class="secthead"><div><div class="eyebrow">Administrador</div><h1 style="margin-top:6px">Proformas emitidas</h1></div></div>
@@ -320,12 +335,13 @@ import {
   serverTimestamp, usd, esc, nombreAuto, errorEs, crearCuenta, telWa
 } from "./fb.js?v=3";
 import { tablaDetalle, CSS_DETALLE, usd2 } from "./detalle.js?v=1";
-document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}</style>`);
+import { iniciarPedidos, CSS_PEDIDOS } from "./pedidos.js?v=1";
+document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}${CSS_PEDIDOS}</style>`);
 
 const $ = (s) => document.querySelector(s);
 const CAT = (window.VASCRUZ_CATALOGO && window.VASCRUZ_CATALOGO.modelos) || [];
 const catById = Object.fromEntries(CAT.map(m => [String(m.id), m]));
-const ROLES = { asesor: "Asesor de importación", socio: "Socio de importación", admin: "Administrador", pendiente: "Pendiente", rechazado: "Rechazado", suspendido: "Suspendido", eliminado: "Eliminado" };
+const ROLES = { asesor: "Asesor de importación", socio: "Socio de importación", cliente: "Cliente", admin: "Administrador", pendiente: "Pendiente", rechazado: "Rechazado", suspendido: "Suspendido", eliminado: "Eliminado" };
 let ME = null, PERFIL = null, ES_ADMIN = false, PRECIOS = null, FOB = null, ROL = null, DETALLE = null;
 
 function show(id) { for (const v of ["v-cargando", "v-login", "v-espera", "v-panel"]) $("#" + v).hidden = v !== id; }
@@ -365,7 +381,7 @@ async function cargar(u) {
   const rol = ES_ADMIN ? "admin" : (PERFIL ? PERFIL.rol : "pendiente");
   ROL = rol;
   $("#who").hidden = false; $("#who-name").textContent = (PERFIL && PERFIL.nombre) || u.email; $("#who-rol").textContent = ROLES[rol] || rol;
-  if (rol === "asesor" || rol === "socio" || rol === "admin") return panel(rol);
+  if (rol === "asesor" || rol === "socio" || rol === "cliente" || rol === "admin") return panel(rol);
   // Pendiente, rechazado o suspendido
   const r = PERFIL ? PERFIL.rol : "pendiente";
   $("#esp-eye").textContent = r === "pendiente" ? "Solicitud recibida" : "Acceso no disponible";
@@ -382,9 +398,10 @@ function panel(rol) {
   if (rol === "asesor" || rol === "admin") tabs.push(["p-catalogo", "Enviar catálogo"]);
   if (rol === "asesor" || rol === "admin") tabs.push(["p-comisiones", rol === "admin" ? "Comisiones" : "Mis comisiones"]);
   if (rol === "socio" || rol === "admin") tabs.push(["p-fob", "Precios FOB"]);
-  if (rol === "admin") tabs.push(["p-usuarios", "Asesores y socios"], ["p-proformas", "Proformas"], ["p-precios", "Actualizar precios"]);
+  if (rol === "cliente") tabs.push(["p-mipedido", "Mi importación"]);
+  if (rol === "admin") tabs.push(["p-pedidos", "Pedidos"], ["p-usuarios", "Usuarios"], ["p-proformas", "Proformas"], ["p-precios", "Actualizar precios"]);
   // Esconder todas las secciones; luego solo se muestran las que corresponden a este rol.
-  for (const s of ["p-cotizador", "p-catalogo", "p-comisiones", "p-fob", "p-usuarios", "p-precios", "p-proformas"]) $("#" + s).hidden = true;
+  for (const s of ["p-cotizador", "p-catalogo", "p-comisiones", "p-fob", "p-usuarios", "p-precios", "p-proformas", "p-pedidos", "p-mipedido"]) $("#" + s).hidden = true;
   const bar = $("#paneltabs"); bar.innerHTML = ""; bar.hidden = tabs.length < 2;
   const abrir = (id) => { for (const [p] of tabs) $("#" + p).hidden = p !== id; bar.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.p === id)); cargarPestana(id); };
   for (const [p, t] of tabs) { const b = document.createElement("button"); b.className = "tab"; b.dataset.p = p; b.textContent = t; b.onclick = () => abrir(p); bar.appendChild(b); }
@@ -392,6 +409,8 @@ function panel(rol) {
   abrir(rol === "admin" && PENDIENTES_PRIMERO ? "p-usuarios" : tabs[0][0]);
 }
 const PENDIENTES_PRIMERO = true;
+const PED = iniciarPedidos({ db, doc, getDoc, getDocs, addDoc, updateDoc, setDoc, collection, query, where, serverTimestamp, $, esc, usd, fecha, nombreAuto, telWa, busy, msg, errorEs, CAT, catById,
+  ME: () => ME, PRECIOS_DE: (id) => PRECIOS && PRECIOS.precios ? PRECIOS.precios[id] : null });
 
 async function cargarPestana(id) {
   try {
@@ -401,6 +420,8 @@ async function cargarPestana(id) {
     if (id === "p-fob") await listaFob();
     if (id === "p-usuarios") await usuarios();
     if (id === "p-proformas") await todasProformas();
+    if (id === "p-pedidos") await PED.adminPedidos();
+    if (id === "p-mipedido") await PED.miImportacion(ME);
   } catch (err) { alert(errorEs(err)); }
 }
 
@@ -683,7 +704,7 @@ function waUsuario(u, texto) { return `https://wa.me/${telWa(u.telefono)}?text=$
 async function cambiarRol(u, rol) {
   const cambios = { rol, revisado: serverTimestamp(), revisado_por: ME.email };
   // Al suspender se recuerda el acceso que tenía, para reactivarlo igual
-  if (rol === "suspendido" && (u.rol === "asesor" || u.rol === "socio")) cambios.rol_anterior = u.rol;
+  if (rol === "suspendido" && (u.rol === "asesor" || u.rol === "socio" || u.rol === "cliente")) cambios.rol_anterior = u.rol;
   try { await updateDoc(doc(db, "usuarios", u.id), cambios); }
   catch (err) { alert(err.code === "permission-denied" ? "Solo el usuario principal puede cambiar el acceso de un Administrador." : errorEs(err)); }
   await usuarios();
@@ -722,7 +743,7 @@ function abrirEditar(u) {
   $("#e-correo").textContent = "Usuario (correo): " + u.email;
   $("#e-nombre").value = u.nombre || ""; $("#e-ci").value = u.ci || ""; $("#e-tel").value = u.telefono || "";
   $("#e-ciudad").value = u.ciudad || ""; $("#e-empresa").value = u.empresa || "";
-  const roles = u.rol === "admin" ? ["admin"] : ["asesor", "socio", "suspendido"];
+  const roles = u.rol === "admin" ? ["admin"] : ["asesor", "socio", "cliente", "suspendido"];
   $("#e-rol").innerHTML = roles.map(r => `<option value="${r}" ${r === u.rol ? "selected" : ""}>${ROLES[r]}</option>`).join("");
   msg($("#m-editar"), "", ""); $("#dlg-editar").hidden = false; $("#e-nombre").focus();
 }
@@ -768,7 +789,7 @@ $("#f-crear").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySe
     }
     msg(m, "", "");
     const url = location.origin + location.pathname;
-    const texto = `Hola ${datos.nombre}, bienvenido a Vascruz Import & Export SRL. Ya tiene su acceso como ${ROLES[rol]}:\n\nIngrese aquí: ${url}\nUsuario: ${email}\nContraseña: ${pass}\n\nEste acceso es personal e intransferible. Si quiere cambiar su contraseña, pulse "Olvidé mi contraseña" en la página de ingreso.`;
+    const texto = `Hola ${datos.nombre}, bienvenido a Vascruz Import & Export SRL. Ya tiene su acceso como ${ROLES[rol]}:\n\nIngrese aquí: ${url}\nUsuario: ${email}\nContraseña: ${pass}\n\nEste acceso es personal e intransferible. Si quiere cambiar su contraseña, pulse "Olvidé mi contraseña" en la página de ingreso.${rol === "cliente" ? "\n\nAl ingresar verá \"Mi importación\": cada etapa de su vehículo desde China hasta Bolivia, su número de contenedor y los videos del proceso." : ""}`;
     const tel = telWa(datos.telefono);
     $("#crear-listo").hidden = false;
     $("#crear-listo").innerHTML = `<div class="eyebrow">Usuario creado</div><h2 style="margin:6px 0">${esc(datos.nombre)} · ${esc(ROLES[rol])}</h2>
