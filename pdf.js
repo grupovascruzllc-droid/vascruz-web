@@ -8,6 +8,8 @@ const cargar = (src) => new Promise((ok, mal) => {
   const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = () => mal(new Error("No se pudo cargar " + src)); document.head.appendChild(s);
 });
 
+// Safari (Mac o iPhone): su ventana de impresión puede dejar el PDF en blanco, así que ahí se usa el PDF armado por la página.
+export const esSafari = /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(navigator.userAgent);
 export const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
 // hoja: el elemento a convertir · nombre: nombre del archivo · clase: estilo compacto (igual al impreso)
@@ -34,4 +36,13 @@ export async function crearPDF(hoja, clase) {
 export async function descargarPDF(hoja, nombre, clase) {
   const pdf = await crearPDF(hoja, clase);
   pdf.save(nombre);
+}
+
+// Imprimir de forma segura en Safari: abre el PDF ya armado (el visor de PDF de Safari imprime bien).
+export async function abrirPDF(hoja, clase) {
+  const ventana = window.open("", "_blank");          // se abre en el mismo clic para que Safari no la bloquee
+  if (ventana) ventana.document.write("<p style=\"font:16px system-ui;padding:40px;text-align:center\">Preparando PDF…</p>");
+  const pdf = await crearPDF(hoja, clase);
+  const url = URL.createObjectURL(pdf.output("blob"));
+  if (ventana) ventana.location.href = url; else location.href = url;
 }

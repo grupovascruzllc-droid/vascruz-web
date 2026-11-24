@@ -60,7 +60,7 @@ h2{font:700 20px var(--display);margin:4px 0 2px}
 <body>
 <div class="bar" id="bar" hidden>
   <button class="btn btn-gold" id="btn-pdf" type="button">⬇ Descargar PDF</button>
-  <button class="btn" type="button" onclick="window.print()">Imprimir</button>
+  <button class="btn" type="button" id="btn-imprimir">Imprimir</button>
   <a class="btn" id="wa" target="_blank" rel="noopener">Consultar al asesor por WhatsApp</a>
   <a class="btn" href="index.html">Ver catálogo</a>
 </div>
@@ -68,7 +68,7 @@ h2{font:700 20px var(--display);margin:4px 0 2px}
 
 <script type="module">
 import { leerPublico, usd, esc, nombreAuto, telWa, listoParaImprimir } from "./publico.js?v=1";
-import { descargarPDF, esIOS } from "./pdf.js?v=1";
+import { descargarPDF, abrirPDF, esIOS, esSafari } from "./pdf.js?v=2";
 import { tablaDetalle, CSS_DETALLE } from "./detalle.js?v=1";
 document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}
 .ficha{display:grid;grid-template-columns:1fr 1fr;gap:2px 24px;font-size:13px;margin-top:14px}
@@ -187,14 +187,20 @@ try {
   const nombreArchivo = (DETALLADA && p.detalle ? "Cotizacion " : "Proforma ") + p.numero + " - " + nombreAuto(v).replace(/[\\/:*?"<>|]/g, "") + ".pdf";
   btn.onclick = async () => {
     const t = btn.textContent; btn.disabled = true; btn.textContent = "Preparando PDF…";
-    try { const h = out.querySelector(".hoja"); await descargarPDF(h, nombreArchivo, h.classList.contains("det-hoja") ? "medir" : "medir-res"); }
+    try { const [h, c] = hojaYClase(); await descargarPDF(h, nombreArchivo, c); }
     catch (err) { alert("No se pudo crear el PDF. Pruebe con el botón Imprimir.\n" + (err && err.message || err)); }
     finally { btn.disabled = false; btn.textContent = t; }
   };
-  // En el iPhone no se abre la ventana de impresión automáticamente: se usa el botón "Descargar PDF".
-  if (params.get("imprimir") === "1" && esIOS) { btn.classList.add("latir"); scrollTo(0, 0); }
+  const hojaYClase = () => { const h = out.querySelector(".hoja"); return [h, h.classList.contains("det-hoja") ? "medir" : "medir-res"]; };
+  document.getElementById("btn-imprimir").onclick = async () => {
+    if (!esSafari) return window.print();
+    try { await abrirPDF(...hojaYClase()); } catch (err) { window.print(); }
+  };
+  // En Safari (iPhone y Mac) no se abre la ventana de impresión automáticamente: se usa el botón "Descargar PDF".
+  const SIN_AUTO = esIOS || esSafari;
+  if (params.get("imprimir") === "1" && SIN_AUTO) { btn.classList.add("latir"); scrollTo(0, 0); }
   // "Imprimir / PDF": abre directamente el diálogo de impresión (ahí se elige "Guardar como PDF")
-  if (params.get("imprimir") === "1" && !esIOS) {
+  if (params.get("imprimir") === "1" && !SIN_AUTO) {
     await listoParaImprimir(out);
     setTimeout(() => window.print(), 100);
   }
