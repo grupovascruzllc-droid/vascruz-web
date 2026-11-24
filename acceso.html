@@ -404,11 +404,22 @@ function panel(rol) {
   for (const s of ["p-cotizador", "p-catalogo", "p-comisiones", "p-fob", "p-usuarios", "p-precios", "p-proformas", "p-pedidos", "p-mipedido"]) $("#" + s).hidden = true;
   const bar = $("#paneltabs"); bar.innerHTML = ""; bar.hidden = tabs.length < 2;
   const abrir = (id) => { for (const [p] of tabs) $("#" + p).hidden = p !== id; bar.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.p === id)); cargarPestana(id); };
+  if (rol === "admin") { const a = document.createElement("a"); a.className = "tab"; a.href = CRM; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Vascruz CRM ↗"; a.style.textDecoration = "none"; setTimeout(() => bar.appendChild(a), 0); }
   for (const [p, t] of tabs) { const b = document.createElement("button"); b.className = "tab"; b.dataset.p = p; b.textContent = t; b.onclick = () => abrir(p); bar.appendChild(b); }
   show("v-panel");
   abrir(rol === "admin" && PENDIENTES_PRIMERO ? "p-usuarios" : tabs[0][0]);
 }
 const PENDIENTES_PRIMERO = true;
+// Vascruz CRM: cada proforma o catálogo que se genera aquí entra como cliente del asesor en el CRM.
+// Se envía con el token de sesión del usuario (el CRM lo verifica con Google); si el CRM no responde, la web sigue igual.
+const CRM = "https://vascruz-crm.vascruz-crm.workers.dev";
+async function alCRM(datos) {
+  try {
+    const t = await auth.currentUser.getIdToken();
+    await fetch(CRM + "/api/web/cotizacion", { method: "POST", keepalive: true,
+      headers: { authorization: "Bearer " + t, "content-type": "application/json" }, body: JSON.stringify(datos) });
+  } catch (_) { /* el CRM es un extra: nunca frena la cotización */ }
+}
 const PED = iniciarPedidos({ db, doc, getDoc, getDocs, addDoc, updateDoc, setDoc, collection, query, where, serverTimestamp, $, esc, usd, fecha, nombreAuto, telWa, busy, msg, errorEs, CAT, catById,
   ME: () => ME, PRECIOS_DE: (id) => PRECIOS && PRECIOS.precios ? PRECIOS.precios[id] : null });
 
@@ -493,6 +504,8 @@ $("#f-catalogo").onsubmit = (e) => { e.preventDefault(); const b = e.target.quer
         cliente_nombre: cliente, cliente_tel: $("#k-tel").value.trim(), nota: $("#k-nota").value.trim(), ids, precios, creado: serverTimestamp()
       });
       const url = location.origin + location.pathname.replace(/acceso\.html$/, "") + "catalogo.html?id=" + ref.id;
+      alCRM({ tipo: "catalogo", ref: ref.id, cliente_nombre: cliente, cliente_tel: $("#k-tel").value.trim(), enlace: url,
+        vehiculo: ids.length + (ids.length === 1 ? " vehículo: " : " vehículos: ") + ids.map(i => catById[i] ? nombreAuto(catById[i]) : i).join(", ") });
       const texto = `Hola${cliente ? " " + cliente : ""}, le comparto el catálogo de vehículos de Vascruz Import & Export SRL que preparé para usted (${ids.length} ${ids.length === 1 ? "vehículo" : "vehículos"}). Cualquier consulta, escríbame por aquí.\n${url}`;
       $("#cat-listo").hidden = false;
       $("#cat-listo").innerHTML = `<div class="eyebrow">Catálogo listo · ${ids.length} ${ids.length === 1 ? "vehículo" : "vehículos"}</div><h2 style="margin:6px 0">Envíelo a su cliente</h2>
@@ -571,6 +584,7 @@ $("#f-cot").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySele
         ...(detalleDe(m) ? { detalle: detalleDe(m) } : {})
       });
       const url = location.origin + location.pathname.replace(/acceso\.html$/, "") + "proforma.html?id=" + ref.id;
+      alCRM({ tipo: "proforma", ref: ref.id, numero, cliente_nombre: cliente, cliente_tel: $("#c-tel").value.trim(), vehiculo: nombreAuto(m), precio: p, enlace: url });
       const texto = `Hola ${cliente}, le comparto su proforma de Vascruz Import & Export SRL: ${nombreAuto(m)} — ${usd(p)} puesto en Santa Cruz.\n${url}`;
       const telCli = telWa($("#c-tel").value);
       $("#cot-listo").hidden = false;
