@@ -68,7 +68,7 @@ h2{font:700 18px var(--display);margin:2px 0}
 
 <script src="catalogo.js"></script>
 <script type="module">
-import { db, doc, getDoc, usd, esc, nombreAuto, telWa } from "./fb.js?v=3";
+import { leerPublico, usd, esc, nombreAuto, telWa, listoParaImprimir } from "./publico.js?v=1";
 const params = new URLSearchParams(location.search);
 const id = params.get("id");
 const out = document.getElementById("out");
@@ -76,9 +76,8 @@ const CAT = (window.VASCRUZ_CATALOGO && window.VASCRUZ_CATALOGO.modelos) || [];
 const fail = (t) => out.innerHTML = `<div class="err"><img src="img/logo-sm.png" alt="" style="height:56px"><p>${t}</p><a class="btn btn-gold" href="index.html">Ver catálogo de Vascruz</a></div>`;
 try {
   if (!id) throw 0;
-  const s = await getDoc(doc(db, "catalogos", id));
-  if (!s.exists()) throw 0;
-  const c = s.data();
+  const c = await leerPublico("catalogos", id);
+  if (!c) throw 0;
   const tel = telWa(c.asesor_tel) || "59177006107";
   const wa = (texto) => `https://wa.me/${tel}?text=${encodeURIComponent(texto)}`;
   const saludo = `Hola ${c.asesor_nombre}, vi el catálogo de Vascruz que me envió`;
@@ -119,8 +118,8 @@ try {
     <div class="cond">Precios en dólares americanos (USD), con el vehículo nuevo importado de fábrica y entregado en Santa Cruz de la Sierra. Sujeto a disponibilidad de stock, versión y color al momento de la reserva. Consulte a su asesor por la cotización detallada.</div>
   </div>`;
   if (params.get("imprimir") === "1") {
-    await Promise.all([...out.querySelectorAll("img")].map(i => { i.loading = "eager"; return i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }); }));
-    setTimeout(() => window.print(), 300);
+    await listoParaImprimir(out);
+    setTimeout(() => window.print(), 100);
   }
 } catch (e) { fail("No encontramos este catálogo. Verifique el enlace o escríbanos."); }
 </script>

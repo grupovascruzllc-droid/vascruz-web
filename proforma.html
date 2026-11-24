@@ -65,15 +65,18 @@ h2{font:700 20px var(--display);margin:4px 0 2px}
 <div id="out"><p style="text-align:center;padding:60px;color:#5f5d58">Cargando proforma…</p></div>
 
 <script type="module">
-import { db, doc, getDoc, usd, esc, nombreAuto, telWa } from "./fb.js?v=3";
+import { leerPublico, usd, esc, nombreAuto, telWa, listoParaImprimir } from "./publico.js?v=1";
 import { tablaDetalle, CSS_DETALLE } from "./detalle.js?v=1";
 document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}
 .ficha{display:grid;grid-template-columns:1fr 1fr;gap:2px 24px;font-size:13px;margin-top:14px}
 .ficha div{padding:3px 0;border-bottom:1px dotted var(--line)}.ficha span{color:var(--muted);display:inline-block;min-width:96px}
 @media (max-width:640px){.ficha{grid-template-columns:1fr}}
 @media print{.det{font-size:11px;margin-top:8px}.det td,.det th{padding:4px 8px}.det tr.gran td{padding:6px 8px}.ficha{font-size:11.5px;margin-top:8px}.det.pagos{margin-top:8px}}
-@media print{${compacto(".det-hoja")} .det-hoja{zoom:var(--zoom,1)}}
+@media print{${compacto(".det-hoja")} .hoja{zoom:var(--zoom,1)}}
 ${compacto(".det-hoja.medir")}
+.hoja.medir-res{padding:0!important;box-shadow:none;font-size:12.5px}.medir-res .veh{grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}.medir-res .meta{grid-template-columns:1fr 1fr;padding:8px 12px;font-size:12px}.medir-res .meta div{padding:2px 0}
+.medir-res .top img{height:52px}.medir-res .top{padding-bottom:10px}.medir-res .tit{margin:12px 0 8px}.medir-res h1{font-size:20px}.medir-res h2{font-size:17px}.medir-res .datos{font-size:11.5px}.medir-res .datos td{padding:3px 0}
+.medir-res .precio{margin-top:12px}.medir-res .precio .tot{padding:9px 14px}.medir-res .precio .tot b{font-size:21px}.medir-res .plan th,.medir-res .plan td{padding:6px 14px;font-size:12px}.medir-res .nota{margin-top:10px;padding:7px 12px}.medir-res .cond{margin-top:10px;font-size:10.5px}.medir-res .firma{margin-top:14px}
 </style>`);
 // Estilo compacto de la cotización detallada impresa (como el Excel, que imprime al 75%).
 // Se usa al imprimir y también para medir la hoja antes de imprimir.
@@ -90,11 +93,13 @@ function compacto(h) {
   ${h} table,${h} tr{break-inside:avoid}`;
 }
 // Antes de imprimir: mide la cotización detallada y la reduce lo justo para que entre en una sola hoja A4.
+// Vale para la proforma resumida y la detallada: se mide con el estilo de impresión y, si no entra, se reduce lo justo.
 function ajustarUnaHoja() {
-  const h = document.querySelector(".det-hoja"); if (!h) return;
+  const h = document.querySelector(".hoja"); if (!h) return;
+  const det = h.classList.contains("det-hoja");
   h.style.removeProperty("--zoom");
-  const ancho = h.style.width; h.classList.add("medir"); h.style.width = "186mm";   // A4 (210 mm) menos márgenes de 12 mm
-  const alto = h.scrollHeight; h.style.width = ancho; h.classList.remove("medir");
+  const ancho = h.style.width; h.classList.add(det ? "medir" : "medir-res"); h.style.width = "186mm";   // A4 (210 mm) menos márgenes de 12 mm
+  const alto = h.scrollHeight; h.style.width = ancho; h.classList.remove("medir", "medir-res");
   const maximo = (297 - 24) * 96 / 25.4 - 40;                                         // alto útil de la hoja en píxeles (con margen de seguridad)
   if (alto > maximo) h.style.setProperty("--zoom", (maximo / alto).toFixed(3));
 }
@@ -106,9 +111,9 @@ const out = document.getElementById("out");
 const fail = (t) => out.innerHTML = `<div class="err"><img src="img/logo-sm.png" alt="" style="height:56px"><p>${t}</p><a class="btn btn-gold" href="https://wa.me/59177006107">Escribir a Vascruz</a></div>`;
 try {
   if (!id) throw 0;
-  const s = await getDoc(doc(db, "proformas", id));
-  if (!s.exists()) throw 0;
-  const p = s.data(), v = p.vehiculo || {}, f = v.ficha || {};
+  const p = await leerPublico("proformas", id);
+  if (!p) throw 0;
+  const v = p.vehiculo || {}, f = v.ficha || {};
   const fch = p.fecha && p.fecha.toDate ? p.fecha.toDate() : new Date();
   const vence = new Date(fch.getTime() + (p.validez_dias || 15) * 864e5);
   const fmt = (d) => d.toLocaleDateString("es-BO", { day: "2-digit", month: "long", year: "numeric" });
@@ -172,10 +177,11 @@ try {
     <div class="firma"><div><b>${esc(p.asesor_nombre)}</b>Asesor de Vascruz${p.asesor_tel ? " · " + esc(p.asesor_tel) : ""}</div><div style="text-align:right"><b>Vascruz Import &amp; Export SRL</b>Santa Cruz de la Sierra, Bolivia</div></div>
   </div>`;
   }
+  ajustarUnaHoja();
   // "Imprimir / PDF": abre directamente el diálogo de impresión (ahí se elige "Guardar como PDF")
   if (params.get("imprimir") === "1") {
-    await Promise.all([...out.querySelectorAll("img")].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })));
-    setTimeout(() => window.print(), 300);
+    await listoParaImprimir(out);
+    setTimeout(() => window.print(), 100);
   }
 } catch (e) { fail("No encontramos esta proforma. Verifique el enlace o consulte a su asesor."); }
 </script>

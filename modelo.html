@@ -244,10 +244,10 @@ document.getElementById("wa-top").href=WA+encodeURIComponent("Hola Vascruz, quis
 const cat = new URLSearchParams(location.search).get("cat");
 if (cat) {
   try {
-    const { db, doc, getDoc, telWa } = await import("./fb.js?v=3");
-    const s = await getDoc(doc(db, "catalogos", cat));
-    if (s.exists()) {
-      const c = s.data(), tel = telWa(c.asesor_tel);
+    const { leerPublico, telWa } = await import("./publico.js?v=1");
+    const c = await leerPublico("catalogos", cat);
+    if (c) {
+      const tel = telWa(c.asesor_tel);
       if (tel) {
         document.querySelectorAll('a[href^="https://wa.me/59177006107"]').forEach(a => {
           const u = new URL(a.href); const t = u.searchParams.get("text") || "";

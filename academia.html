@@ -1,0 +1,503 @@
+<title>Academia Vascruz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;600;800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: índice fijo a la izquierda (escritorio) + columna de lectura; módulos numerados porque es una ruta en orden. */
+:root{
+  --bg:#ffffff; --fg:#111111; --muted:#5f5d58; --surface:#f7f5f0; --surface-2:#efebe2; --line:#e7e2d6; --card:#ffffff;
+  --gold:#a8822a; --gold-2:#d2ad55; --gold-soft:#f3ead3;
+  --sell:#a8822a; --buy:#2f5d73; --buy-soft:#e3edf2;
+  --ok:#2e7d4f; --bad:#b3412e;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b0b0c; --fg:#f3f0e8; --muted:#a6a298; --surface:#131315; --surface-2:#1a1a1d; --line:#2a292d; --card:#121214;
+  --gold:#d9b765; --gold-2:#d9b765; --gold-soft:#2a2416;
+  --sell:#d9b765; --buy:#7fb3cc; --buy-soft:#16242b; --ok:#6cc08e; --bad:#e2846f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b0b0c; --fg:#f3f0e8; --muted:#a6a298; --surface:#131315; --surface-2:#1a1a1d; --line:#2a292d; --card:#121214;
+  --gold:#d9b765; --gold-2:#d9b765; --gold-soft:#2a2416;
+  --sell:#d9b765; --buy:#7fb3cc; --buy-soft:#16242b; --ok:#6cc08e; --bad:#e2846f; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.65 var(--body);margin:0}
+h1,h2,h3,h4{font-family:var(--display);font-weight:700;letter-spacing:-.01em;text-wrap:balance;line-height:1.2;margin:0}
+h2{font-size:clamp(22px,2.6vw,30px)}
+h3{font-size:18px;margin-top:8px}
+h4{font-size:14px;font-family:var(--body);font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--gold)}
+p{margin:0;max-width:68ch}
+a{color:var(--gold)}
+.mono,code{font-family:var(--mono);font-size:.92em}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--gold-2);outline-offset:3px}
+
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);gap:48px;max-width:1240px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 80px}
+nav.indice{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;padding-block:32px;display:grid;gap:2px;max-height:100vh;overflow:auto}
+nav.indice .marca{font:700 13px var(--display);letter-spacing:.06em;margin-bottom:18px}
+nav.indice .marca span{color:var(--gold)}
+nav.indice a{display:grid;grid-template-columns:30px 1fr;gap:6px;padding:7px 10px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+nav.indice a b{font:600 12px var(--mono);color:var(--gold);padding-top:2px}
+nav.indice a:hover,nav.indice a.activo{background:var(--surface);color:var(--fg)}
+main{min-width:0;display:grid;gap:72px;padding-top:32px}
+section{display:grid;gap:20px;scroll-margin-top:20px}
+.eyebrow{font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.lead{font-size:18px;color:var(--muted)}
+
+/* Portada */
+.portada{padding:40px 0 8px;border-bottom:1px solid var(--line);display:grid;gap:20px}
+.portada h1{font-size:clamp(34px,5.4vw,64px);line-height:1.02}
+.portada h1 em{font-style:normal;background:linear-gradient(115deg,#8f6b1f 0%,#c9a14a 30%,#f0d58c 50%,#c9a14a 70%,#8f6b1f 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ruta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font:600 13px var(--mono);color:var(--muted);padding-bottom:28px}
+.ruta span{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.ruta i{font-style:normal;color:var(--gold)}
+
+/* Bloques genéricos */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.caja{border:1px solid var(--line);border-radius:14px;padding:20px;background:var(--card);display:grid;gap:10px;align-content:start;min-width:0}
+.caja.suave{background:var(--surface);border-color:transparent}
+.caja p,.caja li{font-size:15px}
+ul.lista{margin:0;padding-left:20px;display:grid;gap:6px}
+ol.pasos{list-style:none;margin:0;padding:0;display:grid;gap:0;counter-reset:p}
+ol.pasos>li{counter-increment:p;display:grid;grid-template-columns:44px 1fr;gap:16px;padding:18px 0;border-top:1px solid var(--line)}
+ol.pasos>li::before{content:counter(p,decimal-leading-zero);font:600 14px var(--mono);color:var(--gold);padding-top:3px}
+ol.pasos>li>div{display:grid;gap:6px;min-width:0}
+ol.pasos .docs{font:13px var(--mono);color:var(--muted)}
+.nota{border-left:3px solid var(--gold-2);padding:12px 16px;background:var(--gold-soft);border-radius:0 10px 10px 0;font-size:15px}
+.nota b{font-weight:800}
+.tabla{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:var(--surface)}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{font-weight:800;background:var(--gold-soft)}
+tr.sub td{font-weight:700;background:var(--surface)}
+.tag{display:inline-block;font:600 11px var(--mono);padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+
+/* Incoterms interactivo */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:600 13px var(--mono);padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+.chip:hover{border-color:var(--gold-2)}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.inco-panel{display:grid;gap:14px}
+.etapas{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}
+.etapa{display:grid;gap:6px;min-width:0}
+.etapa .barra{height:34px;border-radius:6px;background:var(--buy-soft);border:1px solid var(--buy);transition:background-color .25s}
+.etapa.s .barra{background:var(--sell);border-color:var(--sell)}
+.etapa small{font-size:11.5px;line-height:1.3;color:var(--muted)}
+.leyenda{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.leyenda i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
+@media (max-width:760px){.etapas{grid-template-columns:1fr}.etapa{grid-template-columns:90px 1fr;align-items:center}.etapa .barra{height:22px}}
+
+/* Calculadora */
+.calc{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:20px}
+.campos{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.campo{display:grid;gap:4px;min-width:0}
+.campo label{font-size:12.5px;font-weight:700;color:var(--muted)}
+.campo input,.campo select{font:600 15px var(--mono);padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);width:100%}
+.campo.ancho{grid-column:1/-1}
+.presets{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:700 13.5px var(--body);padding:9px 14px;border-radius:8px;border:1px solid var(--gold-2);background:transparent;color:var(--fg);cursor:pointer}
+.btn:hover{background:var(--gold-soft)}
+.btn.lleno{background:var(--gold-2);color:#111;border-color:var(--gold-2)}
+.pila{display:flex;height:16px;border-radius:999px;overflow:hidden;background:var(--surface-2)}
+.pila div{height:100%}
+.grande{font:700 clamp(26px,3vw,36px)/1 var(--display)}
+@media (max-width:900px){.shell{grid-template-columns:1fr;gap:0}nav.indice{position:static;max-height:none;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));padding-bottom:0}nav.indice .marca{grid-column:1/-1}.calc,.grid3{grid-template-columns:1fr}}
+@media (max-width:640px){.grid2,.campos{grid-template-columns:1fr}ol.pasos>li{grid-template-columns:32px 1fr;gap:10px}}
+
+/* Quiz */
+.preg{border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:10px}
+.preg p{font-weight:700}
+.opts{display:grid;gap:6px}
+.opts button{text-align:left;font:15px var(--body);padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+.opts button:hover:not(:disabled){border-color:var(--gold-2)}
+.opts button.bien{border-color:var(--ok);color:var(--ok);font-weight:700}
+.opts button.mal{border-color:var(--bad);color:var(--bad)}
+.opts button:disabled{cursor:default}
+.explica{font-size:14px;color:var(--muted)}
+.puntaje{position:sticky;bottom:12px;justify-self:start;font:700 14px var(--mono);padding:10px 14px;border-radius:999px;background:var(--fg);color:var(--bg)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+@media print{
+  @page{size:A4;margin:14mm 12mm 16mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{font-size:10.5pt}
+  nav.indice,.puntaje,.presets{display:none!important}
+  .shell{display:block;padding:0}
+  main{gap:10mm;padding-top:0}
+  section{gap:4mm}
+  #metodo,#m1,#m2,#m3,#m4,#m5,#m6,#trabajo{break-before:page}
+  #examen,#examen+*{display:none!important}
+  h2,h3,.eyebrow{break-after:avoid}
+  #ensenanza{break-before:page}
+  .caja,.preg,tr,.nota,ol.pasos>li,.etapa{break-inside:avoid}
+  .portada h1 em{background:none;color:var(--gold)}
+  .grid3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .calc{grid-template-columns:1fr 1fr}
+  .etapas{grid-template-columns:repeat(10,minmax(0,1fr))}
+  .etapa{display:grid;grid-template-columns:1fr}
+}
+</style>
+
+<div class="shell">
+<nav class="indice" aria-label="Módulos">
+  <div class="marca">VASCRUZ <span>ACADEMIA</span></div>
+  <a href="#intro"><b>00</b>Introducción</a>
+  <a href="#metodo"><b>—</b>Cómo enseñamos</a>
+  <a href="#m1"><b>01</b>Fundamentos</a>
+  <a href="#m2"><b>02</b>Incoterms 2020</a>
+  <a href="#m3"><b>03</b>Proceso de importación</a>
+  <a href="#m4"><b>04</b>Aduana y tributos</a>
+  <a href="#m5"><b>05</b>Transporte</a>
+  <a href="#m6"><b>06</b>Cálculo y calculadora</a>
+  <a href="#trabajo"><b>—</b>Materiales de trabajo</a>
+  <a href="#ensenanza"><b>—</b>Materiales de enseñanza</a>
+  <a href="#examen"><b>—</b>Evaluación</a>
+</nav>
+
+<main>
+<header class="portada" id="intro">
+  <div class="eyebrow">Programa de formación de asesores · 2026</div>
+  <h1>Academia de <em>importación</em> Vascruz</h1>
+  <p class="lead">Un asesor que entiende cada dólar de la cadena vende con seguridad, cotiza sin errores y responde cualquier pregunta del cliente. Este programa forma a nuestros asesores para dominar la compra en China, el transporte hasta Iquique, la aduana boliviana y la entrega en Santa Cruz.</p>
+  <div class="ruta" aria-label="Ruta de la mercadería">
+    <span>Fábrica en China</span><i>→</i><span>Puerto de embarque</span><i>→</i><span>Iquique (ZOFRI)</span><i>→</i><span>Frontera Colchane / Pisiga</span><i>→</i><span>Aduana Bolivia</span><i>→</i><span>Santa Cruz</span>
+  </div>
+</header>
+
+<section>
+  <div class="eyebrow">00 · Introducción</div>
+  <h2>Por qué existe esta academia</h2>
+  <p>Nuestro cliente no compra solo un vehículo o una carga: compra la tranquilidad de que alguien sabe exactamente qué pasa en cada etapa. Cada asesor debe poder explicar una proforma línea por línea, decir cuánto se paga de impuestos y por qué, y anticipar tiempos y riesgos.</p>
+  <div class="grid3">
+    <div class="caja suave"><h4>Al terminar, el asesor sabe</h4><ul class="lista"><li>Explicar los 11 Incoterms y cuál usamos en cada operación.</li><li>Calcular el costo puesto en Santa Cruz.</li><li>Leer una DIM y una proforma.</li></ul></div>
+    <div class="caja suave"><h4>Al terminar, el asesor puede</h4><ul class="lista"><li>Cotizar un vehículo y una carga por m³ sin ayuda.</li><li>Pedir los documentos correctos al cliente.</li><li>Detectar errores antes de que cuesten dinero.</li></ul></div>
+    <div class="caja suave"><h4>Perfil de egreso</h4><ul class="lista"><li>Asesor certificado Nivel 1 (vende) o Nivel 2 (cotiza y acompaña el despacho).</li><li>Recertificación cada 6 meses o cuando cambie la normativa.</li></ul></div>
+  </div>
+</section>
+
+<section id="metodo">
+  <div class="eyebrow">Cómo enseñamos</div>
+  <h2>Método: ver, hacer, explicar</h2>
+  <p>Cada tema se enseña en tres tiempos. Primero el formador lo muestra con una operación real de Vascruz. Luego el asesor lo hace con un caso práctico. Al final lo explica en voz alta como si hablara con un cliente. Si puede explicarlo, lo entendió.</p>
+  <div class="tabla"><table>
+    <thead><tr><th>Semana</th><th>Módulos</th><th>Formato</th><th>Entregable del asesor</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">1</td><td>01 Fundamentos · 02 Incoterms</td><td>2 sesiones de 90 min + lectura</td><td>Tabla de Incoterms llenada a mano y juego de roles con cliente</td></tr>
+      <tr><td class="mono">2</td><td>03 Proceso · 05 Transporte</td><td>2 sesiones + visita al almacén o revisión de un embarque real</td><td>Línea de tiempo de una operación con sus documentos</td></tr>
+      <tr><td class="mono">3</td><td>04 Aduana y tributos</td><td>2 sesiones + taller con la agencia despachante</td><td>Lectura comentada de una DIM real (datos tapados)</td></tr>
+      <tr><td class="mono">4</td><td>06 Cálculo · casos integrados</td><td>Taller práctico de cotización</td><td>3 cotizaciones completas + examen final</td></tr>
+    </tbody>
+  </table></div>
+  <div class="grid2">
+    <div class="caja"><h4>Rutina de cada sesión (90 min)</h4><ul class="lista"><li><b>10 min</b> · repaso con 3 preguntas rápidas</li><li><b>25 min</b> · explicación con un caso real</li><li><b>35 min</b> · práctica en parejas</li><li><b>15 min</b> · cada asesor explica el tema en 2 minutos</li><li><b>5 min</b> · tarea y dudas</li></ul></div>
+    <div class="caja"><h4>Reglas de la academia</h4><ul class="lista"><li>Todo número de una cotización debe poder justificarse.</li><li>Ante una duda de aduana, se consulta a la agencia despachante: no se inventa.</li><li>Las tasas se revisan antes de cada cotización, porque cambian por decreto.</li><li>Se aprende con errores en práctica, no con errores en clientes.</li></ul></div>
+  </div>
+</section>
+
+<section id="m1">
+  <div class="eyebrow">Módulo 01</div>
+  <h2>Fundamentos y vocabulario</h2>
+  <p>Antes de calcular, el asesor tiene que hablar el idioma del comercio exterior. Estas son las palabras que va a usar todos los días.</p>
+  <div class="tabla"><table>
+    <thead><tr><th>Término</th><th>Qué significa en la práctica</th></tr></thead>
+    <tbody>
+      <tr><td><b>FOB</b></td><td>Precio de la mercadería cargada en el buque en el puerto de China. Es la base de casi todas nuestras compras.</td></tr>
+      <tr><td><b>CIF frontera</b></td><td>FOB + flete + seguro + gastos hasta la frontera boliviana. Es la <b>base imponible</b> sobre la que la aduana calcula los tributos.</td></tr>
+      <tr><td><b>NANDINA</b></td><td>Código arancelario de 10 dígitos (Comunidad Andina) que clasifica cada producto y define su arancel. Ej.: 8703.80 = vehículos solo con motor eléctrico.</td></tr>
+      <tr><td><b>GA</b></td><td>Gravamen Arancelario. Porcentaje que se cobra sobre el CIF según el código NANDINA.</td></tr>
+      <tr><td><b>ICE</b></td><td>Impuesto a los Consumos Específicos. Aplica a ciertos bienes como vehículos de combustión, bebidas y cigarrillos.</td></tr>
+      <tr><td><b>IVA</b></td><td>Impuesto al Valor Agregado: 13 % nominal, que en importación equivale a 14,94 % sobre la base (se calcula "por dentro").</td></tr>
+      <tr><td><b>DIM</b></td><td>Declaración de Mercancías de Importación. El documento oficial con el que se nacionaliza la mercadería en el sistema SUMA de la Aduana Nacional.</td></tr>
+      <tr><td><b>BL</b></td><td>Bill of Lading o conocimiento de embarque: contrato del transporte marítimo y título de propiedad de la carga.</td></tr>
+      <tr><td><b>MIC/DTA</b></td><td>Manifiesto Internacional de Carga y Declaración de Tránsito Aduanero: documento del camión que lleva la carga de Iquique a Bolivia.</td></tr>
+      <tr><td><b>FCL / LCL</b></td><td>Contenedor completo (Full Container Load) o carga consolidada que comparte contenedor (Less than Container Load).</td></tr>
+      <tr><td><b>ZOFRI</b></td><td>Zona Franca de Iquique. Allí llegan y se desconsolidan los vehículos antes de cruzar a Bolivia.</td></tr>
+      <tr><td><b>Agencia despachante</b></td><td>Profesional autorizado por la Aduana que presenta la DIM. En Bolivia toda importación comercial pasa por una.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="m2">
+  <div class="eyebrow">Módulo 02</div>
+  <h2>Incoterms 2020</h2>
+  <p>Los Incoterms son 11 reglas de la Cámara de Comercio Internacional que definen en un contrato <b>quién paga cada tramo</b> y <b>en qué punto pasa el riesgo</b> del vendedor al comprador. No definen la propiedad ni la forma de pago.</p>
+  <div class="caja inco-panel">
+    <h4>Toque un Incoterm para ver quién paga cada etapa de una compra China → Santa Cruz</h4>
+    <div class="chips" id="chips" role="group" aria-label="Incoterms"></div>
+    <div class="etapas" id="etapas"></div>
+    <div class="leyenda"><span><i style="background:var(--sell)"></i>Paga el vendedor (fábrica china)</span><span><i style="background:var(--buy-soft);border:1px solid var(--buy)"></i>Paga el comprador (Vascruz o cliente)</span></div>
+    <div id="inco-texto" class="grid2"></div>
+  </div>
+  <div class="tabla"><table>
+    <thead><tr><th>Incoterm</th><th>Grupo</th><th>Transporte</th><th>Dónde pasa el riesgo</th></tr></thead>
+    <tbody id="inco-tabla"></tbody>
+  </table></div>
+  <div class="nota"><b>Regla para Bolivia:</b> como no tenemos mar, la carga siempre sigue por tierra desde Iquique. Los Incoterms marítimos (FAS, FOB, CFR, CIF) terminan en el puerto chileno. Para contratos que llegan a Bolivia conviene usar FCA, CPT, CIP, DAP o DDP, que sirven para cualquier transporte.</div>
+  <div class="grid2">
+    <div class="caja"><h4>Ejemplo 1 · Compra FOB Shanghai</h4><p>La fábrica entrega el SUV eléctrico cargado en el buque a <b>USD 18.000</b>. Desde ese momento Vascruz contrata y paga el flete a Iquique, el seguro, los gastos en Iquique, el traslado y la aduana. El riesgo es nuestro desde que el auto está a bordo.</p></div>
+    <div class="caja"><h4>Ejemplo 2 · Compra CIF Iquique</h4><p>La fábrica cotiza <b>USD 19.890</b>: incluye flete y seguro hasta Iquique. Ojo: aunque pague el flete, el riesgo pasó a nosotros en Shanghai. Si el buque tiene un siniestro, reclamamos al seguro, no a la fábrica.</p></div>
+    <div class="caja"><h4>Ejemplo 3 · Venta al cliente "puesto en Santa Cruz"</h4><p>Cuando Vascruz vende un vehículo con importación y tributos incluidos, en la práctica asume una entrega tipo <b>DDP Santa Cruz</b>: nosotros pagamos todo y el cliente recibe el auto nacionalizado.</p></div>
+    <div class="caja"><h4>Ejemplo 4 · Carga consolidada por m³</h4><p>Un cliente compra mercadería a un proveedor chino en <b>EXW</b> (en su fábrica). Vascruz recoge, exporta, consolida y trae. Por eso el asesor debe preguntar siempre: <i>¿en qué Incoterm le cotizó su proveedor?</i></p></div>
+  </div>
+</section>
+
+<section id="m3">
+  <div class="eyebrow">Módulo 03</div>
+  <h2>El proceso de importación paso a paso</h2>
+  <p>Así es una operación típica de Vascruz. El asesor debe saber en qué paso está cada cliente y qué documento corresponde.</p>
+  <ol class="pasos">
+    <li><div><h3>Cotización y proforma</h3><p>Se elige el modelo o se mide la carga. Se calcula el costo puesto en Santa Cruz (módulo 06) y se entrega la proforma en dólares.</p><span class="docs">Proforma Vascruz · ficha técnica · código NANDINA estimado</span></div></li>
+    <li><div><h3>Reserva y orden de compra</h3><p>El cliente paga la reserva (primer pago). Vascruz emite la orden de compra a la fábrica con Incoterm, precio, plazo y especificaciones.</p><span class="docs">Contrato con cliente · orden de compra · factura proforma de la fábrica</span></div></li>
+    <li><div><h3>Producción y control en origen</h3><p>La fábrica produce o asigna la unidad. Se verifica el número de chasis (VIN), color y versión antes del embarque. Segundo pago con el chasis listo.</p><span class="docs">VIN · fotos de control · factura comercial</span></div></li>
+    <li><div><h3>Consolidación y embarque</h3><p>El vehículo se fija con cinchas y tacos dentro del contenedor. Se precinta y se embarca. La fábrica o su agente hace la aduana de exportación china.</p><span class="docs">Lista de empaque · BL · póliza de seguro · certificado de origen</span></div></li>
+    <li><div><h3>Tránsito marítimo</h3><p>Entre 35 y 50 días aproximados desde puertos de China hasta Iquique, según naviera y trasbordos. Se informa al cliente con la fecha estimada de arribo (ETA).</p><span class="docs">Tracking de naviera · aviso de llegada</span></div></li>
+    <li><div><h3>Llegada a Iquique</h3><p>Descarga, pago de gastos portuarios y desconsolidación en ZOFRI. Tercer pago con el vehículo en Iquique.</p><span class="docs">BL original o liberado · factura de gastos portuarios</span></div></li>
+    <li><div><h3>Tránsito a Bolivia</h3><p>El vehículo viaja en cigüeña por Colchane–Pisiga. El camión lleva el MIC/DTA y la aduana boliviana controla el ingreso en frontera.</p><span class="docs">MIC/DTA · carta de porte · manifiesto</span></div></li>
+    <li><div><h3>Despacho aduanero en Bolivia</h3><p>La agencia despachante presenta la DIM. El sistema asigna canal: <b>verde</b> (pasa directo), <b>amarillo</b> (revisión de documentos) o <b>rojo</b> (revisión física). Se pagan los tributos y se libera la mercadería.</p><span class="docs">DIM · DAV (según monto) · comprobante de pago de tributos</span></div></li>
+    <li><div><h3>Entrega y registro</h3><p>Entrega en Santa Cruz. Para vehículos: registro en RUAT, placas y documentos de circulación.</p><span class="docs">Acta de entrega · RUAT · placas · factura al cliente</span></div></li>
+  </ol>
+</section>
+
+<section id="m4">
+  <div class="eyebrow">Módulo 04</div>
+  <h2>Aduana y tributos de importación</h2>
+  <p>En Bolivia los tributos se calculan en cascada: cada impuesto se suma a la base del siguiente. Por eso el orden importa.</p>
+  <div class="tabla"><table>
+    <thead><tr><th>Paso</th><th>Concepto</th><th>Fórmula</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">1</td><td><b>CIF frontera</b> (base imponible)</td><td class="mono">FOB + flete + seguro + gastos hasta frontera</td></tr>
+      <tr><td class="mono">2</td><td><b>GA</b> · Gravamen Arancelario</td><td class="mono">CIF × tasa GA (0 %, 5 %, 10 %, 15 %, 20 %…)</td></tr>
+      <tr><td class="mono">3</td><td><b>ICE</b> · si corresponde</td><td class="mono">(CIF + GA) × tasa ICE</td></tr>
+      <tr><td class="mono">4</td><td><b>IVA</b></td><td class="mono">(CIF + GA + ICE) × 13 ÷ 87 = × 14,94 %</td></tr>
+    </tbody>
+  </table></div>
+  <div class="grid2">
+    <div class="caja"><h4>¿Por qué el IVA es 14,94 % y no 13 %?</h4><p>En Bolivia el IVA va "incluido" en el precio. Si la base es 100, el IVA es la parte que representa el 13 % del total final: 100 × 13 ÷ 87 = 14,94. Así, 14,94 es el 13 % de 114,94. Para el importador con NIT, este IVA se recupera como crédito fiscal.</p></div>
+    <div class="caja"><h4>Seguro: con póliza o presunto</h4><p>Si hay póliza, se usa su prima real. Si no la hay, la aduana aplica un seguro presunto (referencia: 2 % del FOB). Una póliza barata casi siempre baja los tributos: conviene asegurar.</p></div>
+    <div class="caja"><h4>Vehículos eléctricos</h4><p>Los vehículos eléctricos e híbridos enchufables nuevos tienen <b>0 % de GA e ICE</b> por la normativa vigente. Solo pagan IVA. Es nuestra principal ventaja comercial y el asesor debe explicarla con números.</p></div>
+    <div class="caja"><h4>Vehículos de combustión</h4><p>Pagan GA e ICE según código NANDINA, cilindrada y antigüedad. Los vehículos usados tienen límites de antigüedad para importarse. Siempre confirmar con la agencia despachante antes de cotizar.</p></div>
+  </div>
+  <h3>Documentos que pide la aduana</h3>
+  <div class="grid3">
+    <div class="caja suave"><ul class="lista"><li>Factura comercial</li><li>Lista de empaque</li><li>Conocimiento de embarque (BL)</li></ul></div>
+    <div class="caja suave"><ul class="lista"><li>Póliza de seguro</li><li>Certificado de origen</li><li>MIC/DTA y carta de porte</li></ul></div>
+    <div class="caja suave"><ul class="lista"><li>Declaración Andina del Valor (según monto)</li><li>Autorizaciones previas si el producto las exige</li><li>DIM firmada por la agencia</li></ul></div>
+  </div>
+  <div class="nota"><b>Importante:</b> las tasas de esta guía son de referencia para enseñar. Los aranceles y beneficios cambian por decreto supremo. Antes de cada cotización, verifique el arancel vigente de la Aduana Nacional y confírmelo con la agencia despachante.</div>
+</section>
+
+<section id="m5">
+  <div class="eyebrow">Módulo 05</div>
+  <h2>Transporte internacional</h2>
+  <p>El transporte es la parte del costo que más varía. El asesor debe entender cómo se cobra para cotizar bien y explicarle al cliente por qué paga lo que paga.</p>
+  <div class="tabla"><table>
+    <thead><tr><th>Contenedor</th><th>Medidas internas aprox.</th><th class="r">Volumen</th><th class="r">Carga máx. aprox.</th><th>Uso típico Vascruz</th></tr></thead>
+    <tbody>
+      <tr><td><b>20' estándar</b></td><td class="mono">5,90 × 2,35 × 2,39 m</td><td class="r">33 m³</td><td class="r">28 t</td><td>1–2 vehículos pequeños o carga pesada</td></tr>
+      <tr><td><b>40' estándar</b></td><td class="mono">12,03 × 2,35 × 2,39 m</td><td class="r">67 m³</td><td class="r">26 t</td><td>3–4 vehículos en una altura</td></tr>
+      <tr><td><b>40' High Cube</b></td><td class="mono">12,03 × 2,35 × 2,69 m</td><td class="r">76 m³</td><td class="r">26 t</td><td>Vehículos en dos alturas o carga consolidada</td></tr>
+    </tbody>
+  </table></div>
+  <div class="grid2">
+    <div class="caja"><h4>Carga consolidada: cómo se cobra</h4><p>En LCL se cobra por <b>peso o volumen, el que sea mayor</b> (regla W/M): 1 m³ equivale a 1.000 kg. Una caja de 1,2 × 1,0 × 1,0 m pesa 300 kg: se cobra 1,2 m³ porque el volumen gana.</p><p class="mono">m³ = largo × ancho × alto (en metros) × cantidad</p></div>
+    <div class="caja"><h4>Vehículos: cuánto cuesta cada uno</h4><p>El flete del contenedor se reparte entre los vehículos que caben. Si un 40' HC cuesta USD 5.400 a Iquique y lleva 3 autos, cada uno carga USD 1.800 de flete marítimo.</p></div>
+    <div class="caja"><h4>Tramo terrestre</h4><p>Iquique → Colchane/Pisiga → Oruro → Santa Cruz. Unos 1.400 km y de 5 a 8 días según frontera y clima. Va en cigüeña (vehículos) o camión (carga general) con MIC/DTA.</p></div>
+    <div class="caja"><h4>Riesgos a explicar al cliente</h4><ul class="lista"><li>Trasbordos que retrasan la naviera.</li><li>Filas o bloqueos en la frontera.</li><li>Canal rojo en aduana: suma días.</li><li>Recargos de temporada alta en fletes.</li></ul></div>
+  </div>
+</section>
+
+<section id="m6">
+  <div class="eyebrow">Módulo 06</div>
+  <h2>Cómo se calcula: ejemplo resuelto</h2>
+  <p>SUV eléctrico nuevo comprado <b>FOB Shanghai</b>, con póliza de seguro, nacionalizado y entregado en Santa Cruz. Todos los valores en dólares y de referencia.</p>
+  <div class="tabla"><table>
+    <thead><tr><th>Concepto</th><th>Cómo se obtiene</th><th class="r">USD</th></tr></thead>
+    <tbody>
+      <tr><td>Precio FOB</td><td>Factura de la fábrica</td><td class="r">18.000,00</td></tr>
+      <tr><td>Flete marítimo</td><td>40' HC USD 5.400 ÷ 3 vehículos</td><td class="r">1.800,00</td></tr>
+      <tr><td>Seguro</td><td>Prima según póliza</td><td class="r">90,00</td></tr>
+      <tr><td>Gastos en Iquique</td><td>Puerto, desconsolidación, ZOFRI</td><td class="r">450,00</td></tr>
+      <tr><td>Transporte Iquique → frontera</td><td>Parte del flete de cigüeña</td><td class="r">300,00</td></tr>
+      <tr class="sub"><td>CIF frontera</td><td>Suma de lo anterior</td><td class="r">20.640,00</td></tr>
+      <tr><td>GA (0 %)</td><td>20.640 × 0 %</td><td class="r">0,00</td></tr>
+      <tr><td>ICE (0 %)</td><td>(20.640 + 0) × 0 %</td><td class="r">0,00</td></tr>
+      <tr><td>IVA (14,94 %)</td><td>20.640 × 13 ÷ 87</td><td class="r">3.084,14</td></tr>
+      <tr class="sub"><td>Total tributos</td><td>GA + ICE + IVA</td><td class="r">3.084,14</td></tr>
+      <tr><td>Agencia despachante</td><td>1 % del CIF (referencia)</td><td class="r">206,40</td></tr>
+      <tr><td>Almacenaje y gastos de aduana</td><td>Depósito aduanero</td><td class="r">150,00</td></tr>
+      <tr><td>Transporte frontera → Santa Cruz</td><td>Resto del flete de cigüeña</td><td class="r">600,00</td></tr>
+      <tr><td>Registro RUAT, placas y trámites</td><td>Referencia</td><td class="r">250,00</td></tr>
+      <tr class="total"><td>Costo puesto en Santa Cruz</td><td>CIF + tributos + gastos locales</td><td class="r">24.930,54</td></tr>
+    </tbody>
+  </table></div>
+  <div class="nota"><b>Comparación para el cliente:</b> el mismo vehículo, si fuera a combustión con GA 10 % e ICE 15 % (valores ilustrativos), pagaría GA 2.064,00 + ICE 3.405,60 + IVA 3.901,43 = <b>USD 9.371,03</b> de tributos, contra USD 3.084,14 del eléctrico. Una diferencia de <b>USD 6.286,89</b> a favor del eléctrico.</div>
+
+  <h3>Calculadora de práctica</h3>
+  <p>Use la calculadora para los casos del taller. Cambie cualquier valor y el resultado se actualiza al instante. Viene cargada con el ejemplo resuelto.</p>
+  <div class="calc">
+    <form class="caja" id="calc-form" onsubmit="return false">
+      <div class="presets">
+        <button type="button" class="btn lleno" data-preset="ev">Eléctrico nuevo</button>
+        <button type="button" class="btn" data-preset="comb">Combustión (ilustrativo)</button>
+        <button type="button" class="btn" data-preset="lcl">Carga 5 m³</button>
+      </div>
+      <div class="campos">
+        <div class="campo"><label for="c-fob">Precio FOB</label><input id="c-fob" type="number" step="any" min="0"></div>
+        <div class="campo"><label for="c-flete">Flete marítimo</label><input id="c-flete" type="number" step="any" min="0"></div>
+        <div class="campo"><label for="c-segtipo">Seguro</label><select id="c-segtipo"><option value="poliza">Con póliza</option><option value="presunto">Presunto 2 % FOB</option></select></div>
+        <div class="campo"><label for="c-seg">Prima de póliza</label><input id="c-seg" type="number" step="any" min="0"></div>
+        <div class="campo"><label for="c-iqq">Gastos en Iquique</label><input id="c-iqq" type="number" step="any" min="0"></div>
+        <div class="campo"><label for="c-tf">Transporte a frontera</label><input id="c-tf" type="number" step="any" min="0"></div>
+        <div class="campo"><label for="c-ga">GA %</label><input id="c-ga" type="number" step="any" min="0"></div>
+        <div class="campo"><label for="c-ice">ICE %</label><input id="c-ice" type="number" step="any" min="0"></div>
+        <div class="campo"><label for="c-ag">Agencia despachante % CIF</label><input id="c-ag" type="number" step="any" min="0"></div>
+        <div class="campo"><label for="c-alm">Almacenaje y aduana</label><input id="c-alm" type="number" step="any" min="0"></div>
+        <div class="campo"><label for="c-tscz">Transporte a Santa Cruz</label><input id="c-tscz" type="number" step="any" min="0"></div>
+        <div class="campo"><label for="c-otros">Registro y otros</label><input id="c-otros" type="number" step="any" min="0"></div>
+        <div class="campo ancho"><label for="c-margen">Margen de Vascruz % sobre el costo</label><input id="c-margen" type="number" step="any" min="0"></div>
+      </div>
+    </form>
+    <div class="caja" aria-live="polite">
+      <h4>Resultado</h4>
+      <div><small style="color:var(--muted)">Costo puesto en Santa Cruz</small><div class="grande num" id="r-costo">—</div></div>
+      <div class="pila" id="r-pila" aria-hidden="true"></div>
+      <div class="leyenda" id="r-leyenda"></div>
+      <div class="tabla"><table><tbody id="r-tabla"></tbody></table></div>
+      <div><small style="color:var(--muted)">Precio de venta sugerido</small><div class="grande num" id="r-venta">—</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="trabajo">
+  <div class="eyebrow">Materiales de trabajo</div>
+  <h2>Lo que el asesor usa todos los días</h2>
+  <div class="grid2">
+    <div class="caja"><h4>Checklist de cotización</h4><ul class="lista"><li>¿Producto nuevo o usado? ¿Eléctrico o combustión?</li><li>Código NANDINA confirmado con la agencia</li><li>Incoterm de la compra</li><li>Flete vigente de la semana</li><li>Tasas GA / ICE verificadas hoy</li><li>Tipo de cambio si el cliente paga en bolivianos</li><li>Plazo estimado de entrega comunicado</li></ul></div>
+    <div class="caja"><h4>Checklist de documentos del cliente</h4><ul class="lista"><li>Carnet de identidad o NIT</li><li>Datos para la factura</li><li>Comprobantes de los 3 pagos</li><li>Para carga: factura y lista de empaque del proveedor</li><li>Medidas y peso de cada bulto</li></ul></div>
+    <div class="caja"><h4>Plantillas</h4><ul class="lista"><li>Proforma Vascruz (página <span class="mono">proforma.html</span>)</li><li>Hoja de costeo en Excel con las mismas fórmulas de esta calculadora</li><li>Mensaje tipo de seguimiento por etapa</li><li>Hoja de medidas para carga por m³</li></ul></div>
+    <div class="caja"><h4>Guía de respuestas rápidas</h4><ul class="lista"><li>"¿Por qué el IVA es 14,94 %?"</li><li>"¿Qué pasa si el auto se daña en el viaje?"</li><li>"¿Cuánto tarda en llegar?"</li><li>"¿Qué es canal rojo?"</li><li>"¿Por qué me cobran por volumen y no por peso?"</li></ul></div>
+  </div>
+</section>
+
+<section id="ensenanza">
+  <div class="eyebrow">Materiales de enseñanza</div>
+  <h2>Lo que el formador usa para enseñar</h2>
+  <div class="grid3">
+    <div class="caja"><h4>Casos prácticos</h4><p><b>Caso A:</b> cliente quiere un sedán eléctrico, FOB 15.500, 4 autos por contenedor de USD 6.000.</p><p><b>Caso B:</b> carga de 18 cajas de 0,6 × 0,5 × 0,4 m y 22 kg cada una.</p><p><b>Caso C:</b> el proveedor cotizó EXW. ¿Qué costos faltan?</p></div>
+    <div class="caja"><h4>Juegos de rol</h4><p>Un asesor hace de cliente desconfiado y otro debe explicar la proforma. Se evalúa claridad, exactitud y trato. Cada asesor pasa por ambos roles.</p></div>
+    <div class="caja"><h4>Operaciones reales</h4><p>Carpeta con una operación completa de Vascruz (datos del cliente tapados): orden de compra, BL, MIC/DTA, DIM y factura final. Se recorre documento por documento.</p></div>
+    <div class="caja"><h4>Tarjetas de Incoterms</h4><p>11 tarjetas para imprimir: de un lado la sigla, del otro quién paga y dónde pasa el riesgo. Se usan para repasar al inicio de cada sesión.</p></div>
+    <div class="caja"><h4>Mapa de la ruta</h4><p>Mapa grande China → Iquique → Santa Cruz con días y documentos en cada punto, para tener en la oficina.</p></div>
+    <div class="caja"><h4>Rúbrica de certificación</h4><p>Examen teórico (mín. 80 %), 3 cotizaciones sin errores y un juego de rol aprobado. Nivel 2 suma acompañar un despacho real.</p></div>
+  </div>
+</section>
+
+<section id="examen">
+  <div class="eyebrow">Evaluación</div>
+  <h2>Autoevaluación</h2>
+  <p>Diez preguntas para comprobar lo aprendido. Toque una respuesta para ver si es correcta y por qué.</p>
+  <div id="quiz" style="display:grid;gap:12px"></div>
+  <div class="puntaje" id="puntaje">0 / 10 correctas</div>
+</section>
+</main>
+</div>
+
+<script>
+/* ---------- Incoterms ---------- */
+const ETAPAS=["Carga en fábrica","Transporte a puerto origen","Aduana exportación China","Carga en el buque","Flete marítimo","Seguro","Descarga en Iquique","Transporte a Santa Cruz","Descarga en destino","Aduana e impuestos Bolivia"];
+const INCO=[
+ {k:"EXW",n:"Ex Works · En fábrica",g:"E",t:"Cualquiera",s:0,r:"En la fábrica del vendedor, sin cargar.",ej:"El proveedor deja la mercadería lista en su fábrica de Guangzhou. Vascruz carga, exporta y trae todo.",ojo:"El comprador hace hasta la aduana de exportación china. Conviene un agente en origen."},
+ {k:"FCA",n:"Free Carrier · Franco transportista",g:"F",t:"Cualquiera",s:3,r:"Al entregar al transportista designado por el comprador.",ej:"La fábrica entrega exportado en el almacén de nuestro agente en Shanghai.",ojo:"Es la opción multimodal recomendada en lugar de FOB."},
+ {k:"FAS",n:"Free Alongside Ship · Al costado del buque",g:"F",t:"Marítimo",s:3,r:"Junto al buque en el puerto de embarque.",ej:"Se usa poco: carga a granel o maquinaria grande.",ojo:"Rara vez aplica a nuestras operaciones."},
+ {k:"FOB",n:"Free On Board · Libre a bordo",g:"F",t:"Marítimo",s:4,r:"Cuando la mercadería está a bordo del buque.",ej:"Nuestra compra típica: SUV eléctrico FOB Shanghai USD 18.000.",ojo:"Desde que está a bordo, el riesgo es nuestro: hay que asegurar."},
+ {k:"CFR",n:"Cost and Freight · Costo y flete",g:"C",t:"Marítimo",s:5,r:"A bordo en origen, aunque el vendedor pague el flete.",ej:"La fábrica cotiza CFR Iquique: incluye flete pero no seguro.",ojo:"El comprador debe contratar el seguro por su cuenta."},
+ {k:"CIF",n:"Cost, Insurance and Freight",g:"C",t:"Marítimo",s:6,r:"A bordo en origen. El vendedor contrata seguro mínimo.",ej:"La fábrica cotiza CIF Iquique USD 19.890.",ojo:"El seguro mínimo (cláusula C) cubre poco. Revisar la póliza."},
+ {k:"CPT",n:"Carriage Paid To · Transporte pagado hasta",g:"C",t:"Cualquiera",s:5,r:"Al entregar al primer transportista en origen.",ej:"CPT Iquique: la fábrica paga el transporte hasta Iquique.",ojo:"Igual que CFR pero sirve para cualquier transporte."},
+ {k:"CIP",n:"Carriage and Insurance Paid To",g:"C",t:"Cualquiera",s:6,r:"Al entregar al primer transportista. Seguro amplio obligatorio.",ej:"CIP Iquique con seguro todo riesgo pagado por la fábrica.",ojo:"En 2020 exige cobertura amplia (cláusula A)."},
+ {k:"DAP",n:"Delivered At Place · Entregado en lugar",g:"D",t:"Cualquiera",s:8,r:"En el destino, listo para descargar.",ej:"DAP Santa Cruz: el vendedor trae hasta nuestro almacén.",ojo:"Descarga, aduana e impuestos bolivianos son del comprador."},
+ {k:"DPU",n:"Delivered at Place Unloaded · Entregado descargado",g:"D",t:"Cualquiera",s:9,r:"En el destino, ya descargado.",ej:"DPU almacén Santa Cruz: el vendedor también descarga.",ojo:"Único Incoterm en que el vendedor descarga en destino."},
+ {k:"DDP",n:"Delivered Duty Paid · Entregado con impuestos pagados",g:"D",t:"Cualquiera",s:10,r:"En el destino, nacionalizado.",ej:"Lo que ofrece Vascruz al cliente: vehículo puesto en Santa Cruz con tributos incluidos.",ojo:"Máxima responsabilidad del vendedor."}
+];
+const chips=document.getElementById("chips"),etapasEl=document.getElementById("etapas"),txt=document.getElementById("inco-texto");
+etapasEl.innerHTML=ETAPAS.map(e=>`<div class="etapa"><div class="barra"></div><small>${e}</small></div>`).join("");
+INCO.forEach(i=>{const b=document.createElement("button");b.className="chip";b.type="button";b.textContent=i.k;b.setAttribute("aria-pressed","false");b.onclick=()=>verInco(i.k);chips.appendChild(b)});
+document.getElementById("inco-tabla").innerHTML=INCO.map(i=>`<tr><td><b>${i.k}</b><br><small style="color:var(--muted)">${i.n}</small></td><td class="mono">${i.g}</td><td>${i.t}</td><td>${i.r}</td></tr>`).join("");
+function verInco(k){
+  const i=INCO.find(x=>x.k===k);
+  [...chips.children].forEach(c=>c.setAttribute("aria-pressed",c.textContent===k?"true":"false"));
+  [...etapasEl.children].forEach((e,n)=>e.classList.toggle("s",n<i.s));
+  txt.innerHTML=`<div><h3>${i.k} · ${i.n}</h3><p style="margin-top:6px"><b>Riesgo:</b> ${i.r}</p><p><b>Transporte:</b> ${i.t}</p></div><div><p><b>Ejemplo Vascruz:</b> ${i.ej}</p><p style="margin-top:6px"><b>Atención:</b> ${i.ojo}</p></div>`;
+}
+verInco("FOB");
+
+/* ---------- Calculadora ---------- */
+const PRESETS={
+ ev:{fob:18000,flete:1800,segtipo:"poliza",seg:90,iqq:450,tf:300,ga:0,ice:0,ag:1,alm:150,tscz:600,otros:250,margen:12},
+ comb:{fob:18000,flete:1800,segtipo:"poliza",seg:90,iqq:450,tf:300,ga:10,ice:15,ag:1,alm:150,tscz:600,otros:250,margen:12},
+ lcl:{fob:6000,flete:5*95,segtipo:"presunto",seg:0,iqq:5*35,tf:5*20,ga:10,ice:0,ag:1,alm:60,tscz:5*45,otros:0,margen:15}
+};
+const IDS=["fob","flete","segtipo","seg","iqq","tf","ga","ice","ag","alm","tscz","otros","margen"];
+const $=id=>document.getElementById("c-"+id);
+const usd=v=>"USD "+v.toLocaleString("es-BO",{minimumFractionDigits:2,maximumFractionDigits:2});
+function cargar(p){const d=PRESETS[p];IDS.forEach(k=>$(k).value=d[k]);document.querySelectorAll("[data-preset]").forEach(b=>b.classList.toggle("lleno",b.dataset.preset===p));calcular()}
+function calcular(){
+  const n=k=>Math.max(0,parseFloat($(k).value)||0);
+  const presunto=$("segtipo").value==="presunto";
+  $("seg").disabled=presunto;
+  const fob=n("fob"),flete=n("flete"),seg=presunto?fob*0.02:n("seg"),iqq=n("iqq"),tf=n("tf");
+  const cif=fob+flete+seg+iqq+tf;
+  const ga=cif*n("ga")/100, ice=(cif+ga)*n("ice")/100, iva=(cif+ga+ice)*13/87;
+  const trib=ga+ice+iva;
+  const ag=cif*n("ag")/100, loc=ag+n("alm")+n("tscz")+n("otros");
+  const costo=cif+trib+loc, venta=costo*(1+n("margen")/100);
+  document.getElementById("r-costo").textContent=usd(costo);
+  document.getElementById("r-venta").textContent=usd(venta);
+  const filas=[["Precio FOB",fob],["Flete marítimo",flete],["Seguro"+(presunto?" (2 % FOB)":""),seg],["Gastos Iquique + transporte a frontera",iqq+tf],["CIF frontera",cif,"sub"],["GA",ga],["ICE",ice],["IVA (13 ÷ 87)",iva],["Total tributos",trib,"sub"],["Agencia despachante",ag],["Almacenaje, transporte a Santa Cruz y otros",loc-ag],["Costo puesto en Santa Cruz",costo,"total"]];
+  document.getElementById("r-tabla").innerHTML=filas.map(f=>`<tr class="${f[2]||""}"><td>${f[0]}</td><td class="r">${usd(f[1])}</td></tr>`).join("");
+  const partes=[["Mercadería (FOB)",fob,"var(--fg)"],["Transporte y seguro hasta frontera",cif-fob,"var(--buy)"],["Tributos",trib,"var(--gold-2)"],["Gastos en Bolivia",loc,"var(--muted)"]];
+  document.getElementById("r-pila").innerHTML=partes.map(p=>`<div style="width:${costo?p[1]/costo*100:0}%;background:${p[2]}"></div>`).join("");
+  document.getElementById("r-leyenda").innerHTML=partes.map(p=>`<span><i style="background:${p[2]}"></i>${p[0]} ${costo?(p[1]/costo*100).toFixed(1):0} %</span>`).join("");
+}
+document.getElementById("calc-form").addEventListener("input",calcular);
+document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>cargar(b.dataset.preset));
+cargar("ev");
+
+/* ---------- Quiz ---------- */
+const QUIZ=[
+ ["¿En qué Incoterm pasa el riesgo al comprador cuando la mercadería está a bordo del buque en China?",["EXW","FOB","DAP","DDP"],1,"En FOB el riesgo pasa cuando la carga está a bordo en el puerto de embarque."],
+ ["Compramos CIF Iquique y el buque sufre un siniestro. ¿Quién asume el riesgo?",["La fábrica, porque pagó el flete","Vascruz, y reclama al seguro","La naviera siempre","La aduana chilena"],1,"En CIF el riesgo pasa en origen. El vendedor paga flete y seguro, pero el riesgo es del comprador."],
+ ["¿Cuál es la base imponible para los tributos de importación en Bolivia?",["El precio FOB","El precio de venta al cliente","El valor CIF frontera","El flete marítimo"],2,"La aduana calcula sobre el CIF frontera: FOB + flete + seguro + gastos hasta la frontera."],
+ ["Con un CIF de USD 10.000, GA 0 % e ICE 0 %, ¿cuánto es el IVA?",["USD 1.300,00","USD 1.494,25","USD 870,00","USD 0"],1,"10.000 × 13 ÷ 87 = 1.494,25. La tasa efectiva es 14,94 %."],
+ ["¿Qué tributos paga un vehículo eléctrico nuevo según la normativa vigente?",["GA, ICE e IVA","Solo GA","Solo IVA","Ninguno"],2,"Los eléctricos e híbridos enchufables nuevos tienen 0 % de GA e ICE. Pagan IVA."],
+ ["En carga consolidada, una caja mide 1 m³ y pesa 400 kg. ¿Cómo se cobra?",["Por 400 kg","Por 1 m³","Por 0,4 m³","Por bulto"],1,"Regla W/M: 1 m³ = 1.000 kg. El volumen (1 m³) es mayor que el peso equivalente (0,4), así que se cobra 1 m³."],
+ ["¿Qué documento acompaña al camión de Iquique a Bolivia?",["DIM","MIC/DTA","Proforma","RUAT"],1,"El MIC/DTA es el manifiesto y la declaración de tránsito aduanero del transporte terrestre."],
+ ["¿Qué significa canal rojo en la aduana boliviana?",["Mercadería prohibida","Revisión física de la mercadería","Pago con multa","Liberación inmediata"],1,"Rojo: aforo físico. Amarillo: revisión documental. Verde: pasa sin revisión."],
+ ["Para un contrato que entrega en Santa Cruz, ¿qué Incoterm es correcto?",["FOB Santa Cruz","CIF Santa Cruz","DAP Santa Cruz","FAS Santa Cruz"],2,"FOB, CIF y FAS son solo marítimos. Para un destino interior se usa DAP, DPU, DDP, CPT o CIP."],
+ ["¿Cuál es el orden correcto del cálculo en cascada?",["IVA → GA → ICE","GA → ICE → IVA","ICE → IVA → GA","Todos sobre el FOB"],1,"Primero GA sobre CIF, luego ICE sobre CIF + GA, y al final IVA sobre CIF + GA + ICE."]
+];
+let ok=0;const quiz=document.getElementById("quiz"),pts=document.getElementById("puntaje");
+QUIZ.forEach((q,qi)=>{
+  const d=document.createElement("div");d.className="preg";
+  d.innerHTML=`<p>${qi+1}. ${q[0]}</p><div class="opts">${q[1].map((o,oi)=>`<button type="button" data-i="${oi}">${o}</button>`).join("")}</div><div class="explica" hidden></div>`;
+  d.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i;d.querySelectorAll("button").forEach(x=>{x.disabled=true;if(+x.dataset.i===q[2])x.classList.add("bien")});
+    if(i===q[2])ok++;else b.classList.add("mal");
+    const ex=d.querySelector(".explica");ex.hidden=false;ex.textContent=(i===q[2]?"Correcto. ":"Incorrecto. ")+q[3];
+    pts.textContent=`${ok} / ${QUIZ.length} correctas`;
+  });
+  quiz.appendChild(d);
+});
+
+/* ---------- Índice activo ---------- */
+const links=[...document.querySelectorAll("nav.indice a")];
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle("activo",a.getAttribute("href")==="#"+e.target.id))}),{rootMargin:"-30% 0px -60% 0px"});
+document.querySelectorAll("main [id]").forEach(s=>{if(links.some(a=>a.getAttribute("href")==="#"+s.id))obs.observe(s)});
+</script>
