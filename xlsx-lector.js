@@ -59,7 +59,7 @@ function parseSheet(xml, shared) {
     var a = attrs(m[1]), inner = m[2] || "";
     if (!a.r) continue;
     var row = parseInt(a.r.replace(/[A-Z]/g, ""), 10), col = colIndex(a.r);
-    var vm = /<v>([\s\S]*?)<\/v>/.exec(inner), v = vm ? decodeXml(vm[1]) : null, val = null;
+    var vm = /<v(?:\s[^>]*)?>([\s\S]*?)<\/v>/.exec(inner), v = vm ? decodeXml(vm[1]) : null, val = null;
     if (a.t === "s") val = v === null ? null : shared[parseInt(v, 10)];
     else if (a.t === "inlineStr") {
       var t = "", rt = /<t(?:\s[^>]*)?>([\s\S]*?)<\/t>/g, k;
