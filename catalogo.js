@@ -1,6 +1,6 @@
 // Generado automáticamente desde el Excel de Vascruz con "Actualizar web". No editar a mano.
 window.VASCRUZ_CATALOGO = {
- "actualizado": "2026-11-17T03:02:19Z",
+ "actualizado": "2026-11-24T18:44:08Z",
  "modelos": [
   {
    "id": 1,
@@ -168,54 +168,6 @@ window.VASCRUZ_CATALOGO = {
     "distancia_ejes": "2.750 mm",
     "carga": "Consultar",
     "destacado": "Nueva versión de mayor autonomía"
-   }
-  },
-  {
-   "id": 8,
-   "marca": "AION",
-   "modelo": "UT",
-   "version": "Starry 320",
-   "anio": "2026",
-   "tec": "BEV",
-   "tipo": "Hatchback",
-   "autonomia": 320,
-   "colores": "Blanco",
-   "precio": null,
-   "foto": "img/autos/08_AION_UT.jpg",
-   "ficha": {
-    "bateria": "LFP · consultar capacidad",
-    "bateria_destacado": "Consultar",
-    "potencia": "100 kW (134 hp)",
-    "potencia_destacado": "134 HP",
-    "traccion": "Delantera (FWD)",
-    "dimensiones": "4.270 × 1.850 × 1.575 mm",
-    "distancia_ejes": "2.750 mm",
-    "carga": "Consultar",
-    "destacado": "Versión de entrada, ideal para ciudad"
-   }
-  },
-  {
-   "id": 9,
-   "marca": "AION",
-   "modelo": "UT",
-   "version": "Deluxe 420",
-   "anio": "2025",
-   "tec": "BEV",
-   "tipo": "Hatchback",
-   "autonomia": 420,
-   "colores": "Beige · Verde",
-   "precio": null,
-   "foto": "img/autos/09_AION_UT.jpg",
-   "ficha": {
-    "bateria": "44,1 kWh LFP",
-    "bateria_destacado": "44,1 kWh",
-    "potencia": "100 kW (134 hp)",
-    "potencia_destacado": "134 HP",
-    "traccion": "Delantera (FWD)",
-    "dimensiones": "4.270 × 1.850 × 1.575 mm",
-    "distancia_ejes": "2.750 mm",
-    "carga": "Consultar",
-    "destacado": "Hatchback urbano espacioso"
    }
   },
   {
@@ -411,30 +363,6 @@ window.VASCRUZ_CATALOGO = {
    }
   },
   {
-   "id": 18,
-   "marca": "Mazda",
-   "modelo": "EZ-60 EV",
-   "version": "600 MAX",
-   "anio": "2026",
-   "tec": "BEV",
-   "tipo": "SUV coupé",
-   "autonomia": 600,
-   "colores": "Morado/Morado · Blanco/Morado · Gris/Morado",
-   "precio": null,
-   "foto": "img/autos/18_Mazda_EZ-60_EV.jpg",
-   "ficha": {
-    "bateria": "77,94 kWh LFP",
-    "bateria_destacado": "77,9 kWh",
-    "potencia": "190 kW (255 hp)",
-    "potencia_destacado": "255 HP",
-    "traccion": "Trasera (RWD)",
-    "dimensiones": "4.850 × 1.935 × 1.620 mm",
-    "distancia_ejes": "2.902 mm",
-    "carga": "Consultar",
-    "destacado": "Opcionales: espejo streaming, llantas 21\", techo negro"
-   }
-  },
-  {
    "id": 19,
    "marca": "Nissan",
    "modelo": "NX8",
@@ -579,30 +507,6 @@ window.VASCRUZ_CATALOGO = {
    }
   },
   {
-   "id": 25,
-   "marca": "Toyota",
-   "modelo": "bZ3X",
-   "version": "610 Max",
-   "anio": "2026",
-   "tec": "BEV",
-   "tipo": "SUV compacto",
-   "autonomia": 610,
-   "colores": "Consultar",
-   "precio": null,
-   "foto": "img/autos/25_Toyota_bZ3X.jpg",
-   "ficha": {
-    "bateria": "67,9 kWh LFP",
-    "bateria_destacado": "67,9 kWh",
-    "potencia": "165 kW (221 hp)",
-    "potencia_destacado": "221 HP",
-    "traccion": "Delantera (FWD)",
-    "dimensiones": "4.600 × 1.850 × 1.645 mm",
-    "distancia_ejes": "2.765 mm",
-    "carga": "30–80% en aprox. 24 min (150 kW)",
-    "destacado": "Versión tope de gama Max"
-   }
-  },
-  {
    "id": 26,
    "marca": "BYD",
    "modelo": "Leopard 7",
@@ -630,7 +534,7 @@ window.VASCRUZ_CATALOGO = {
    "id": 27,
    "marca": "Toyota",
    "modelo": "BZ5",
-   "version": "PRO",
+   "version": "PRO 550 KM",
    "anio": "2026",
    "tec": "BEV",
    "tipo": "SUV coupé",
