@@ -823,8 +823,17 @@ $("#xls").onchange = async (e) => {
       await setDoc(doc(db, "privado", "asesores"), { precios: r.precios, actualizado: ahora, por: ME.email });
       await setDoc(doc(db, "privado", "socios"), { fob: r.fob, actualizado: ahora, por: ME.email });
       await setDoc(doc(db, "privado", "detalle"), { desglose: r.desglose, comisiones: r.comisiones, actualizado: ahora, por: ME.email });
+      // Catálogos ya enviados por los asesores: se actualizan al precio vigente (y sin los vehículos quitados)
+      let nCat = 0;
+      const cs = await getDocs(collection(db, "catalogos"));
+      for (const d of cs.docs) {
+        const pr = d.data().precios || {}; const ks = Object.keys(pr); if (!ks.length) continue;
+        const nuevos = {}; let cambia = false;
+        ks.forEach(id => { if (r.precios[id]) { nuevos[id] = r.precios[id]; if (r.precios[id] !== pr[id]) cambia = true; } else cambia = true; });
+        if (cambia) { await updateDoc(doc(db, "catalogos", d.id), { precios: nuevos }); nCat++; }
+      }
       PRECIOS = null; FOB = null; DETALLE = null; $("#c-auto").innerHTML = "";
-      out.innerHTML = `<div class="msg ok">✅ Precios guardados. Asesores y socios ya ven los precios nuevos.</div>`;
+      out.innerHTML = `<div class="msg ok">✅ Precios guardados. El cotizador de los asesores, la lista FOB de los socios y las comisiones ya tienen los precios nuevos${nCat ? " · " + nCat + " catálogos enviados actualizados" : ""}.</div>`;
       e.target.value = "";
     });
   } catch (err) { out.innerHTML = `<div class="msg err">${esc(errorEs(err))}</div>`; }
