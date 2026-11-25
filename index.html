@@ -182,6 +182,21 @@ section{padding-block:clamp(70px,9vw,120px)}
 .chip{font:600 13.5px var(--body);padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer;transition:all .2s}
 .chip:hover{border-color:var(--gold-2)}
 .chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+/* Filtro por marca */
+.fm-tit{font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.fmarcas{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:12px;margin-bottom:22px}
+.fmarca{position:relative;display:flex;flex-direction:column;padding:0;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--fg);overflow:hidden;cursor:pointer;text-align:left;font:inherit;transition:border-color .2s,transform .25s,box-shadow .25s}
+.fmarca:hover{border-color:var(--gold-2);transform:translateY(-3px);box-shadow:0 14px 30px -18px rgba(0,0,0,.45)}
+.fmarca .fm{aspect-ratio:16/10;background:var(--surface,#f3f0e8);overflow:hidden}
+.fmarca .fm img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.fmarca:hover .fm img{transform:scale(1.06)}
+.fmarca .tx{padding:10px 12px 12px}
+.fmarca b{display:block;font:700 15px var(--display);letter-spacing:.01em}
+.fmarca small{color:var(--muted);font-size:12.5px}
+.fmarca.todas .fm{display:grid;place-items:center;background:linear-gradient(135deg,#f0d58c,#c9a14a 55%,#a8822a);color:#111;font:700 28px var(--display)}
+.fmarca[aria-pressed="true"]{border-color:var(--gold-2);box-shadow:0 0 0 2px var(--gold-2)}
+.fmarca[aria-pressed="true"]::after{content:"✓";position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:var(--gold-2);color:#111;display:grid;place-items:center;font:700 13px var(--body)}
+@media (max-width:640px){.fmarcas{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;margin-inline:-16px;padding-inline:16px}.fmarca{flex:0 0 138px;scroll-snap-align:start}}
 .search{flex:1 1 220px;min-width:0;max-width:320px;margin-left:auto;padding:11px 16px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--fg);font:inherit;font-size:14px}
 .count{font:12.5px var(--mono);color:var(--muted);margin-bottom:24px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
@@ -561,6 +576,8 @@ a:hover .ico-anim svg *,.ico-anim:hover svg *,div:hover > .ico-anim svg *{animat
       <div><div class="eyebrow rev">Catálogo</div><h2 class="rev">Modelos disponibles para importar.</h2></div>
       <p class="rev">Precio referencial puesto en Bolivia (Santa Cruz), con importación y tributos incluidos.</p>
     </div>
+    <p class="fm-tit">Elija una marca</p>
+    <div class="fmarcas" id="marcas" role="group" aria-label="Filtrar por marca"></div>
     <div class="filters" role="group" aria-label="Filtrar por tipo">
       <button class="chip" data-f="all" aria-pressed="true">Todos</button>
       <button class="chip" data-f="SUV" aria-pressed="false">SUV</button>
@@ -621,11 +638,20 @@ const CAT=(window.VASCRUZ_CATALOGO&&window.VASCRUZ_CATALOGO.modelos)||[];
 const V=CAT.map(m=>[m.marca,[m.modelo,m.version].filter(Boolean).join(" "),m.anio,m.tec,m.tipo||"",m.autonomia,m.colores,m.precio,m.foto,m.id,!!(window.VASCRUZ_360||{})[m.marca+"|"+m.modelo]]).sort((a,b)=>(a[7]==null?1e12:a[7])-(b[7]==null?1e12:b[7]));
 const fmt=n=>"USD "+n.toLocaleString("de-DE");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-let f="all";
+let f="all",marca="";
+// Marcas que hay en el Excel (se arman solas: si agrega o quita una marca, aparece o desaparece aquí)
+(function(){
+  const porMarca={};CAT.forEach(m=>{(porMarca[m.marca]=porMarca[m.marca]||[]).push(m)});
+  const lista=Object.keys(porMarca).sort((a,b)=>a.localeCompare(b,"es"));
+  const tile=(m,n,foto)=>`<button class="fmarca${m?"":" todas"}" data-m="${esc(m)}" aria-pressed="${m===marca}"><span class="fm">${foto?`<img src="${esc(foto)}" alt="" loading="lazy">`:"V"}</span><span class="tx"><b>${m?esc(m):"Todas"}</b><small>${n} ${n===1?"modelo":"modelos"}</small></span></button>`;
+  const caja=document.getElementById("marcas");
+  caja.innerHTML=tile("",CAT.length,"")+lista.map(m=>tile(m,porMarca[m].length,(porMarca[m].find(x=>x.foto)||{}).foto)).join("");
+  caja.querySelectorAll(".fmarca").forEach(b=>b.addEventListener("click",()=>{marca=b.dataset.m;caja.querySelectorAll(".fmarca").forEach(c=>c.setAttribute("aria-pressed",c===b));render();}));
+})();
 function render(){
   const q=document.getElementById("q").value.trim().toLowerCase();
-  const rows=V.filter(v=>{const okF=f==="all"||(f==="PHEV"?v[3]==="PHEV":v[4].startsWith(f));const okQ=!q||(v[0]+" "+v[1]).toLowerCase().includes(q);return okF&&okQ;});
-  document.getElementById("count").textContent=rows.length+(rows.length===1?" modelo":" modelos");
+  const rows=V.filter(v=>{if(marca&&v[0]!==marca)return false;const okF=f==="all"||(f==="PHEV"?v[3]==="PHEV":v[4].startsWith(f));const okQ=!q||(v[0]+" "+v[1]).toLowerCase().includes(q);return okF&&okQ;});
+  document.getElementById("count").textContent=rows.length+(rows.length===1?" modelo":" modelos")+(marca?" de "+marca:"");
   document.getElementById("grid").innerHTML=rows.length?rows.map(v=>{
     const name=v[0]+" "+v[1]+" ("+v[2]+")";
     const msg=encodeURIComponent("Hola Vascruz, quisiera una cotización del "+name+".");
