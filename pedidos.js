@@ -260,7 +260,7 @@ export function iniciarPedidos(cx) {
 
   async function borrar() {
     if (!EDIT || !confirm(`¿Eliminar el pedido de ${EDIT.cliente_nombre}? El cliente dejará de verlo. No se puede deshacer.`)) return;
-    if (!deleteDoc) deleteDoc = (await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js")).deleteDoc;
+    if (!deleteDoc) deleteDoc = (await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-lite.js")).deleteDoc;
     await deleteDoc(doc(db, "pedidos", EDIT.id));
     $("#ped-form").hidden = true; EDIT = null; await adminPedidos();
   }

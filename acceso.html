@@ -115,7 +115,7 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
 <main class="wrap">
 
 <!-- Cargando -->
-<section id="v-cargando"><p class="muted">Cargando…</p></section>
+<section id="v-cargando"><p class="muted" id="cargando-txt">Cargando…</p><p id="cargando-lento" hidden><span class="muted">La conexión está lenta.</span> <button class="btn btn-gold" type="button" onclick="location.reload()">Reintentar</button></p></section>
 
 <!-- Ingresar / Registrarse -->
 <section id="v-login" hidden>
@@ -333,9 +333,9 @@ import {
   auth, db, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification,
   sendPasswordResetEmail, signOut, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, getDocs,
   serverTimestamp, usd, esc, nombreAuto, errorEs, crearCuenta, telWa
-} from "./fb.js?v=3";
+} from "./fb.js?v=4";
 import { tablaDetalle, CSS_DETALLE, usd2 } from "./detalle.js?v=1";
-import { iniciarPedidos, CSS_PEDIDOS } from "./pedidos.js?v=1";
+import { iniciarPedidos, CSS_PEDIDOS } from "./pedidos.js?v=2";
 document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}${CSS_PEDIDOS}</style>`);
 
 const $ = (s) => document.querySelector(s);
@@ -374,10 +374,17 @@ onAuthStateChanged(auth, (u) => {
 
 async function cargar(u) {
   ME = u; show("v-cargando");
-  let snap = null; try { snap = await getDoc(doc(db, "usuarios", u.uid)); } catch (_) {}
+  // Si tarda mucho (mala señal), mostrar "Reintentar" en lugar de quedarse cargando para siempre
+  const lento = setTimeout(() => { $("#cargando-lento").hidden = false; }, 8000);
+  const conLimite = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error("tiempo")), ms))]);
+  // Perfil y permiso de administrador se piden a la vez (antes era uno detrás de otro)
+  const [snap, admin] = await Promise.all([
+    conLimite(getDoc(doc(db, "usuarios", u.uid)), 15000).catch(() => null),
+    conLimite(getDocs(query(collection(db, "usuarios"), where("rol", "==", "pendiente"))), 15000).then(() => true).catch(() => false),
+  ]);
+  clearTimeout(lento); $("#cargando-lento").hidden = true;
   PERFIL = snap && snap.exists() ? snap.data() : null;
-  ES_ADMIN = false;
-  try { await getDocs(query(collection(db, "usuarios"), where("rol", "==", "pendiente"))); ES_ADMIN = true; } catch (_) {}
+  ES_ADMIN = admin;
   const rol = ES_ADMIN ? "admin" : (PERFIL ? PERFIL.rol : "pendiente");
   ROL = rol;
   $("#who").hidden = false; $("#who-name").textContent = (PERFIL && PERFIL.nombre) || u.email; $("#who-rol").textContent = ROLES[rol] || rol;

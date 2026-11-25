@@ -8,7 +8,8 @@ import {
 import {
   getFirestore, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, orderBy, limit,
   getDocs, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-lite.js";
+// Versión liviana de Firestore (119 KB en lugar de 440 KB): carga más rápido en el celular y no se cuelga con mala señal.
 
 const CONFIG = {
   apiKey: "AIzaSyCd7ccK2wu2x8Iw_1bCU-PG5adlvBAlaFM",
