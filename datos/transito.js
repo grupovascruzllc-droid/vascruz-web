@@ -13,13 +13,13 @@ window.VASCRUZ_TRANSITO = [
     fotos: ["bz5-01.jpg","bz5-02.jpg","bz5-03.jpg","bz5-04.jpg","bz5-05.jpg","bz5-06.jpg","bz5-07.jpg","bz5-08.jpg","bz5-09.jpg"]
   },
   {
-    modelo_id: 24,                                   // Toyota bZ3X (confirmar versión: Pro o Pro+)
-    nombre: "Toyota bZ3X",
+    modelo_id: 24,                                   // Toyota bZ3X 520 Pro+
+    nombre: "Toyota bZ3X 520 Pro+",
     anio: "2026",
     color: "2 negros · 1 blanco · interior naranja",
     unidades: 3,
     etapa: 3,
-    llegada: "",
+    llegada: "Iquique, 10 de diciembre",
     fotos: ["bz3x-01.jpg","bz3x-02.jpg","bz3x-03.jpg","bz3x-04.jpg","bz3x-05.jpg","bz3x-06.jpg","bz3x-07.jpg","bz3x-08.jpg","bz3x-09.jpg"]
   },
   {
@@ -28,8 +28,8 @@ window.VASCRUZ_TRANSITO = [
     anio: "2026",
     color: "Blanco perla · interior azul",
     unidades: 4,
-    etapa: 2,
-    llegada: "",
+    etapa: 3,
+    llegada: "Iquique, 10 de diciembre",
     fotos: ["seagull-01.jpg","seagull-02.jpg","seagull-03.jpg","seagull-04.jpg","seagull-05.jpg","seagull-06.jpg","seagull-07.jpg","seagull-08.jpg","seagull-09.jpg","seagull-10.jpg"]
   }
 ];
