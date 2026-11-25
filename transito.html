@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es" class="solo-claro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stock en tránsito | Vascruz Import & Export SRL</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="img/logo-sm.png">
+<link rel="apple-touch-icon" href="img/app/icono-180.png">
+<meta name="theme-color" content="#111111">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--fg:#141414;--muted:#5f5d58;--surface:#f8f5ee;--line:#e6dfcd;--gold:#a8822a;--gold-btn:#d2ad55;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;--body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+html{color-scheme:light}*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:#efebe2;color:var(--fg);font:15px/1.5 var(--body)}
+.bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:999px;font:700 14px var(--body);border:1px solid #cfc8b8;background:#fff;color:#111;text-decoration:none;cursor:pointer}
+.btn-gold{background:linear-gradient(135deg,#f0d58c,#c9a14a 55%,#a8822a);border-color:transparent}
+.hoja{max-width:980px;margin:0 auto 40px;background:#fff;padding:30px 34px;box-shadow:0 2px 14px rgba(0,0,0,.08)}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid var(--gold);padding-bottom:14px}
+.top img{height:58px}
+.top .emp{text-align:right;font-size:12px;color:var(--muted);line-height:1.5}.top .emp b{color:var(--fg);font-size:13px}
+.eyebrow{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+h1{font:700 24px var(--display);margin:6px 0 2px}
+.intro{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin:18px 0 16px}
+.asesor{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--surface);font-size:13.5px}.asesor b{display:block;font-size:15px}
+.item{display:grid;grid-template-columns:240px minmax(0,1fr);gap:16px;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;break-inside:avoid}
+.item .fotos{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.item .fotos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;display:block}
+.item .fotos img:first-child{grid-column:1/-1;aspect-ratio:16/10}
+.item h2{font:700 18px var(--display);margin:2px 0 6px}
+.uni{display:inline-block;background:#111;color:#fff;font:700 12.5px var(--body);padding:4px 10px;border-radius:999px}
+.datos{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;font-size:13px}
+.datos div{border-bottom:1px dotted var(--line);padding:3px 0}.datos span{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.pasos{display:flex;gap:4px;margin-top:10px;font-size:10.5px;color:var(--muted)}
+.pasos span{flex:1;text-align:center;padding:5px 2px;border-radius:6px;background:#f2efe7}
+.pasos span.ok{background:#efe1b8;color:#111;font-weight:700}
+.pasos span.ya{background:linear-gradient(135deg,#f0d58c,#c9a14a);color:#111;font-weight:800}
+.cond{margin-top:14px;font-size:11.5px;color:var(--muted);line-height:1.5}
+.medir-tr{padding:0!important;box-shadow:none!important;max-width:none!important;margin:0!important}
+@media (max-width:700px){.hoja{padding:18px 14px}.item{grid-template-columns:1fr}.top img{height:44px}h1{font-size:20px}}
+@page{size:A4;margin:10mm}
+@media print{body{background:#fff}.bar{display:none!important}.hoja{box-shadow:none;margin:0;padding:0;max-width:none}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<link rel="stylesheet" href="tema.css?v=1">
+<script src="tema.js?v=1"></script>
+</head>
+<body>
+<div class="bar">
+  <button class="btn btn-gold" id="btn-pdf" type="button">⬇ Descargar PDF</button>
+  <a class="btn" id="wa" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+</div>
+<div id="out"><p style="text-align:center;padding:60px;color:#5f5d58">Cargando…</p></div>
+
+<script>document.write('<script src="datos/transito.js?v='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
+<script type="module">
+import { descargarPDF } from "./pdf.js?v=2";
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const p = new URLSearchParams(location.search);
+// El asesor viene en el enlace (lo pone su panel): así el cliente le escribe a él.
+const asesor = (p.get("asesor") || "").slice(0, 60), telTxt = (p.get("tel") || "").slice(0, 20);
+const d = telTxt.replace(/\D/g, ""), tel = d.length === 8 ? "591" + d : (d || "59177006107");
+const T = window.VASCRUZ_TRANSITO || [];
+const PASOS = ["Fábrica", "Puerto", "Contenedor", "En el mar", "Iquique", "Santa Cruz"];
+const hoy = new Date().toLocaleDateString("es-BO", { day: "2-digit", month: "long", year: "numeric" });
+const saludo = asesor ? `Hola ${asesor}, vi el stock en tránsito de Vascruz` : "Hola Vascruz, vi su stock en tránsito";
+document.getElementById("wa").href = `https://wa.me/${tel}?text=${encodeURIComponent(saludo + " y quisiera reservar.")}`;
+const out = document.getElementById("out");
+if (!T.length) out.innerHTML = `<div class="hoja"><p>Por ahora no hay vehículos en tránsito. Consúltenos por WhatsApp.</p></div>`;
+else {
+  const total = T.reduce((a, t) => a + (t.unidades || 0), 0);
+  out.innerHTML = `<div class="hoja">
+    <div class="top"><img src="img/logo-sm.png" alt="Vascruz Import &amp; Export SRL">
+      <div class="emp"><b>Vascruz Import &amp; Export SRL</b><br>Importadora de vehículos eléctricos · China → Bolivia<br>Av. Grigotá B/El Parí, Calle Guariyú #132, Santa Cruz de la Sierra<br>vascruz.com</div></div>
+    <div class="intro">
+      <div><div class="eyebrow">Stock en tránsito · ${hoy}</div><h1>Vehículos que ya vienen en camino</h1>
+        <div style="color:var(--muted)">${total} unidades compradas y en viaje desde China. Resérvelas antes de que lleguen a Santa Cruz.</div></div>
+      <div class="asesor">${asesor ? "Asesor de importación · Vascruz" : "Contacto Vascruz"}<b>${esc(asesor || "Vascruz Import & Export SRL")}</b>WhatsApp ${esc(telTxt || "+591 77006107")}</div>
+    </div>
+    ${T.map(t => `<article class="item">
+      <div class="fotos">${t.fotos.slice(0, 3).map(f => `<img src="img/transito/${esc(f)}" alt="">`).join("")}</div>
+      <div>
+        <div class="eyebrow">${esc(t.anio)} · 100% eléctrico</div>
+        <h2>${esc(t.nombre)}</h2>
+        <span class="uni">${t.unidades} ${t.unidades === 1 ? "unidad disponible" : "unidades disponibles"}</span>
+        <div class="datos"><div><span>Colores</span>${esc(t.color)}</div><div><span>Llegada estimada</span>${t.llegada ? esc(t.llegada) : "Consultar"}</div></div>
+        <div class="pasos">${PASOS.map((s, i) => `<span class="${i < t.etapa ? "ok" : i === t.etapa ? "ya" : ""}">${s}</span>`).join("")}</div>
+      </div></article>`).join("")}
+    <div class="cond">Fotos reales de las unidades en China. Fecha de llegada estimada, sujeta a la naviera y a la aduana. Precios y reserva: consulte a su asesor. Sujeto a disponibilidad al momento de la reserva.</div>
+  </div>`;
+}
+const btn = document.getElementById("btn-pdf");
+btn.onclick = async () => {
+  const t = btn.textContent; btn.disabled = true; btn.textContent = "Preparando PDF…";
+  try { await descargarPDF(out.querySelector(".hoja"), "Stock en tránsito Vascruz.pdf", "medir-tr"); }
+  catch (e) { alert("No se pudo crear el PDF. Pruebe de nuevo."); }
+  finally { btn.disabled = false; btn.textContent = t; }
+};
+if (p.get("pdf") === "1") { btn.style.outline = "3px solid #c9a14a"; }
+</script>
+</body>
+</html>
