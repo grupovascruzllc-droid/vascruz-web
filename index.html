@@ -182,6 +182,39 @@ section{padding-block:clamp(70px,9vw,120px)}
 .chip{font:600 13.5px var(--body);padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer;transition:all .2s}
 .chip:hover{border-color:var(--gold-2)}
 .chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+/* Stock en tránsito */
+#transito{background:var(--surface)}
+.tr-card{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:0;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:var(--card);margin-bottom:22px}
+.tr-gal{position:relative;background:#111}
+.tr-main{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;cursor:zoom-in}
+.tr-thumbs{display:flex;gap:6px;padding:8px;overflow-x:auto;background:#111}
+.tr-thumbs button{flex:0 0 76px;height:52px;padding:0;border:2px solid transparent;border-radius:8px;overflow:hidden;cursor:pointer;background:none;opacity:.7}
+.tr-thumbs button[aria-pressed="true"]{border-color:var(--gold-2);opacity:1}
+.tr-thumbs img{width:100%;height:100%;object-fit:cover}
+.tr-badge{position:absolute;top:14px;left:14px;display:inline-flex;align-items:center;gap:8px;background:rgba(17,17,17,.82);color:#f3dc9a;font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;border-radius:999px}
+.tr-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:#f0d58c;animation:trlatido 1.6s infinite}
+@keyframes trlatido{50%{opacity:.25}}
+.tr-info{padding:clamp(20px,3vw,34px);display:flex;flex-direction:column;gap:12px}
+.tr-info h3{font-size:clamp(22px,2.4vw,30px);margin:0}
+.tr-uni{display:inline-block;align-self:flex-start;background:var(--fg);color:var(--bg);font:700 13px var(--body);padding:6px 12px;border-radius:999px}
+.tr-datos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tr-datos div{border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+.tr-datos small{display:block;font:11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tr-pasos{list-style:none;padding:0;margin:6px 0 0;display:grid;grid-template-columns:repeat(6,1fr);gap:4px;counter-reset:p}
+.tr-pasos li{position:relative;text-align:center;font-size:11.5px;color:var(--muted);padding-top:24px;line-height:1.25}
+.tr-pasos li::before{content:"";position:absolute;top:6px;left:50%;transform:translateX(-50%);width:14px;height:14px;border-radius:50%;border:2px solid var(--line);background:var(--card);z-index:1}
+.tr-pasos li::after{content:"";position:absolute;top:12px;left:-50%;width:100%;height:2px;background:var(--line)}
+.tr-pasos li:first-child::after{display:none}
+.tr-pasos li.ok{color:var(--fg);font-weight:600}
+.tr-pasos li.ok::before{background:linear-gradient(135deg,#f0d58c,#c9a14a);border-color:#c9a14a}
+.tr-pasos li.ok::after{background:#c9a14a}
+.tr-pasos li.ya::before{border-color:#c9a14a;box-shadow:0 0 0 5px color-mix(in srgb,#c9a14a 25%,transparent)}
+.tr-acc{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.tr-nota{font-size:12.5px;color:var(--muted);margin:0}
+.tr-visor{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:20px}
+.tr-visor img{max-width:100%;max-height:88vh;border-radius:10px}
+.tr-visor button{position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;font-size:20px;cursor:pointer}
+@media (max-width:820px){.tr-card{grid-template-columns:minmax(0,1fr)}.tr-info h3{overflow-wrap:anywhere}.tr-pasos li{font-size:10px}}
 /* Filtro por marca */
 .fm-tit{font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
 .fmarcas{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:12px;margin-bottom:22px}
@@ -392,7 +425,7 @@ a:hover .ico-anim svg *,.ico-anim:hover svg *,div:hover > .ico-anim svg *{animat
   <div class="wrap nav">
     <a class="brand" href="#inicio" aria-label="Vascruz Import & Export, inicio"><img src="img/logo-sm.png" alt="Vascruz Import &amp; Export SRL" width="360" height="204"></a>
     <nav class="links" aria-label="Secciones">
-      <a href="#nosotros">Nosotros</a><a href="#ruta">Cómo importamos</a><a href="#catalogo">Catálogo</a><a href="#contacto">Contacto</a><a href="acceso.html">Seguimiento de mi vehículo</a>
+      <a href="#nosotros">Nosotros</a><a href="#ruta">Cómo importamos</a><a href="#catalogo">Catálogo</a><a href="#transito" id="nav-transito" hidden>En tránsito</a><a href="#contacto">Contacto</a><a href="acceso.html">Seguimiento de mi vehículo</a>
     </nav>
     <div class="nav-der">
       <button class="tema" id="tema" type="button" aria-label="Cambiar tema"></button>
@@ -592,6 +625,17 @@ a:hover .ico-anim svg *,.ico-anim:hover svg *,div:hover > .ico-anim svg *{animat
   </div>
 </section>
 
+<section id="transito" hidden>
+  <div class="wrap">
+    <div class="sec-head">
+      <div><div class="eyebrow rev">Stock en tránsito</div><h2 class="rev">Vehículos que ya vienen en camino.</h2></div>
+      <p class="rev">Unidades compradas y en viaje desde China. Resérvelas antes de que lleguen a Santa Cruz.</p>
+    </div>
+    <div id="tr-lista"></div>
+    <p class="tr-nota">Fotos reales de las unidades en China. Fecha de llegada estimada, sujeta a la naviera y a la aduana.</p>
+  </div>
+</section>
+
 <section class="contact" id="contacto">
   <div class="wrap c-grid">
     <div>
@@ -631,6 +675,7 @@ a:hover .ico-anim svg *,.ico-anim:hover svg *,div:hover > .ico-anim svg *{animat
 
 <script>/* Pide siempre el catálogo más reciente (evita versiones guardadas en caché) */document.write('<script src="catalogo.js?v='+Math.floor(Date.now()/60000)+'"><\/script><script src="vistas360.js?v='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
 <script src="img/web/creditos-d.js"></script>
+<script>document.write('<script src="datos/transito.js?v='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
 <script>
 // ===== Catálogo (datos del Excel) =====
 const WA="https://wa.me/59177006107?text=";
@@ -670,6 +715,33 @@ function render(){
 }
 document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{f=b.dataset.f;document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c===b));render();}));
 document.getElementById("q").addEventListener("input",render);
+// ===== Stock en tránsito =====
+(function(){
+  const T=window.VASCRUZ_TRANSITO||[];
+  if(!T.length)return;
+  document.getElementById("transito").hidden=false;document.getElementById("nav-transito").hidden=false;
+  const PASOS=["Fábrica","En el puerto","Cargado en contenedor","En el mar","Iquique","Santa Cruz"];
+  const ruta=f=>"img/transito/"+f;
+  document.getElementById("tr-lista").innerHTML=T.map((t,n)=>{
+    const msg=encodeURIComponent("Hola Vascruz, me interesa reservar el "+t.nombre+" ("+t.color+") que viene en tránsito.");
+    return `<article class="tr-card rev" data-n="${n}">
+      <div class="tr-gal"><span class="tr-badge">En tránsito</span>
+        <img class="tr-main" src="${ruta(t.fotos[0])}" alt="${esc(t.nombre)}" loading="lazy">
+        <div class="tr-thumbs">${t.fotos.map((f,i)=>`<button data-f="${esc(f)}" aria-pressed="${i===0}" aria-label="Foto ${i+1}"><img src="${ruta(f)}" alt="" loading="lazy"></button>`).join("")}</div></div>
+      <div class="tr-info">
+        <div class="eyebrow">${esc(t.anio)} · 100% eléctrico</div>
+        <h3>${esc(t.nombre)}</h3>
+        <span class="tr-uni">${t.unidades} ${t.unidades===1?"unidad disponible":"unidades disponibles"}</span>
+        <div class="tr-datos"><div><small>Color</small>${esc(t.color)}</div><div><small>Llegada estimada</small>${t.llegada?esc(t.llegada):"Consultar"}</div></div>
+        <ol class="tr-pasos">${PASOS.map((p,i)=>`<li class="${i<t.etapa?"ok":i===t.etapa?"ok ya":""}">${p}</li>`).join("")}</ol>
+        <div class="tr-acc"><a class="btn btn-oro" href="${WA+msg}" target="_blank" rel="noopener">Reservar por WhatsApp</a>${t.modelo_id!=null?`<a class="btn btn-linea" href="modelo.html?id=${t.modelo_id}">Ver ficha técnica</a>`:""}</div>
+      </div></article>`;}).join("");
+  document.querySelectorAll(".tr-card").forEach(card=>{
+    const main=card.querySelector(".tr-main");
+    card.querySelectorAll(".tr-thumbs button").forEach(b=>b.addEventListener("click",()=>{main.src=ruta(b.dataset.f);card.querySelectorAll(".tr-thumbs button").forEach(x=>x.setAttribute("aria-pressed",x===b));}));
+    main.addEventListener("click",()=>{const v=document.createElement("div");v.className="tr-visor";v.innerHTML=`<img src="${main.src}" alt=""><button aria-label="Cerrar">✕</button>`;v.onclick=()=>v.remove();document.body.appendChild(v);});
+  });
+})();
 const gen=WA+encodeURIComponent("Hola Vascruz, quisiera información sobre la importación de un vehículo eléctrico.");
 ["wa-top","wa-hero","wa-contact"].forEach(id=>document.getElementById(id).href=gen);
 document.querySelectorAll("button.copy").forEach(b=>b.addEventListener("click",()=>{const t=b.dataset.copy;const done=()=>{b.textContent="Copiado";setTimeout(()=>b.textContent="Copiar",1500)};try{navigator.clipboard.writeText(t).then(done).catch(()=>{});}catch(e){}}));
