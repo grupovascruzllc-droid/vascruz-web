@@ -152,7 +152,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 <footer><div class="wrap"><span>© 2026 Vascruz Import &amp; Export SRL · Vascruz Grupo Empresarial</span><span class="redes"><a class="ig-link" href="https://www.instagram.com/vascruz_import_export/" target="_blank" rel="noopener"><svg class="ig-ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>Síguenos en Instagram</a><a class="ig-link" href="https://www.tiktok.com/@vascruzimport" target="_blank" rel="noopener" aria-label="TikTok de Vascruz"><svg class="ig-ico" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16.6 3c.4 2.1 1.7 3.6 3.9 3.8v3.1c-1.4.1-2.7-.3-3.9-1.1v6.3c0 3.4-2.6 5.9-5.8 5.9S5 18.5 5 15.2c0-3.3 2.8-5.9 6.2-5.6v3.2c-1.6-.3-3 .8-3 2.4 0 1.4 1.1 2.5 2.6 2.5s2.7-1.1 2.7-2.9V3h3.1z"/></svg>TikTok</a><a class="ig-link" href="https://www.facebook.com/profile.php?id=61596376682060" target="_blank" rel="noopener" aria-label="Facebook de Vascruz"><svg class="ig-ico" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.2H7.3V14h2.8v8h3.4z"/></svg>Facebook</a></span><span>Av. Grigotá B/El Parí, Calle Guariyú #132 · Santa Cruz de la Sierra, Bolivia · +591 77006107</span></div></footer>
 
-<script>document.write('<script src="catalogo.js?v='+Math.floor(Date.now()/60000)+'"><\/script><script src="vistas360.js?v='+Math.floor(Date.now()/60000)+'"><\/script><script src="fichas.js?v='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
+<script>document.write('<script src="catalogo.js?v='+Math.floor(Date.now()/60000)+'"><\/script><script src="vistas360.js?v='+Math.floor(Date.now()/60000)+'"><\/script><script src="fichas.js?v='+Math.floor(Date.now()/60000)+'"><\/script><script src="datos/transito.js?v='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
 <script>
 const WA="https://wa.me/59177006107?text=";
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -238,6 +238,23 @@ if(!m){
   }
 }
 document.getElementById("wa-top").href=WA+encodeURIComponent("Hola Vascruz, quisiera información sobre la importación de un vehículo eléctrico.");
+</script>
+<script>
+// Si este modelo tiene unidades en tránsito, se avisa arriba de la ficha con un botón para reservar
+(function(){
+  const id=new URLSearchParams(location.search).get("id");
+  const t=(window.VASCRUZ_TRANSITO||[]).filter(x=>String(x.modelo_id)===String(id));
+  if(!t.length)return;
+  const n=t.reduce((a,x)=>a+(x.unidades||0),0);
+  const msg=encodeURIComponent("Hola Vascruz, me interesa reservar el "+t[0].nombre+" que viene en tránsito.");
+  const d=document.createElement("div");
+  d.style.cssText="max-width:1100px;margin:14px auto 0;padding:0 16px";
+  d.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-radius:16px;background:#111;color:#fff;border:1px solid rgba(240,213,140,.5)">'
+    +'<span style="font:600 15px var(--body,system-ui)">🚢 <b style="color:#f3dc9a">'+n+(n===1?' unidad':' unidades')+' en tránsito</b> · '+(t[0].color||'')+(t[0].llegada?' · llega '+t[0].llegada:'')+'</span>'
+    +'<span style="display:flex;gap:8px;flex-wrap:wrap"><a href="index.html#transito" style="color:#f3dc9a;font-weight:600;padding:8px 12px">Ver fotos</a>'
+    +'<a href="https://wa.me/59177006107?text='+msg+'" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#f0d58c,#c9a14a);color:#111;font-weight:700;padding:8px 14px;border-radius:999px;text-decoration:none">Reservar</a></span></div>';
+  const app=document.getElementById("app"); app.before(d);
+})();
 </script>
 <script type="module">
 // Si el cliente llega desde el catálogo de un asesor (?cat=...), los botones de WhatsApp le escriben a ese asesor.

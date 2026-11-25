@@ -183,6 +183,8 @@ section{padding-block:clamp(70px,9vw,120px)}
 .chip:hover{border-color:var(--gold-2)}
 .chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 /* Stock en tránsito */
+.btn-transito{gap:9px}.btn-transito .pto{width:9px;height:9px;border-radius:50%;background:#f0d58c;animation:trlatido 1.6s infinite}
+.b-transito{position:absolute;left:12px;bottom:12px;background:rgba(17,17,17,.82);color:#f3dc9a;font:600 11.5px var(--mono);letter-spacing:.06em;padding:6px 10px;border-radius:999px;text-decoration:none}
 #transito{background:var(--surface)}
 .tr-card{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:0;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:var(--card);margin-bottom:22px}
 .tr-gal{position:relative;background:#111}
@@ -425,7 +427,7 @@ a:hover .ico-anim svg *,.ico-anim:hover svg *,div:hover > .ico-anim svg *{animat
   <div class="wrap nav">
     <a class="brand" href="#inicio" aria-label="Vascruz Import & Export, inicio"><img src="img/logo-sm.png" alt="Vascruz Import &amp; Export SRL" width="360" height="204"></a>
     <nav class="links" aria-label="Secciones">
-      <a href="#nosotros">Nosotros</a><a href="#ruta">Cómo importamos</a><a href="#catalogo">Catálogo</a><a href="#transito" id="nav-transito" hidden>En tránsito</a><a href="#contacto">Contacto</a><a href="acceso.html">Seguimiento de mi vehículo</a>
+      <a href="#nosotros">Nosotros</a><a href="#ruta">Cómo importamos</a><a href="#transito" id="nav-transito" hidden>En tránsito</a><a href="#catalogo">Catálogo</a><a href="#contacto">Contacto</a><a href="acceso.html">Seguimiento de mi vehículo</a>
     </nav>
     <div class="nav-der">
       <button class="tema" id="tema" type="button" aria-label="Cambiar tema"></button>
@@ -446,6 +448,7 @@ a:hover .ico-anim svg *,.ico-anim:hover svg *,div:hover > .ico-anim svg *{animat
     <div class="ctas">
       <a class="btn btn-oro" href="#catalogo">Ver vehículos</a>
       <a class="btn btn-linea" href="#carga">Cotizar carga por m³</a>
+      <a class="btn btn-linea btn-transito" id="cta-transito" href="#transito" hidden><span class="pto"></span>Stock en tránsito</a>
       <a class="btn btn-linea" id="wa-hero" href="https://wa.me/59177006107" target="_blank" rel="noopener">WhatsApp</a>
     </div>
   </div>
@@ -455,6 +458,17 @@ a:hover .ico-anim svg *,.ico-anim:hover svg *,div:hover > .ico-anim svg *{animat
 </section>
 
 <div class="marcas" aria-label="Marcas que importamos"><div class="cinta" id="cinta"></div></div>
+
+<section id="transito" hidden>
+  <div class="wrap">
+    <div class="sec-head">
+      <div><div class="eyebrow rev">Stock en tránsito</div><h2 class="rev">Vehículos que ya vienen en camino.</h2></div>
+      <p class="rev">Unidades compradas y en viaje desde China. Resérvelas antes de que lleguen a Santa Cruz.</p>
+    </div>
+    <div id="tr-lista"></div>
+    <p class="tr-nota">Fotos reales de las unidades en China. Fecha de llegada estimada, sujeta a la naviera y a la aduana.</p>
+  </div>
+</section>
 
 <div class="cifras"><div class="wrap">
   <div class="cifra rev"><b class="oro"><span data-cuenta="0">0</span>%</b><span>Gravamen arancelario e ICE para eléctricos e híbridos enchufables nuevos</span></div>
@@ -625,16 +639,7 @@ a:hover .ico-anim svg *,.ico-anim:hover svg *,div:hover > .ico-anim svg *{animat
   </div>
 </section>
 
-<section id="transito" hidden>
-  <div class="wrap">
-    <div class="sec-head">
-      <div><div class="eyebrow rev">Stock en tránsito</div><h2 class="rev">Vehículos que ya vienen en camino.</h2></div>
-      <p class="rev">Unidades compradas y en viaje desde China. Resérvelas antes de que lleguen a Santa Cruz.</p>
-    </div>
-    <div id="tr-lista"></div>
-    <p class="tr-nota">Fotos reales de las unidades en China. Fecha de llegada estimada, sujeta a la naviera y a la aduana.</p>
-  </div>
-</section>
+
 
 <section class="contact" id="contacto">
   <div class="wrap c-grid">
@@ -684,6 +689,8 @@ const V=CAT.map(m=>[m.marca,[m.modelo,m.version].filter(Boolean).join(" "),m.ani
 const fmt=n=>"USD "+n.toLocaleString("de-DE");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let f="all",marca="";
+// Unidades en tránsito por modelo (para marcarlas en el catálogo y en la portada)
+const TR={};(window.VASCRUZ_TRANSITO||[]).forEach(t=>{if(t.modelo_id!=null)TR[t.modelo_id]=(TR[t.modelo_id]||0)+(t.unidades||0)});
 // Marcas que hay en el Excel (se arman solas: si agrega o quita una marca, aparece o desaparece aquí)
 (function(){
   const porMarca={};CAT.forEach(m=>{(porMarca[m.marca]=porMarca[m.marca]||[]).push(m)});
@@ -701,7 +708,7 @@ function render(){
     const name=v[0]+" "+v[1]+" ("+v[2]+")";
     const msg=encodeURIComponent("Hola Vascruz, quisiera una cotización del "+name+".");
     return `<article class="card">
-      <a class="photo" href="modelo.html?id=${v[9]}" aria-label="Ver ficha del ${esc(v[0]+" "+v[1])}">${v[8]?`<img src="${esc(v[8])}" alt="${esc(v[0]+" "+v[1])}" loading="lazy" width="720" height="540">`:""}${v[10]?`<span class="b360">360°</span>`:""}</a>
+      <a class="photo" href="modelo.html?id=${v[9]}" aria-label="Ver ficha del ${esc(v[0]+" "+v[1])}">${v[8]?`<img src="${esc(v[8])}" alt="${esc(v[0]+" "+v[1])}" loading="lazy" width="720" height="540">`:""}${v[10]?`<span class="b360">360°</span>`:""}${TR[v[9]]?`<span class="b-transito">🚢 ${TR[v[9]]} en tránsito</span>`:""}</a>
       <div class="cuerpo">
       <div class="card-top"><span class="make">${esc(v[0])} · ${v[2]}</span><span class="tag">${v[3]==="PHEV"?"Híbrido enchufable":"100% eléctrico"}</span></div>
       <h3><a href="modelo.html?id=${v[9]}">${esc(v[1])}</a></h3>
@@ -720,6 +727,7 @@ document.getElementById("q").addEventListener("input",render);
   const T=window.VASCRUZ_TRANSITO||[];
   if(!T.length)return;
   document.getElementById("transito").hidden=false;document.getElementById("nav-transito").hidden=false;
+  document.getElementById("cta-transito").hidden=false;
   const PASOS=["Fábrica","En el puerto","Cargado en contenedor","En el mar","Iquique","Santa Cruz"];
   const ruta=f=>"img/transito/"+f;
   document.getElementById("tr-lista").innerHTML=T.map((t,n)=>{
