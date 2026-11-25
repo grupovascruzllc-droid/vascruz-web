@@ -181,14 +181,15 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
   <!-- Stock en tránsito: asesores, socios y administrador lo comparten con sus clientes -->
   <div id="p-transito" hidden>
     <div class="secthead"><div><div class="eyebrow">Para sus clientes</div><h1 style="margin-top:6px">Stock en tránsito</h1></div><span class="muted" id="tr-total"></span></div>
-    <div class="card" style="margin-bottom:16px">
-      <h2 style="margin:0 0 4px">Compartir todo el stock</h2>
-      <p class="muted" style="margin:0 0 12px">La hoja sale con su nombre y su WhatsApp: el cliente le escribe directo a usted.</p>
-      <label for="tr-cli">Nombre del cliente <span class="muted">(opcional)</span></label><input id="tr-cli" autocomplete="off" placeholder="Para el saludo del WhatsApp">
-      <label for="tr-tel">Celular del cliente <span class="muted">(opcional)</span></label><input id="tr-tel" type="tel" autocomplete="off" placeholder="Si lo pone, el WhatsApp se abre directo con él">
-      <div class="actions" id="tr-acc"></div>
+    <p class="muted" style="margin-top:0">Marque los vehículos que quiere compartir. Su cliente recibe un enlace con las fotos y le escribe directo a usted.</p>
+    <div id="tr-lista"></div>
+    <div class="card" style="margin-top:6px">
+      <div class="row2">
+        <div><label for="tr-cli">Nombre del cliente <span class="muted">(opcional)</span></label><input id="tr-cli" autocomplete="off"></div>
+        <div><label for="tr-tel">Celular del cliente <span class="muted">(opcional)</span></label><input id="tr-tel" type="tel" autocomplete="off" placeholder="Para abrir su WhatsApp directo"></div>
+      </div>
+      <div id="tr-listo"></div>
     </div>
-    <div id="tr-lista" class="tr-grid"></div>
   </div>
 
   <div id="p-fob" hidden>
@@ -432,37 +433,39 @@ function panel(rol) {
   abrir(rol === "admin" && PENDIENTES_PRIMERO ? "p-usuarios" : tabs[0][0]);
 }
 const PENDIENTES_PRIMERO = true;
-// ---------- Stock en tránsito (compartir con clientes) ----------
+// ---------- Stock en tránsito (el asesor elige qué vehículos compartir y envía un enlace) ----------
 function stockTransito() {
   const T = window.VASCRUZ_TRANSITO || [];
   const total = T.reduce((a, t) => a + (t.unidades || 0), 0);
   $("#tr-total").textContent = total + " unidades en camino";
-  const base = location.origin + location.pathname.replace(/acceso\.html$/, "");
-  const nombreAs = (PERFIL && PERFIL.nombre) || "", telAs = (PERFIL && PERFIL.telefono) || "";
-  const hoja = base + "transito.html?" + new URLSearchParams({ asesor: nombreAs, tel: telAs }).toString();
   const PASOS = ["Fábrica", "En el puerto", "Cargado en contenedor", "En el mar", "Iquique", "Santa Cruz"];
-  const linea = (t) => "🚗 " + t.nombre + " · " + t.unidades + (t.unidades === 1 ? " unidad" : " unidades") + " · " + t.color + " · " + PASOS[t.etapa] + (t.llegada ? " · llega " + t.llegada : "");
-  const waCli = (texto) => { const n = telWa($("#tr-tel").value); return "https://wa.me/" + (n || "") + "?text=" + encodeURIComponent(texto); };
-  const saludo = () => { const c = $("#tr-cli").value.trim(); return "Hola" + (c ? " " + c : "") + ", le comparto los vehículos que Vascruz tiene en tránsito, ya en camino a Bolivia:"; };
-  const pintarAcc = () => {
-    const texto = saludo() + "\n\n" + T.map(linea).join("\n") + "\n\nFotos y detalles aquí: " + hoja + "\n¿Le reservo uno?";
-    $("#tr-acc").innerHTML = `<a class="btn btn-gold" href="${esc(waCli(texto))}" target="_blank" rel="noopener">Enviar por WhatsApp</a>
-      <a class="btn btn-line" href="${esc(hoja + "&pdf=1")}" target="_blank" rel="noopener">Ver / Descargar PDF</a>
-      <button class="btn btn-line" type="button" id="tr-copiar">Copiar enlace</button>`;
-    $("#tr-copiar").onclick = () => navigator.clipboard.writeText(hoja).then(() => $("#tr-copiar").textContent = "Enlace copiado ✓");
+  const clave = (t) => t.modelo_id != null ? String(t.modelo_id) : t.nombre.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const base = location.origin + location.pathname.replace(/acceso\.html$/, "");
+  $("#tr-lista").innerHTML = T.map((t, i) => `<label class="card tr-sel" style="display:grid;grid-template-columns:auto minmax(0,150px) minmax(0,1fr);gap:14px;align-items:center;margin:0 0 10px;cursor:pointer;font-weight:500">
+      <input type="checkbox" data-k="${esc(clave(t))}" checked style="width:22px;height:22px">
+      <img src="img/transito/${esc(t.fotos[0])}" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px">
+      <span><span class="eyebrow">${esc(PASOS[t.etapa])}${t.llegada ? " · llega " + esc(t.llegada) : ""}</span>
+        <b style="display:block;font-size:17px;margin:3px 0">${esc(t.nombre)}</b>
+        <span><b>${t.unidades}</b> ${t.unidades === 1 ? "unidad" : "unidades"} · ${esc(t.color)}</span></span></label>`).join("");
+  const pintar = () => {
+    const elegidos = [...document.querySelectorAll("#tr-lista input:checked")].map(c => c.dataset.k);
+    const sel = T.filter(t => elegidos.includes(clave(t)));
+    if (!sel.length) { $("#tr-listo").innerHTML = `<p class="muted" style="margin:12px 0 0">Marque al menos un vehículo.</p>`; return; }
+    const cli = $("#tr-cli").value.trim();
+    const q = new URLSearchParams({ asesor: (PERFIL && PERFIL.nombre) || "", tel: (PERFIL && PERFIL.telefono) || "", m: elegidos.join(",") });
+    if (cli) q.set("c", cli);
+    const url = base + "transito.html?" + q.toString();
+    const lista = sel.map(t => "🚗 " + t.nombre + " · " + t.unidades + (t.unidades === 1 ? " unidad" : " unidades") + (t.llegada ? " · llega " + t.llegada : "")).join("\n");
+    const texto = `Hola${cli ? " " + cli : ""}, le comparto ${sel.length === 1 ? "este vehículo" : "estos vehículos"} que Vascruz ya tiene en camino a Bolivia:\n\n${lista}\n\nVea las fotos aquí: ${url}\n¿Le reservo uno?`;
+    const n = telWa($("#tr-tel").value);
+    $("#tr-listo").innerHTML = `<div class="eyebrow" style="margin-top:14px">Enlace listo · ${sel.length} ${sel.length === 1 ? "vehículo" : "vehículos"}</div>
+      <p class="muted" style="margin:4px 0 0;word-break:break-all;font-size:13px">${esc(url)}</p>
+      <div class="actions"><a class="btn btn-gold" href="https://wa.me/${n}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        <a class="btn btn-line" href="${esc(url)}" target="_blank" rel="noopener">Ver</a>
+        <button class="btn btn-line" type="button" id="tr-copiar">Copiar enlace</button></div>`;
+    $("#tr-copiar").onclick = () => navigator.clipboard.writeText(url).then(() => $("#tr-copiar").textContent = "Enlace copiado ✓");
   };
-  $("#tr-cli").oninput = $("#tr-tel").oninput = pintarAcc; pintarAcc();
-  $("#tr-lista").innerHTML = T.map((t, i) => `<div class="card" style="display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:16px;align-items:center;margin-bottom:12px">
-      <img src="img/transito/${esc(t.fotos[0])}" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px">
-      <div><div class="eyebrow">${esc(t.anio)} · ${esc(PASOS[t.etapa])}</div>
-        <h2 style="margin:4px 0">${esc(t.nombre)}</h2>
-        <div><b>${t.unidades}</b> ${t.unidades === 1 ? "unidad" : "unidades"} · ${esc(t.color)}</div>
-        <div class="muted">Llegada estimada: ${t.llegada ? esc(t.llegada) : "consultar"}</div>
-        <div class="actions"><button class="btn btn-line btn-sm" type="button" data-tr="${i}">Enviar este por WhatsApp</button>${t.modelo_id != null ? `<a class="btn btn-line btn-sm" href="modelo.html?id=${t.modelo_id}" target="_blank" rel="noopener">Ficha técnica</a>` : ""}</div></div></div>`).join("");
-  $("#tr-lista").querySelectorAll("[data-tr]").forEach(b => b.onclick = () => {
-    const t = T[+b.dataset.tr], c = $("#tr-cli").value.trim();
-    window.open(waCli("Hola" + (c ? " " + c : "") + ", tenemos en tránsito:\n" + linea(t) + "\n\nFotos: " + hoja + "\n¿Le reservo uno?"), "_blank", "noopener");
-  });
+  $("#tr-lista").onchange = pintar; $("#tr-cli").oninput = $("#tr-tel").oninput = pintar; pintar();
 }
 // Vascruz CRM: cada proforma o catálogo que se genera aquí entra como cliente del asesor en el CRM.
 // Se envía con el token de sesión del usuario (el CRM lo verifica con Google); si el CRM no responde, la web sigue igual.
