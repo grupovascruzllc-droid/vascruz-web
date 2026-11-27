@@ -74,6 +74,13 @@ export const CSS_PEDIDOS = `
 .medio iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .medio img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px}
 .medio small{display:block;margin-top:4px;color:var(--muted);font-size:12.5px}
+.galeria-cli{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.galeria-cli button{padding:0;border:0;border-radius:10px;overflow:hidden;cursor:zoom-in;background:none}
+.galeria-cli img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;transition:transform .4s}
+.galeria-cli button:hover img{transform:scale(1.05)}
+.visor-cli{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:16px}
+.visor-cli img{max-width:100%;max-height:88vh;border-radius:10px}
+.visor-cli button{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;font-size:20px;cursor:pointer}
 .pagos-c{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
 .pagos-c div{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}
 .pagos-c small{display:block;color:var(--muted);font-size:12px}
@@ -126,7 +133,7 @@ export function iniciarPedidos(cx) {
     }).join("");
     return `<article class="card" style="margin-bottom:22px">
       <div class="seg-card">
-        <img class="foto" src="${esc(p.foto || m.foto || "img/logo.png")}" alt="">
+        <img class="foto" src="${esc((p.fotos && p.fotos[0]) || p.foto || m.foto || "img/logo.png")}" alt="">
         <div>
           <div class="seg-estado">${ult === "entrega" ? "Entregado" : esc(ult ? titulo(ult) : "Pedido registrado")}</div>
           <h2 style="margin:8px 0 2px">${esc(p.vehiculo_nombre || nombreAuto(m))}</h2>
@@ -145,6 +152,8 @@ export function iniciarPedidos(cx) {
         ${[["N.° de chasis (VIN)", p.chasis], ["Contenedor", p.contenedor], ["BL", p.bl], ["Naviera", p.naviera], ["Puerto de origen", p.origen], ["Llegada estimada a Iquique", (p.etapas && p.etapas.iquique && p.etapas.iquique.hecho) ? "Llegó · " + fechaTxt(p.etapas.iquique.fecha) : fechaTxt(p.eta)], ["Llegada estimada a Santa Cruz", estimadoSCZ(p)], ["Su asesor", p.asesor_nombre]]
           .filter(r => r[1]).map(r => `<div><small>${esc(r[0])}</small><b>${esc(r[1])}</b></div>`).join("")}
       </div>
+      ${(p.fotos || []).length ? `<h3 style="margin:26px 0 4px">Fotos de su vehículo</h3><p class="muted" style="margin:0 0 10px;font-size:13px">Fotos reales de su unidad en China, antes de cargarla al contenedor.</p>
+        <div class="galeria-cli">${p.fotos.map((f, i) => `<button type="button" data-g="${esc(f)}" aria-label="Foto ${i + 1}"><img src="${esc(f)}" alt="" loading="lazy"></button>`).join("")}</div>` : ""}
       <h3 style="margin:26px 0 6px">Seguimiento de su importación</h3>
       <ol class="linea-t">${items}</ol>
       ${precio ? `<h3 style="margin:10px 0 0">Pagos</h3><div class="pagos-c">${pg.map(([k, t, f]) => `<div><small>${t}</small><b>${usd(precio * f)}</b><span class="${p.pagos && p.pagos[k] ? "ok" : "pend"}">${p.pagos && p.pagos[k] ? "✓ Pagado" : "Pendiente"}</span></div>`).join("")}</div>` : ""}
@@ -152,6 +161,12 @@ export function iniciarPedidos(cx) {
     </article>`;
   }
   function activarCopiar(caja) {
+    // Galería: al tocar una foto se ve en grande
+    caja.querySelectorAll("[data-g]").forEach(b => b.addEventListener("click", () => {
+      const v = document.createElement("div"); v.className = "visor-cli";
+      v.innerHTML = `<img src="${esc(b.dataset.g)}" alt=""><button type="button" aria-label="Cerrar">✕</button>`;
+      v.onclick = () => v.remove(); document.body.appendChild(v);
+    }));
     caja.querySelectorAll("[data-copiar]").forEach(a => a.addEventListener("click", () => { try { navigator.clipboard.writeText(a.dataset.copiar); } catch (_) {} }));
   }
 
