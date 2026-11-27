@@ -19,7 +19,7 @@ window.VASCRUZ_TRANSITO = [
     color: "2 negros · 1 blanco · interior naranja",
     unidades: 3,
     etapa: 3,
-    llegada: "Iquique, 10 de diciembre",
+    llegada: "Iquique, 9 de diciembre",
     fotos: ["bz3x-01.jpg","bz3x-02.jpg","bz3x-03.jpg","bz3x-04.jpg","bz3x-05.jpg","bz3x-06.jpg","bz3x-07.jpg","bz3x-08.jpg","bz3x-09.jpg"]
   },
   {
