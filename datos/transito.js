@@ -9,7 +9,7 @@ window.VASCRUZ_TRANSITO = [
     color: "5 blancos · 1 gris plata",
     unidades: 6,
     etapa: 3,
-    llegada: "Iquique, 10 de diciembre",
+    llegada: "Iquique, 30 de noviembre",
     fotos: ["bz5-01.jpg","bz5-02.jpg","bz5-03.jpg","bz5-04.jpg","bz5-05.jpg","bz5-06.jpg","bz5-07.jpg","bz5-08.jpg","bz5-09.jpg"]
   },
   {
@@ -28,8 +28,8 @@ window.VASCRUZ_TRANSITO = [
     anio: "2026",
     color: "Blanco perla · interior azul",
     unidades: 4,
-    etapa: 3,
-    llegada: "Iquique, 10 de diciembre",
+    etapa: 2,
+    llegada: "Iquique, 17 de enero",
     fotos: ["seagull-01.jpg","seagull-02.jpg","seagull-03.jpg","seagull-04.jpg","seagull-05.jpg","seagull-06.jpg","seagull-07.jpg","seagull-08.jpg","seagull-09.jpg","seagull-10.jpg"]
   }
 ];
