@@ -94,6 +94,17 @@ export function iniciarPedidos(cx) {
   const ultimaEtapa = (p) => { let u = null; ETAPAS.forEach(e => { if (p.etapas && p.etapas[e[0]] && p.etapas[e[0]].hecho) u = e[0]; }); return u; };
   const avance = (p) => Math.round(ETAPAS.filter(e => p.etapas && p.etapas[e[0]] && p.etapas[e[0]].hecho).length / ETAPAS.length * 100);
   const fechaTxt = (f) => f ? new Date(f + "T12:00:00").toLocaleDateString("es-BO", { day: "2-digit", month: "long", year: "numeric" }) : "";
+  // De Iquique a Santa Cruz no hay rastreo público: se estima 7 a 10 días desde la llegada a Iquique
+  const DIAS_IQQ_SCZ = [7, 10];
+  const masDias = (f, n) => { const d = new Date(f + "T12:00:00"); d.setDate(d.getDate() + n); return d; };
+  const corto = (d) => d.toLocaleDateString("es-BO", { day: "numeric", month: "long" });
+  function estimadoSCZ(p) {
+    const iq = p.etapas && p.etapas.iquique, base = iq && iq.hecho && iq.fecha ? iq.fecha : p.eta;
+    if (!base) return "";
+    const tras = p.etapas && p.etapas.traslado;
+    if (tras && tras.hecho) return "";
+    return "entre el " + corto(masDias(base, DIAS_IQQ_SCZ[0])) + " y el " + corto(masDias(base, DIAS_IQQ_SCZ[1])) + (iq && iq.hecho ? "" : " (aprox.)");
+  }
 
   // ---------- Vista del cliente ----------
   function tarjeta(p, id, deAdmin) {
@@ -110,7 +121,7 @@ export function iniciarPedidos(cx) {
       const medios = (p.medios || []).filter(x => x.etapa === e[0]);
       return `<li class="${hecho ? "hecho" : actual ? "actual" : ""}"><span class="pto">${hecho ? "✓" : ""}</span>
         <h4>${esc(e[1])}</h4>${hecho && d.fecha ? `<div class="fecha">${esc(fechaTxt(d.fecha))}</div>` : actual ? `<div class="fecha">En curso</div>` : ""}
-        ${hecho || actual ? `<p>${esc(e[2])}</p>` : ""}${d.nota ? `<div class="nota">${esc(d.nota)}</div>` : ""}
+        ${hecho || actual ? `<p>${esc(e[2])}</p>` : ""}${e[0] === "traslado" && !hecho && estimadoSCZ(p) ? `<p class="muted" style="font-size:13px">Desde Iquique tarda de 7 a 10 días en llegar a Santa Cruz: estimado ${esc(estimadoSCZ(p))}. Luego sigue la aduana.</p>` : ""}${d.nota ? `<div class="nota">${esc(d.nota)}</div>` : ""}
         ${medios.length ? `<div class="medios">${medios.map(x => medioHTML(x.url, x.titulo, esc)).join("")}</div>` : ""}</li>`;
     }).join("");
     return `<article class="card" style="margin-bottom:22px">
@@ -131,7 +142,7 @@ export function iniciarPedidos(cx) {
         </div>
       </div>
       <div class="seg-datos">
-        ${[["N.° de chasis (VIN)", p.chasis], ["Contenedor", p.contenedor], ["BL", p.bl], ["Naviera", p.naviera], ["Puerto de origen", p.origen], ["Llegada estimada a Iquique", fechaTxt(p.eta)], ["Su asesor", p.asesor_nombre]]
+        ${[["N.° de chasis (VIN)", p.chasis], ["Contenedor", p.contenedor], ["BL", p.bl], ["Naviera", p.naviera], ["Puerto de origen", p.origen], ["Llegada estimada a Iquique", (p.etapas && p.etapas.iquique && p.etapas.iquique.hecho) ? "Llegó · " + fechaTxt(p.etapas.iquique.fecha) : fechaTxt(p.eta)], ["Llegada estimada a Santa Cruz", estimadoSCZ(p)], ["Su asesor", p.asesor_nombre]]
           .filter(r => r[1]).map(r => `<div><small>${esc(r[0])}</small><b>${esc(r[1])}</b></div>`).join("")}
       </div>
       <h3 style="margin:26px 0 6px">Seguimiento de su importación</h3>
