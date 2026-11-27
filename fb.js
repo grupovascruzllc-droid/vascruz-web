@@ -3,7 +3,7 @@
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  sendEmailVerification, sendPasswordResetEmail, signOut
+  sendEmailVerification, sendPasswordResetEmail, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, orderBy, limit,
@@ -41,7 +41,7 @@ auth.languageCode = "es";
 export const db = getFirestore(app);
 export {
   onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification,
-  sendPasswordResetEmail, signOut, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, orderBy,
+  sendPasswordResetEmail, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, orderBy,
   limit, getDocs, serverTimestamp
 };
 
@@ -75,4 +75,26 @@ export function errorEs(e) {
     "permission-denied": "No tiene permiso para ver esta información."
   };
   return t[c] || (e && e.message) || "Ocurrió un error. Intente de nuevo.";
+}
+
+// ---------- Clientes que entran con su número de celular ----------
+// Firebase necesita un correo; para los clientes se arma uno interno a partir del celular
+// (ej.: 70012345 → 59170012345@cliente.vascruz.com). El cliente nunca lo ve: escribe solo su celular.
+export const DOMINIO_CLIENTE = "cliente.vascruz.com";
+export function usuarioAEmail(u) {
+  const s = String(u || "").trim().toLowerCase();
+  if (s.includes("@")) return s;
+  const d = telWa(s);
+  return d.length >= 7 ? d + "@" + DOMINIO_CLIENTE : s;
+}
+export function esUsuarioCelular(email) { return String(email || "").toLowerCase().endsWith("@" + DOMINIO_CLIENTE); }
+// Lo que se le muestra a la persona como "usuario": su celular, o su correo si es asesor o socio
+export function usuarioVisible(email) {
+  if (!esUsuarioCelular(email)) return email || "";
+  const d = String(email).split("@")[0];
+  return d.startsWith("591") && d.length === 11 ? d.slice(3) : d;
+}
+export function claveSeisNumeros() {
+  const n = crypto.getRandomValues(new Uint32Array(1))[0] % 900000 + 100000;
+  return String(n);
 }

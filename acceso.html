@@ -125,7 +125,7 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
     <p class="muted" style="margin:10px 0 18px">Ingrese con el usuario y la contraseña que le entregó Vascruz. Si es cliente, aquí verá el seguimiento de su importación.</p>
 
     <form class="card" id="f-ingresar" novalidate>
-      <label for="li-email">Correo</label><input id="li-email" type="email" autocomplete="email" required>
+      <label for="li-email">Correo o número de celular</label><input id="li-email" type="text" inputmode="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="Clientes: su número de celular" required>
       <label for="li-pass">Contraseña</label><input id="li-pass" type="password" autocomplete="current-password" required>
       <button class="btn btn-gold full" type="submit">Ingresar</button>
       <p style="margin:14px 0 0"><button type="button" class="link" id="olvide">Olvidé mi contraseña</button></p>
@@ -259,7 +259,7 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
         <div><label for="n-empresa">Empresa <span class="muted">(opcional)</span></label><input id="n-empresa" autocomplete="off"></div>
       </div>
       <div class="row2">
-        <div><label for="n-email">Correo (será su usuario)</label><input id="n-email" type="email" autocomplete="off" required></div>
+        <div><label for="n-email" id="n-email-lbl">Correo (será su usuario)</label><input id="n-email" type="email" autocomplete="off" required></div>
         <div><label for="n-pass">Contraseña inicial</label>
           <div style="display:flex;gap:6px"><input id="n-pass" autocomplete="new-password" minlength="8" required><button type="button" class="btn btn-line btn-sm" id="n-gen" title="Generar contraseña">Generar</button></div></div>
       </div>
@@ -297,6 +297,18 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
   <div id="p-mipedido" hidden>
     <div class="secthead"><div><div class="eyebrow">Seguimiento Vascruz</div><h1 style="margin-top:6px">Mi importación</h1></div></div>
     <div id="mi-pedido"></div>
+    <details class="card" id="cambiar-clave" style="margin-top:18px">
+      <summary style="cursor:pointer;font-weight:700">🔒 Cambiar mi contraseña</summary>
+      <form id="f-clave" novalidate style="margin-top:10px">
+        <label for="cc-actual">Contraseña actual</label><input id="cc-actual" type="password" autocomplete="current-password" required>
+        <div class="row2">
+          <div><label for="cc-nueva">Contraseña nueva <span class="muted">(mínimo 6)</span></label><input id="cc-nueva" type="password" autocomplete="new-password" minlength="6" required></div>
+          <div><label for="cc-repite">Repita la contraseña nueva</label><input id="cc-repite" type="password" autocomplete="new-password" minlength="6" required></div>
+        </div>
+        <button class="btn btn-gold" type="submit">Guardar contraseña nueva</button>
+        <div class="msg" id="m-clave" hidden></div>
+      </form>
+    </details>
   </div>
 
   <!-- Administrador: pedidos y seguimiento de clientes -->
@@ -347,8 +359,9 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
 import {
   auth, db, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification,
   sendPasswordResetEmail, signOut, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, getDocs,
-  serverTimestamp, usd, esc, nombreAuto, errorEs, crearCuenta, telWa
-} from "./fb.js?v=4";
+  serverTimestamp, usd, esc, nombreAuto, errorEs, crearCuenta, telWa,
+  updatePassword, EmailAuthProvider, reauthenticateWithCredential, usuarioAEmail, esUsuarioCelular, usuarioVisible, claveSeisNumeros
+} from "./fb.js?v=5";
 import { tablaDetalle, CSS_DETALLE, usd2 } from "./detalle.js?v=1";
 import { iniciarPedidos, CSS_PEDIDOS } from "./pedidos.js?v=2";
 document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}${CSS_PEDIDOS}</style>`);
@@ -366,13 +379,27 @@ async function busy(btn, fn) { btn.disabled = true; try { await fn(); } finally 
 
 // ---------- Ingresar ----------
 $("#f-ingresar").onsubmit = (e) => { e.preventDefault(); const b = e.submitter || e.target.querySelector("button[type=submit]");
-  busy(b, async () => { try { msg($("#m-ingresar"), "", ""); await signInWithEmailAndPassword(auth, $("#li-email").value.trim(), $("#li-pass").value); }
-    catch (err) { msg($("#m-ingresar"), errorEs(err), "err"); } }); };
+  busy(b, async () => { try { msg($("#m-ingresar"), "", ""); await signInWithEmailAndPassword(auth, usuarioAEmail($("#li-email").value), $("#li-pass").value); }
+    catch (err) { msg($("#m-ingresar"), errorEs(err) + (!$("#li-email").value.includes("@") ? " Revise su número de celular (sin espacios) y su contraseña." : ""), "err"); } }); };
 $("#olvide").onclick = async () => {
   const em = $("#li-email").value.trim();
+  if (em && !em.includes("@")) return msg($("#m-ingresar"), "Si entra con su celular, pida a Vascruz o a su asesor por WhatsApp que le asigne una contraseña nueva (+591 77006107).", "info");
   if (!em) return msg($("#m-ingresar"), "Escriba su correo arriba y vuelva a pulsar \"Olvidé mi contraseña\".", "info");
   try { await sendPasswordResetEmail(auth, em); msg($("#m-ingresar"), "Le enviamos un correo para crear una nueva contraseña.", "ok"); }
   catch (err) { msg($("#m-ingresar"), errorEs(err), "err"); }
+};
+// Cambiar mi contraseña (el cliente confirma la actual y pone una nueva)
+$("#f-clave").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySelector("button[type=submit]"); const m = $("#m-clave");
+  const actual = $("#cc-actual").value, nueva = $("#cc-nueva").value;
+  if (nueva.length < 6) return msg(m, "La contraseña nueva debe tener al menos 6 caracteres.", "err");
+  if (nueva !== $("#cc-repite").value) return msg(m, "Las dos contraseñas nuevas no coinciden.", "err");
+  busy(b, async () => {
+    try {
+      await reauthenticateWithCredential(auth.currentUser, EmailAuthProvider.credential(auth.currentUser.email, actual));
+      await updatePassword(auth.currentUser, nueva);
+      e.target.reset(); msg(m, "✅ Listo. Desde ahora entre con su contraseña nueva.", "ok");
+    } catch (err) { msg(m, ["auth/invalid-credential", "auth/wrong-password"].includes(err.code) ? "La contraseña actual no es correcta." : errorEs(err), "err"); }
+  });
 };
 // Al salir se recarga la página: así no queda nada del usuario anterior (secciones ni precios en memoria).
 $("#salir").onclick = async () => { await signOut(auth); location.reload(); };
@@ -737,7 +764,7 @@ $("#fob-xls").onclick = () => busy($("#fob-xls"), async () => {
 async function usuarios() {
   const s = await getDocs(collection(db, "usuarios"));
   const todos = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ((b.creado?.seconds) || 0) - ((a.creado?.seconds) || 0));
-  const contacto = (u) => `${esc(u.email)}<br><span class="muted">${esc(u.telefono || "")} · CI/NIT ${esc(u.ci || "")}<br>${esc(u.ciudad || "")}${u.empresa ? " · " + esc(u.empresa) : ""}</span>`;
+  const contacto = (u) => `${esCliente2(u) ? "Usuario: <b>" + esc(usuarioVisible(u.email)) + "</b>" : esc(u.email)}<br><span class="muted">${esc(u.telefono || "")} · CI/NIT ${esc(u.ci || "")}<br>${esc(u.ciudad || "")}${u.empresa ? " · " + esc(u.empresa) : ""}</span>`;
   const pend = todos.filter(u => u.rol === "pendiente");
   $("#pend-box").hidden = !pend.length;
   $("#u-pend").innerHTML = pend.map(u => `<tr><td><b>${esc(u.nombre)}</b></td><td>${contacto(u)}</td><td>${esc(ROLES[u.tipo_solicitado] || u.tipo_solicitado)}</td><td>${fecha(u.creado)}</td>
@@ -770,6 +797,7 @@ let USUARIOS = {};
 $("#ver-elim").onchange = () => usuarios();
 
 const URL_ACCESO = location.origin + location.pathname;
+const esCliente2 = (u) => esUsuarioCelular(u.email);
 function avisoUsuario(html) { const box = $("#u-aviso"); box.hidden = false; box.innerHTML = html; box.scrollIntoView({ behavior: "smooth", block: "center" }); }
 function waUsuario(u, texto) { return `https://wa.me/${telWa(u.telefono)}?text=${encodeURIComponent(texto)}`; }
 
@@ -785,9 +813,23 @@ async function cambiarRol(u, rol) {
 async function accionUsuario(a, u) {
   if (!u) return;
   if (a === "wa") {
-    const texto = `Hola ${u.nombre}, este es su acceso a Vascruz Import & Export SRL como ${ROLES[u.rol] || "usuario"}:\n\nIngrese aquí: ${URL_ACCESO}\nUsuario: ${u.email}\n\nSi no recuerda su contraseña, pulse "Olvidé mi contraseña" en la página de ingreso o pídanos que se la restablezcamos. Este acceso es personal e intransferible.`;
+    const texto = `Hola ${u.nombre}, este es su acceso a Vascruz Import & Export SRL como ${ROLES[u.rol] || "usuario"}:\n\nIngrese aquí: ${URL_ACCESO}\nUsuario: ${usuarioVisible(u.email)}\n\nSi no recuerda su contraseña, pulse "Olvidé mi contraseña" en la página de ingreso o pídanos que se la restablezcamos. Este acceso es personal e intransferible.`;
     if (!u.telefono) return alert("Este usuario no tiene celular registrado. Pulse \"Editar\" para agregarlo.");
     window.open(waUsuario(u, texto), "_blank", "noopener");
+  }
+  if (a === "reset" && esUsuarioCelular(u.email)) {
+    // Cliente que entra con su celular: no tiene correo, así que se le asigna una contraseña nueva de 6 números
+    if (!confirm(`¿Asignar una contraseña nueva a ${u.nombre}? La anterior dejará de funcionar.`)) return;
+    let r, j = {};
+    try {
+      r = await fetch(CRM + "/api/web/clave-cliente", { method: "POST", headers: { authorization: "Bearer " + await auth.currentUser.getIdToken(), "content-type": "application/json" }, body: JSON.stringify({ uid: u.id }) });
+      j = await r.json().catch(() => ({}));
+    } catch (_) { return alert("No se pudo conectar. Intente de nuevo en un momento."); }
+    if (!r.ok) return alert(j.error === "FALTA_CONFIGURAR" ? "Falta un paso de configuración (la cuenta de servicio de Firebase en el CRM). Avise a Claude." : (j.error || "No se pudo restablecer."));
+    const texto = `Hola ${u.nombre}, esta es su nueva contraseña de Vascruz:\n\nUsuario: ${usuarioVisible(u.email)}\nContraseña: ${j.clave}\n\nIngrese aquí: ${URL_ACCESO}\nDentro puede cambiarla en "Cambiar mi contraseña".`;
+    avisoUsuario(`<div class="msg ok" style="margin:0">✅ Contraseña nueva de <b>${esc(u.nombre)}</b>: <b style="font-size:18px;letter-spacing:.08em">${esc(j.clave)}</b></div>
+      <div class="actions">${u.telefono ? `<a class="btn btn-gold btn-sm" href="${esc(waUsuario(u, texto))}" target="_blank" rel="noopener">Enviársela por WhatsApp</a>` : ""}</div>`);
+    return;
   }
   if (a === "reset") {
     if (!confirm(`¿Enviar a ${u.email} un correo para crear una contraseña nueva?`)) return;
@@ -841,14 +883,26 @@ function generarClave() {
   const r = (s) => s[crypto.getRandomValues(new Uint32Array(1))[0] % s.length];
   return "Vc" + Array.from({ length: 6 }, () => r(letras)).join("") + r(nums) + r(nums);
 }
-$("#n-gen").onclick = () => { $("#n-pass").value = generarClave(); };
+const esCliente = () => (document.querySelector("input[name=n-tipo]:checked") || {}).value === "cliente";
+$("#n-gen").onclick = () => { $("#n-pass").value = esCliente() ? claveSeisNumeros() : generarClave(); };
+// Clientes: su usuario es su celular (el correo es opcional) y la contraseña, 6 números fáciles
+function ajustarTipo() {
+  const c = esCliente();
+  $("#n-email-lbl").innerHTML = c ? 'Correo <span class="muted">(opcional: si lo deja vacío, el usuario es su celular)</span>' : "Correo (será su usuario)";
+  $("#n-email").required = !c; $("#n-pass").minLength = c ? 6 : 8;
+  if (c && (!$("#n-pass").value || $("#n-pass").value.length > 6)) $("#n-pass").value = claveSeisNumeros();
+}
+document.querySelectorAll("input[name=n-tipo]").forEach(x => x.addEventListener("change", ajustarTipo));
 $("#f-crear").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySelector("button[type=submit]"); const m = $("#m-crear");
   const v = (id) => $(id).value.trim();
   const datos = { nombre: v("#n-nombre"), ci: v("#n-ci"), telefono: v("#n-tel"), ciudad: v("#n-ciudad"), empresa: v("#n-empresa") };
-  const email = v("#n-email").toLowerCase(), pass = $("#n-pass").value, rol = document.querySelector("input[name=n-tipo]:checked").value;
+  const rol = document.querySelector("input[name=n-tipo]:checked").value, pass = $("#n-pass").value;
   if (!datos.nombre || !datos.ci || !datos.telefono || !datos.ciudad) return msg(m, "Complete nombre, CI o NIT, celular y ciudad.", "err");
+  // Cliente sin correo: su usuario es su celular
+  const email = (rol === "cliente" && !v("#n-email")) ? usuarioAEmail(datos.telefono) : v("#n-email").toLowerCase();
+  if (rol === "cliente" && !v("#n-email") && telWa(datos.telefono).length < 10) return msg(m, "Revise el celular del cliente: será su usuario (8 números, ej.: 70012345).", "err");
   if (!/^\S+@\S+\.\S+$/.test(email)) return msg(m, "Escriba un correo válido.", "err");
-  if (pass.length < 8) return msg(m, "La contraseña inicial debe tener al menos 8 caracteres. Puede pulsar \"Generar\".", "err");
+  if (pass.length < (rol === "cliente" ? 6 : 8)) return msg(m, rol === "cliente" ? "La contraseña debe tener al menos 6 caracteres. Pulse \"Generar\"." : "La contraseña inicial debe tener al menos 8 caracteres. Puede pulsar \"Generar\".", "err");
   busy(b, async () => {
     let uid = null;
     try {
@@ -856,20 +910,20 @@ $("#f-crear").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySe
       uid = await crearCuenta(email, pass);
       await setDoc(doc(db, "usuarios", uid), { ...datos, email, rol, creado: serverTimestamp(), creado_por: ME.email });
     } catch (err) {
-      if (err.code === "auth/email-already-in-use") return msg(m, "Ese correo ya tiene una cuenta. Búsquelo en la lista de usuarios de abajo para cambiar su acceso.", "err");
+      if (err.code === "auth/email-already-in-use") return msg(m, (esUsuarioCelular(email) ? "Ese celular ya tiene una cuenta." : "Ese correo ya tiene una cuenta.") + " Búsquelo en la lista de usuarios de abajo para cambiar su acceso.", "err");
       return msg(m, (uid ? "La cuenta se creó pero no se pudo guardar su ficha: " : "") + errorEs(err) + (err.code === "permission-denied" ? " Revise que las reglas nuevas de Firebase estén publicadas." : ""), "err");
     }
     msg(m, "", "");
     const url = location.origin + location.pathname;
-    const texto = `Hola ${datos.nombre}, bienvenido a Vascruz Import & Export SRL. Ya tiene su acceso como ${ROLES[rol]}:\n\nIngrese aquí: ${url}\nUsuario: ${email}\nContraseña: ${pass}\n\nEste acceso es personal e intransferible. Si quiere cambiar su contraseña, pulse "Olvidé mi contraseña" en la página de ingreso.${rol === "cliente" ? "\n\nAl ingresar verá \"Mi importación\": cada etapa de su vehículo desde China hasta Bolivia, su número de contenedor y los videos del proceso." : ""}`;
+    const texto = `Hola ${datos.nombre}, bienvenido a Vascruz Import & Export SRL. Ya tiene su acceso como ${ROLES[rol]}:\n\nIngrese aquí: ${url}\nUsuario: ${usuarioVisible(email)}\nContraseña: ${pass}\n\nEste acceso es personal e intransferible. ${esUsuarioCelular(email) ? "Dentro puede cambiar su contraseña en \"Cambiar mi contraseña\"." : "Si quiere cambiar su contraseña, pulse \"Olvidé mi contraseña\" en la página de ingreso."}${rol === "cliente" ? "\n\nAl ingresar verá \"Mi importación\": cada etapa de su vehículo desde China hasta Bolivia, su número de contenedor y los videos del proceso." : ""}`;
     const tel = telWa(datos.telefono);
     $("#crear-listo").hidden = false;
     $("#crear-listo").innerHTML = `<div class="eyebrow">Usuario creado</div><h2 style="margin:6px 0">${esc(datos.nombre)} · ${esc(ROLES[rol])}</h2>
-      <p class="muted" style="margin:0">Usuario: <b>${esc(email)}</b><br>Contraseña inicial: <b>${esc(pass)}</b></p>
+      <p class="muted" style="margin:0">Usuario: <b>${esc(usuarioVisible(email))}</b><br>Contraseña inicial: <b>${esc(pass)}</b></p>
       <div class="actions"><a class="btn btn-gold" href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Enviar acceso por WhatsApp</a>
       <button class="btn btn-line" id="copiar-acceso">Copiar mensaje</button></div>`;
     $("#copiar-acceso").onclick = () => navigator.clipboard.writeText(texto).then(() => $("#copiar-acceso").textContent = "Mensaje copiado ✓");
-    e.target.reset();
+    e.target.reset(); ajustarTipo();
     await usuarios();
   });
 };
