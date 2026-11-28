@@ -177,6 +177,37 @@ button.foto:hover .thumb{filter:brightness(1.05);box-shadow:0 2px 10px rgba(0,0,
     <div class="tbl" style="margin-top:10px"><table><thead><tr><th>N.°</th><th>Fecha</th><th>Cliente</th><th>Vehículo</th><th class="num">Precio</th><th></th></tr></thead><tbody id="mis-prof"></tbody></table></div>
   </div>
 
+  <!-- Cotización por contenedor (asesores y administrador): varios vehículos en un contenedor, gastos repartidos -->
+  <div id="p-contenedor" hidden>
+    <div class="secthead"><div><div class="eyebrow">Cotizaciones Vascruz</div><h1 style="margin-top:6px">Cotizar contenedor</h1></div><span class="muted" id="ct-act"></span></div>
+    <p class="muted" style="margin-top:0">Elija los vehículos que van juntos en un contenedor. El flete y la logística de puerto se dividen entre todos: con más vehículos, cada uno sale más barato.</p>
+    <div class="card">
+      <h2 style="margin:0 0 8px">1. Vehículos del contenedor</h2>
+      <div class="tbl"><table class="ct-veh"><thead><tr><th>Vehículo</th><th class="num">Cantidad</th><th class="num ct-adm">FOB negociado</th><th></th></tr></thead><tbody id="ct-lineas"></tbody></table></div>
+      <button class="btn btn-line btn-sm" type="button" id="ct-agregar" style="margin-top:10px">+ Agregar vehículo</button>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h2 style="margin:0 0 4px">2. Gastos del contenedor</h2>
+      <p class="muted" style="margin:0 0 10px" id="ct-gastos-nota"></p>
+      <div class="tbl"><table><thead><tr><th>Concepto</th><th>Se cobra</th><th class="num">Monto</th><th class="num">Valor normal</th><th class="num">Por vehículo</th></tr></thead><tbody id="ct-gastos"></tbody></table></div>
+    </div>
+    <div class="card" style="margin-top:18px" id="ct-res"></div>
+    <form class="card" id="f-ct" novalidate style="margin-top:18px">
+      <h2 style="margin:0 0 8px">3. Datos del cliente</h2>
+      <label for="ct-cliente">Nombre del cliente</label><input id="ct-cliente" required>
+      <div class="row2">
+        <div><label for="ct-doc">CI o NIT <span class="muted">(opcional)</span></label><input id="ct-doc"></div>
+        <div><label for="ct-tel">Celular del cliente <span class="muted">(opcional)</span></label><input id="ct-tel" type="tel"></div>
+      </div>
+      <label for="ct-nota">Nota para el cliente <span class="muted">(opcional)</span></label><textarea id="ct-nota" rows="2"></textarea>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:500;margin-top:10px"><input type="checkbox" id="ct-desglose" checked style="width:auto"> Mostrar al cliente el desglose de gastos por vehículo</label>
+      <button class="btn btn-gold full" type="submit">Generar cotización del contenedor</button>
+      <div class="msg" id="m-ct" hidden></div>
+    </form>
+    <div class="space"></div>
+    <div class="card" id="ct-listo" hidden></div>
+  </div>
+
   <!-- Lista FOB (socios) -->
   <!-- Stock en tránsito: asesores, socios y administrador lo comparten con sus clientes -->
   <div id="p-transito" hidden>
@@ -444,6 +475,8 @@ function panel(rol) {
   const tabs = [];
   // Asesores y socios cotizan a nombre de Vascruz (precio puesto en Santa Cruz); los socios además ven el FOB.
   if (rol === "asesor" || rol === "socio" || rol === "admin") tabs.push(["p-cotizador", "Cotizador"]);
+  // Cotización por contenedor: solo administrador, asesores y socios (el cliente solo ve el enlace que le envían)
+  if (rol === "asesor" || rol === "socio" || rol === "admin") tabs.push(["p-contenedor", "Cotizar contenedor"]);
   if (rol === "asesor" || rol === "admin") tabs.push(["p-catalogo", "Enviar catálogo"]);
   if (rol === "asesor" || rol === "admin") tabs.push(["p-comisiones", rol === "admin" ? "Comisiones" : "Mis comisiones"]);
   if ((rol === "asesor" || rol === "socio" || rol === "admin") && (window.VASCRUZ_TRANSITO || []).length) tabs.push(["p-transito", "Stock en tránsito"]);
@@ -451,7 +484,7 @@ function panel(rol) {
   if (rol === "cliente") tabs.push(["p-mipedido", "Mi importación"]);
   if (rol === "admin") tabs.push(["p-pedidos", "Pedidos"], ["p-usuarios", "Usuarios"], ["p-proformas", "Proformas"], ["p-precios", "Actualizar precios"]);
   // Esconder todas las secciones; luego solo se muestran las que corresponden a este rol.
-  for (const s of ["p-cotizador", "p-catalogo", "p-comisiones", "p-transito", "p-fob", "p-usuarios", "p-precios", "p-proformas", "p-pedidos", "p-mipedido"]) $("#" + s).hidden = true;
+  for (const s of ["p-cotizador", "p-contenedor", "p-catalogo", "p-comisiones", "p-transito", "p-fob", "p-usuarios", "p-precios", "p-proformas", "p-pedidos", "p-mipedido"]) $("#" + s).hidden = true;
   const bar = $("#paneltabs"); bar.innerHTML = ""; bar.hidden = tabs.length < 2;
   const abrir = (id) => { for (const [p] of tabs) $("#" + p).hidden = p !== id; bar.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.p === id)); cargarPestana(id); };
   if (rol === "admin") { const a = document.createElement("a"); a.className = "tab"; a.href = CRM; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Vascruz CRM ↗"; a.style.textDecoration = "none"; setTimeout(() => bar.appendChild(a), 0); }
@@ -510,6 +543,7 @@ const PED = iniciarPedidos({ db, doc, getDoc, getDocs, addDoc, updateDoc, setDoc
 async function cargarPestana(id) {
   try {
     if (id === "p-cotizador") await cotizador();
+    if (id === "p-contenedor") await cotizarContenedor();
     if (id === "p-catalogo") await enviarCatalogo();
     if (id === "p-comisiones") await misComisiones();
     if (id === "p-fob") await listaFob();
@@ -557,6 +591,149 @@ $("#ver-det").onclick = () => {
   const box = $("#cot-det"); box.hidden = !box.hidden;
   $("#ver-det").textContent = box.hidden ? "Ver cotización detallada" : "Ocultar cotización detallada";
   vistaDetalle(); if (!box.hidden) box.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+// ---------- Cotizar contenedor ----------
+// Mismo cálculo que la hoja "Cotización x Contenedor" del Excel:
+// flete y logística de puerto por contenedor (se reparten entre las unidades); seguro, cigüeña, otros gastos y comisiones por vehículo.
+// Base CIF = FOB + % del transporte (flete por unidad + cigüeña) + seguro; arancel, ICE e IVA en cascada.
+const CT = { lineas: [], g: null };
+function ctParam() { return (PRECIOS && PRECIOS.param) || (DETALLE && DETALLE.param) || null; }
+// Datos del vehículo: los asesores los leen del desglose; los socios, de su lista FOB y del catálogo.
+function ctDato(id) {
+  const d = DETALLE && DETALLE.desglose && DETALLE.desglose[id];
+  if (d) return { fob: d.fob, tec: d.tec };
+  const m = catById[id], f = FOB && FOB.fob && FOB.fob[id];
+  return f && m ? { fob: f, tec: m.tec } : null;
+}
+function ctGastosIniciales() {
+  const P = ctParam();
+  return {
+    flete: P.fleteCont, logistica: P.tramite, seguro: P.seguro, cig: P.cig, otros: 0,
+    vascruz: 1000, asesor: 500, descuento: 0,
+    normal: { flete: P.fleteCont, logistica: P.tramite, seguro: P.seguro, cig: P.cig,
+      otros: P.agente + P.puerto + P.almIqq + P.despachante + P.almAduana, vascruz: 1000, asesor: 500, descuento: 0 }
+  };
+}
+async function cotizarContenedor() {
+  if (!PRECIOS) { const s = await getDoc(doc(db, "privado", "asesores")); PRECIOS = s.exists() ? s.data() : { precios: {} }; }
+  if ((ROL === "asesor" || ROL === "admin") && !DETALLE) await cargarDetalle();
+  if (ROL === "socio" && !FOB) { const s = await getDoc(doc(db, "privado", "socios")); FOB = s.exists() ? s.data() : { fob: {} }; }
+  const P = ctParam();
+  if (!P) { $("#ct-res").innerHTML = `<p class="muted" style="margin:0">Falta cargar los parámetros de costos. El administrador debe dar "Actualizar web" (o "Actualizar precios") con el Excel de Vascruz.</p>`; return; }
+  $("#ct-act").textContent = PRECIOS.actualizado ? "Costos al " + fecha(PRECIOS.actualizado) : "";
+  if (!CT.g) CT.g = ctGastosIniciales();
+  if (!CT.lineas.length) CT.lineas.push({ id: "", cant: 3, fob: "" });
+  document.querySelectorAll("#p-contenedor .ct-adm").forEach(e => e.hidden = !ES_ADMIN);
+  $("#ct-gastos-nota").textContent = ES_ADMIN ? "Los montos amarillos los puede cambiar para negociar. Al lado ve el valor normal." : "Montos fijados por Vascruz.";
+  ctPintarLineas(); ctPintarGastos(); ctCalcular();
+}
+function ctOpciones(sel) {
+  const lista = CAT.filter(m => ctDato(m.id));
+  return `<option value="">— Elija un vehículo —</option>` + lista.map(m => `<option value="${m.id}" ${String(m.id) === String(sel) ? "selected" : ""}>${esc(nombreAuto(m))}</option>`).join("");
+}
+function ctPintarLineas() {
+  $("#ct-lineas").innerHTML = CT.lineas.map((l, i) => `<tr>
+      <td><select data-i="${i}" data-k="id">${ctOpciones(l.id)}</select></td>
+      <td class="num"><input data-i="${i}" data-k="cant" type="number" min="1" max="20" value="${esc(l.cant)}" style="width:80px;text-align:right"></td>
+      <td class="num ct-adm" ${ES_ADMIN ? "" : "hidden"}><input data-i="${i}" data-k="fob" type="number" min="0" step="10" placeholder="${l.id && ctDato(l.id) ? ctDato(l.id).fob : ""}" value="${esc(l.fob)}" style="width:120px;text-align:right;background:#fff8dc"></td>
+      <td>${CT.lineas.length > 1 ? `<button class="btn btn-line btn-sm" type="button" data-quitar="${i}">Quitar</button>` : ""}</td></tr>`).join("");
+  $("#ct-lineas").querySelectorAll("[data-k]").forEach(el => el.oninput = el.onchange = () => {
+    const l = CT.lineas[+el.dataset.i]; l[el.dataset.k] = el.value;
+    if (el.dataset.k === "id") { l.fob = ""; ctPintarLineas(); }
+    ctCalcular();
+  });
+  $("#ct-lineas").querySelectorAll("[data-quitar]").forEach(b => b.onclick = () => { CT.lineas.splice(+b.dataset.quitar, 1); ctPintarLineas(); ctCalcular(); });
+}
+$("#ct-agregar").onclick = () => { if (CT.lineas.length >= 8) return; CT.lineas.push({ id: "", cant: 1, fob: "" }); ctPintarLineas(); ctCalcular(); };
+const CT_GASTOS = [
+  ["flete", "Flete marítimo / naviera / BL", "Por contenedor"],
+  ["logistica", "Gasto logístico en puerto Iquique (desconsolidado + reexpedición)", "Por contenedor"],
+  ["seguro", "Seguro internacional", "Por vehículo"],
+  ["cig", "Transporte terrestre Iquique → Santa Cruz (cigüeña)", "Por vehículo"],
+  ["otros", "Otros gastos (agente China, puerto, almacenajes, despachante, aduana)", "Por vehículo"],
+  ["vascruz", "Gestión Vascruz (comisión)", "Por vehículo"],
+  ["asesor", "Comisión del asesor", "Por vehículo"],
+  ["descuento", "Descuento al cliente (se resta)", "Por vehículo"],
+];
+function ctPintarGastos() {
+  $("#ct-gastos").innerHTML = CT_GASTOS.map(([k, t, modo]) => `<tr><td>${esc(t)}</td><td>${modo}</td>
+    <td class="num">${ES_ADMIN ? `<input data-g="${k}" type="number" min="0" step="10" value="${CT.g[k]}" style="width:110px;text-align:right;background:#fff8dc">` : usd(CT.g[k])}</td>
+    <td class="num muted">${usd(CT.g.normal[k])}</td><td class="num" id="ctpv-${k}"></td></tr>`).join("");
+  $("#ct-gastos").querySelectorAll("[data-g]").forEach(el => el.oninput = () => { CT.g[el.dataset.g] = Number(el.value) || 0; ctCalcular(); });
+}
+function ctCalculo() {
+  const P = ctParam(), g = CT.g;
+  const lineas = CT.lineas.filter(l => l.id && ctDato(l.id) && Number(l.cant) > 0);
+  const U = lineas.reduce((a, l) => a + Number(l.cant), 0);
+  if (!U) return { U: 0, filas: [], total: 0 };
+  const fleteU = g.flete / U, logU = g.logistica / U, red = P.redondeo || 10;
+  const filas = lineas.map(l => {
+    const d = ctDato(l.id), m = catById[l.id], tec = d.tec;
+    const fob = Number(l.fob) > 0 ? Number(l.fob) : d.fob;
+    const base = fob + (fleteU + g.cig) * P.pctTransp + g.seguro;
+    const gaR = tec === "PHEV" ? P.gaPHEV : tec === "Gasolina" ? P.gaGas : P.gaBEV;
+    const iceR = tec === "PHEV" ? P.icePHEV : tec === "Gasolina" ? P.iceGas : P.iceBEV;
+    const ga = base * gaR, ice = (base + ga) * iceR, iva = (base + ga + ice) * P.iva, trib = ga + ice + iva;
+    const gestion = g.vascruz + g.asesor;
+    const sin = fob + fleteU + logU + g.seguro + g.cig + g.otros + trib + gestion - g.descuento;
+    const precio = Math.ceil(Math.round(sin * 1e6) / 1e6 / red) * red;
+    const r2 = (x) => Math.round(x * 100) / 100;
+    return { id: Number(l.id), nombre: m ? nombreAuto(m) : "", foto: (m && m.foto) || "", tec, tipo: (m && m.tipo) || "", cant: Number(l.cant),
+      fob: r2(fob), flete: r2(fleteU), logistica: r2(logU), seguro: g.seguro, cig: g.cig, otros: g.otros,
+      base: r2(base), ga_pct: gaR, ga: r2(ga), ice: r2(ice), iva: r2(iva), tributos: r2(trib), gestion, descuento: g.descuento,
+      precio, total: precio * Number(l.cant), utilidad: (precio - (sin + g.descuento - g.vascruz)) * Number(l.cant) };
+  });
+  const total = filas.reduce((a, f) => a + f.total, 0);
+  return { U, filas, total, fleteU, logU };
+}
+function ctCalcular() {
+  const c = ctCalculo(), box = $("#ct-res");
+  for (const [k] of CT_GASTOS) { const el = $("#ctpv-" + k); if (!el) continue;
+    el.textContent = !c.U ? "—" : k === "flete" ? usd(c.fleteU) : k === "logistica" ? usd(c.logU) : (k === "descuento" && CT.g[k] ? "-" : "") + usd(CT.g[k]); }
+  if (!c.U) { box.innerHTML = `<p class="muted" style="margin:0">Elija al menos un vehículo y su cantidad.</p>`; return; }
+  const pg = pagos(c.total), uti = c.filas.reduce((a, f) => a + f.utilidad, 0);
+  box.innerHTML = `<div class="secthead" style="margin-bottom:6px"><div><div class="eyebrow">Resultado · ${c.U} ${c.U === 1 ? "vehículo" : "vehículos"} en el contenedor</div>
+      <h2 style="margin-top:4px">Total contenedor puesto en Santa Cruz: ${usd(c.total)}</h2></div></div>
+    <div class="tbl"><table><thead><tr><th>Vehículo</th><th class="num">FOB</th><th class="num">Flete</th><th class="num">Logística Iquique</th><th class="num">Seguro</th><th class="num">Cigüeña</th><th class="num">Otros</th><th class="num">Tributos</th><th class="num">Gestión</th><th class="num">Desc.</th><th class="num">Precio unitario</th><th class="num">Cant.</th><th class="num">Total</th></tr></thead><tbody>
+      ${c.filas.map(f => `<tr><td><b>${esc(f.nombre)}</b><br><span class="muted">Base CIF ${usd(f.base)} · arancel ${Math.round(f.ga_pct * 100)}%</span></td><td class="num">${usd(f.fob)}</td><td class="num">${usd(f.flete)}</td><td class="num">${usd(f.logistica)}</td><td class="num">${usd(f.seguro)}</td><td class="num">${usd(f.cig)}</td><td class="num">${usd(f.otros)}</td><td class="num">${usd(f.tributos)}</td><td class="num">${usd(f.gestion)}</td><td class="num">${f.descuento ? "-" + usd(f.descuento) : "—"}</td><td class="num"><b>${usd(f.precio)}</b></td><td class="num">${f.cant}</td><td class="num"><b>${usd(f.total)}</b></td></tr>`).join("")}
+    </tbody></table></div>
+    <div class="plan"><div>Reserva 50%<b>${usd(pg[0])}</b></div><div>Chasis 30%<b>${usd(pg[1])}</b></div><div>Iquique 20%<b>${usd(pg[2])}</b></div></div>
+    ${ES_ADMIN ? `<p style="margin:12px 0 0;color:#a3261b"><b>Uso interno:</b> utilidad Vascruz ${usd(Math.round(uti))} · comisión de asesores ${usd(CT.g.asesor * c.U)}</p>` : ""}`;
+}
+$("#f-ct").onsubmit = (e) => { e.preventDefault(); const b = e.target.querySelector("button[type=submit]"); const mm = $("#m-ct");
+  const c = ctCalculo(); const cliente = $("#ct-cliente").value.trim();
+  if (!c.U) return msg(mm, "Elija al menos un vehículo y su cantidad.", "err");
+  if (!cliente) return msg(mm, "Escriba el nombre del cliente.", "err");
+  busy(b, async () => {
+    try {
+      msg(mm, "", "");
+      const hoy = new Date();
+      const numero = "VC-CONT-" + hoy.toISOString().slice(2, 10).replace(/-/g, "") + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+      const lineas = c.filas.map(({ utilidad, ...f }) => f);
+      const ref = await addDoc(collection(db, "proformas"), {
+        tipo: "contenedor", numero, fecha: serverTimestamp(), fecha_txt: hoy.toLocaleDateString("es-BO"), validez_dias: 7,
+        asesor_uid: ME.uid, asesor_nombre: (PERFIL && PERFIL.nombre) || ME.email, asesor_tel: (PERFIL && PERFIL.telefono) || "", asesor_email: ME.email, asesor_rol: ROL,
+        cliente_nombre: cliente, cliente_doc: $("#ct-doc").value.trim(), cliente_tel: $("#ct-tel").value.trim(), nota: $("#ct-nota").value.trim(),
+        mostrar_desglose: $("#ct-desglose").checked, lineas, unidades: c.U, precio: c.total, pagos: pagos(c.total),
+        vehiculo: { marca: "Contenedor", modelo: c.U + " vehículos", version: "" }
+      });
+      const url = location.origin + location.pathname.replace(/acceso\.html$/, "") + "contenedor.html?id=" + ref.id;
+      alCRM({ tipo: "proforma", ref: ref.id, numero, cliente_nombre: cliente, cliente_tel: $("#ct-tel").value.trim(),
+        vehiculo: "Contenedor: " + c.filas.map(f => f.cant + " × " + f.nombre).join(", "), precio: c.total, enlace: url });
+      const texto = `Hola ${cliente}, le comparto la cotización por contenedor de Vascruz Import & Export SRL (${c.U} vehículos, ${usd(c.total)} puesto en Santa Cruz):\n${url}`;
+      const telCli = telWa($("#ct-tel").value);
+      $("#ct-listo").hidden = false;
+      $("#ct-listo").innerHTML = `<div class="eyebrow">Cotización ${esc(numero)} lista</div><h2 style="margin:6px 0">Compártala con su cliente</h2>
+        <p class="muted" style="margin:0;word-break:break-all">${esc(url)}</p>
+        <div class="actions"><a class="btn btn-gold" href="https://wa.me/${telCli}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        <a class="btn btn-line" href="${esc(url)}" target="_blank" rel="noopener">Ver</a>
+        <a class="btn btn-line" href="${esc(url + "&imprimir=1")}" target="_blank" rel="noopener">Imprimir / PDF</a>
+        <button class="btn btn-line" type="button" id="copiar-ct">Copiar enlace</button></div>`;
+      $("#copiar-ct").onclick = () => navigator.clipboard.writeText(url).then(() => $("#copiar-ct").textContent = "Enlace copiado ✓");
+      $("#ct-listo").scrollIntoView({ behavior: "smooth", block: "center" });
+    } catch (err) { msg(mm, errorEs(err), "err"); }
+  });
 };
 
 // ---------- Enviar catálogo ----------
@@ -700,7 +877,7 @@ function filaProf(d, conAsesor) {
   const p = d.data(); const v = p.vehiculo || {};
   return `<tr><td><span class="pill">${esc(p.numero)}</span></td><td>${esc(p.fecha_txt || fecha(p.fecha))}</td>${conAsesor ? `<td>${esc(p.asesor_nombre)}${p.asesor_rol === "socio" ? ` <span class="pill">Socio</span>` : ""}</td>` : ""}
     <td>${esc(p.cliente_nombre)}</td><td>${esc(nombreAuto(v))}</td><td class="num">${usd(p.precio)}</td>
-    <td><div class="actions" style="margin:0;flex-wrap:nowrap"><a class="btn btn-line btn-sm" href="proforma.html?id=${d.id}" target="_blank" rel="noopener">Abrir</a>${p.detalle ? `<a class="btn btn-line btn-sm" href="proforma.html?id=${d.id}&v=detalle" target="_blank" rel="noopener">Detallada</a>` : ""}</div></td></tr>`;
+    <td><div class="actions" style="margin:0;flex-wrap:nowrap"><a class="btn btn-line btn-sm" href="${p.tipo === "contenedor" ? "contenedor" : "proforma"}.html?id=${d.id}" target="_blank" rel="noopener">Abrir</a>${p.detalle ? `<a class="btn btn-line btn-sm" href="proforma.html?id=${d.id}&v=detalle" target="_blank" rel="noopener">Detallada</a>` : ""}</div></td></tr>`;
 }
 function ordenar(docs) { return docs.sort((a, b) => ((b.data().fecha?.seconds) || 9e12) - ((a.data().fecha?.seconds) || 9e12)); }
 async function misProformas() {
@@ -936,7 +1113,7 @@ $("#xls").onchange = async (e) => {
   const f = e.target.files[0]; if (!f) return; const out = $("#xls-res");
   out.innerHTML = `<div class="msg info">Leyendo ${esc(f.name)}…</div>`;
   try {
-    const { leerExcelPrivado } = await import("./xlsx-lector.js?v=3");
+    const { leerExcelPrivado } = await import("./xlsx-lector.js?v=4");
     const r = await leerExcelPrivado(await f.arrayBuffer());
     if (r.errores.length) { out.innerHTML = `<div class="msg err">Revise el Excel (no se guardó nada):<br>${r.errores.map(esc).join("<br>")}<br>Si acaba de cambiar precios, abra el Excel, guárdelo y vuelva a intentar.</div>`; return; }
     if (!r.n) { out.innerHTML = `<div class="msg err">No hay vehículos con "Sí" en "Incluir en catálogo".</div>`; return; }
@@ -946,9 +1123,9 @@ $("#xls").onchange = async (e) => {
       <button class="btn btn-gold full" id="guardar-precios">Guardar precios</button>`;
     $("#guardar-precios").onclick = (ev) => busy(ev.target, async () => {
       const ahora = serverTimestamp();
-      await setDoc(doc(db, "privado", "asesores"), { precios: r.precios, actualizado: ahora, por: ME.email });
+      await setDoc(doc(db, "privado", "asesores"), { precios: r.precios, ...(r.param ? { param: r.param } : {}), actualizado: ahora, por: ME.email });
       await setDoc(doc(db, "privado", "socios"), { fob: r.fob, actualizado: ahora, por: ME.email });
-      await setDoc(doc(db, "privado", "detalle"), { desglose: r.desglose, comisiones: r.comisiones, actualizado: ahora, por: ME.email });
+      await setDoc(doc(db, "privado", "detalle"), { desglose: r.desglose, comisiones: r.comisiones, ...(r.param ? { param: r.param } : {}), actualizado: ahora, por: ME.email });
       // Catálogos ya enviados por los asesores: se actualizan al precio vigente (y sin los vehículos quitados)
       let nCat = 0;
       const cs = await getDocs(collection(db, "catalogos"));

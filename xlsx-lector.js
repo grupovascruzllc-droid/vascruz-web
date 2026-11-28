@@ -232,6 +232,16 @@ async function unzipXlsx(buf) {
 // Solo toma las filas con "Sí" en "Incluir en catálogo". Clave = ID del Excel (el mismo de la web).
 // Desglose de costos (hoja "Cálculo de Costos") y comisión del asesor externo (hoja "Comisiones"),
 // igual que la hoja "Cotizador" del Excel. Solo para vehículos con "Sí" en "Incluir en catálogo".
+// Parámetros de costos (hoja "Parámetros", columna C) para el cotizador por contenedor de la web.
+var FILAS_PARAM = { fleteCont: 5, tramite: 6, agente: 9, seguro: 10, puerto: 11, almIqq: 12, ibmetro: 13, despachante: 14,
+  almAduana: 15, cig: 17, pctTransp: 19, iva: 20, gaBEV: 21, iceBEV: 22, gaPHEV: 23, icePHEV: 24, pagoExt: 26, redondeo: 27,
+  gaGas: 37, iceGas: 38 };
+function buildParam(par) {
+  var out = {};
+  Object.keys(FILAS_PARAM).forEach(function (k) { var v = cell(par, FILAS_PARAM[k], 3); out[k] = typeof v === "number" && isFinite(v) ? v : 0; });
+  return out;
+}
+
 function buildDetalle(base, calc, comis) {
   var desglose = {}, comisiones = {}, errores = [];
   var filaCalc = {}, filaCom = {};
@@ -287,5 +297,6 @@ export async function leerExcelPrivado(arrayBuffer) {
     if (typeof fo === "number" && fo > 0) fob[id] = Math.round(fo); else errores.push(nombre + ": sin FOB.");
     n++;
   }
-  return { n, precios, fob, desglose: det.desglose, comisiones: det.comisiones, errores: errores.concat(det.errores) };
+  const param = map["Parámetros"] ? buildParam(hoja("Parámetros")) : null;
+  return { n, precios, fob, desglose: det.desglose, comisiones: det.comisiones, param, errores: errores.concat(det.errores) };
 }
