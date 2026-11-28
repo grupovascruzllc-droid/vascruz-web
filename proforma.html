@@ -69,7 +69,7 @@ h2{font:700 20px var(--display);margin:4px 0 2px}
 <script type="module">
 import { leerPublico, usd, esc, nombreAuto, telWa, listoParaImprimir } from "./publico.js?v=1";
 import { descargarPDF, abrirPDF, esIOS, esSafari } from "./pdf.js?v=2";
-import { tablaDetalle, CSS_DETALLE } from "./detalle.js?v=1";
+import { tablaDetalle, CSS_DETALLE } from "./detalle.js?v=2";
 document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}
 .ficha{display:grid;grid-template-columns:1fr 1fr;gap:2px 24px;font-size:13px;margin-top:14px}
 .ficha div{padding:3px 0;border-bottom:1px dotted var(--line)}.ficha span{color:var(--muted);display:inline-block;min-width:96px}
@@ -122,7 +122,8 @@ try {
   const vence = new Date(fch.getTime() + (p.validez_dias || 15) * 864e5);
   const fmt = (d) => d.toLocaleDateString("es-BO", { day: "2-digit", month: "long", year: "numeric" });
   const tec = v.tec === "BEV" ? "100% eléctrico" : v.tec === "PHEV" ? "Híbrido enchufable" : v.tec;
-  const filas = [["Tecnología", tec], ["Carrocería", v.tipo], ["Autonomía", v.autonomia ? v.autonomia + " km" : (f.carga || "")], ["Batería", f.bateria], ["Potencia", f.potencia],
+  const gas = v.tec === "Gasolina";
+  const filas = [["Tecnología", tec], ["Carrocería", v.tipo], ["Autonomía", v.autonomia ? v.autonomia + " km" : (f.carga || "")], [gas ? "Motor" : "Batería", f.bateria], ["Potencia", f.potencia],
     ["Tracción", f.traccion], ["Dimensiones (L × A × H)", f.dimensiones], ["Color", p.color]].filter(r => r[1]);
   const pg = p.pagos || [];
   document.title = `Proforma ${p.numero} — ${nombreAuto(v)} | Vascruz`;
@@ -136,7 +137,7 @@ try {
     document.title = `Cotización ${p.numero} — ${nombreAuto(v)} | Vascruz`;
     out.innerHTML = `<div class="hoja det-hoja">
       ${cabecera}
-      <div class="tit"><h1 style="font-size:19px">COTIZACIÓN — VEHÍCULO ${v.tec === "PHEV" ? "HÍBRIDO ENCHUFABLE" : "ELÉCTRICO"} IMPORTADO DE CHINA</h1><div class="num">N.° ${esc(p.numero)}</div></div>
+      <div class="tit"><h1 style="font-size:19px">COTIZACIÓN — VEHÍCULO ${v.tec === "PHEV" ? "HÍBRIDO ENCHUFABLE" : gas ? "A GASOLINA" : "ELÉCTRICO"} IMPORTADO DE CHINA</h1><div class="num">N.° ${esc(p.numero)}</div></div>
       <div class="meta">
         <div><span>Fecha:</span> ${fmt(fch)}</div><div><span>Válida hasta:</span> ${fmt(new Date(fch.getTime() + 7 * 864e5))}</div>
         <div><span>Cliente:</span> <b>${esc(p.cliente_nombre)}</b></div><div><span>Asesor:</span> ${esc(p.asesor_nombre)}</div>
@@ -144,13 +145,13 @@ try {
       </div>
       <div class="ficha">
         <div><span>Vehículo:</span> <b>${esc(nombreAuto(v))}</b></div><div><span>Tecnología:</span> ${esc(tec)}</div>
-        <div><span>Carrocería:</span> ${esc(v.tipo || "")}</div><div><span>Autonomía:</span> ${v.autonomia ? v.autonomia + " km" : "—"}</div>
-        <div><span>Color:</span> ${esc(p.color || "")}</div><div><span>Incluye:</span> Idioma español y cargador</div>
+        <div><span>Carrocería:</span> ${esc(v.tipo || "")}</div><div><span>${gas ? "Motor:" : "Autonomía:"}</span> ${gas ? esc(f.bateria || "—") : v.autonomia ? v.autonomia + " km" : "—"}</div>
+        <div><span>Color:</span> ${esc(p.color || "")}</div><div><span>Incluye:</span> ${gas ? "Idioma español" : "Idioma español y cargador"}</div>
       </div>
       ${tablaDetalle(p.detalle, p.precio, p.pagos)}
       ${p.nota ? `<div class="nota">${esc(p.nota)}</div>` : ""}
       <div class="cond">• Cotización referencial en dólares americanos, sujeta a variación de flete, gastos portuarios y tributos al momento de la nacionalización.<br>
-        • Precio por vehículo puesto en Santa Cruz de la Sierra. Incluye idioma español y cargador según especificación del proveedor.<br>
+        • Precio por vehículo puesto en Santa Cruz de la Sierra. Incluye idioma español${gas ? "" : " y cargador"} según especificación del proveedor.<br>
         • Validez de la cotización: 7 días calendario.</div>
       <div class="firma"><div><b>${esc(p.asesor_nombre)}</b>Asesor de Vascruz${p.asesor_tel ? " · " + esc(p.asesor_tel) : ""}</div><div style="text-align:right"><b>José María Vásquez Aguado</b>Gerente General — Vascruz Import &amp; Export SRL</div></div>
     </div>`;

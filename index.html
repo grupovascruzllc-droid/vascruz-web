@@ -686,7 +686,7 @@ a:hover .ico-anim svg *,.ico-anim:hover svg *,div:hover > .ico-anim svg *{animat
 // ===== Catálogo (datos del Excel) =====
 const WA="https://wa.me/59177006107?text=";
 const CAT=(window.VASCRUZ_CATALOGO&&window.VASCRUZ_CATALOGO.modelos)||[];
-const V=CAT.map(m=>[m.marca,[m.modelo,m.version].filter(Boolean).join(" "),m.anio,m.tec,m.tipo||"",m.autonomia,m.colores,m.precio,m.foto,m.id,!!(window.VASCRUZ_360||{})[m.marca+"|"+m.modelo]]).sort((a,b)=>(a[7]==null?1e12:a[7])-(b[7]==null?1e12:b[7]));
+const V=CAT.map(m=>[m.marca,[m.modelo,m.version].filter(Boolean).join(" "),m.anio,m.tec,m.tipo||"",m.autonomia,m.colores,m.precio,m.foto,m.id,!!(window.VASCRUZ_360||{})[m.marca+"|"+m.modelo],[(m.ficha||{}).bateria_destacado,(m.ficha||{}).potencia_destacado].filter(Boolean).join(" · ")+(m.tec==="Gasolina"?" gasolina":"")]).sort((a,b)=>(a[7]==null?1e12:a[7])-(b[7]==null?1e12:b[7]));
 const fmt=n=>"USD "+n.toLocaleString("de-DE");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let f="all",marca="";
@@ -711,9 +711,9 @@ function render(){
     return `<article class="card">
       <a class="photo" href="modelo.html?id=${v[9]}" aria-label="Ver ficha del ${esc(v[0]+" "+v[1])}">${v[8]?`<img src="${esc(v[8])}" alt="${esc(v[0]+" "+v[1])}" loading="lazy" width="720" height="540">`:""}${v[10]?`<span class="b360">360°</span>`:""}${TR[v[9]]?`<span class="b-transito">🚢 ${TR[v[9]]} en tránsito</span>`:""}</a>
       <div class="cuerpo">
-      <div class="card-top"><span class="make">${esc(v[0])} · ${v[2]}</span><span class="tag">${v[3]==="PHEV"?"Híbrido enchufable":"100% eléctrico"}</span></div>
+      <div class="card-top"><span class="make">${esc(v[0])} · ${v[2]}</span><span class="tag">${v[3]==="PHEV"?"Híbrido enchufable":v[3]==="Gasolina"?"Gasolina":"100% eléctrico"}</span></div>
       <h3><a href="modelo.html?id=${v[9]}">${esc(v[1])}</a></h3>
-      <dl class="specs"><div><dt>Carrocería</dt><dd>${esc(v[4])}</dd></div><div><dt>Autonomía eléctrica</dt><dd>${v[5]?v[5]+" km":"Consultar"}</dd></div></dl>
+      <dl class="specs"><div><dt>Carrocería</dt><dd>${esc(v[4])}</dd></div>${v[3]==="Gasolina"?`<div><dt>Motor</dt><dd>${esc(v[11]||"Consultar")}</dd></div>`:`<div><dt>Autonomía eléctrica</dt><dd>${v[5]?v[5]+" km":"Consultar"}</dd></div>`}</dl>
       <p class="colors">${esc(v[6])}</p>
       <div class="price">${v[7]!=null?`<div><small>Desde, puesto en Bolivia</small><b>${fmt(v[7])}</b></div>`:`<div><small>Precio puesto en Bolivia</small><b>Consultar</b></div>`}<a href="${WA+msg}" target="_blank" rel="noopener">Cotizar →</a></div>
       <a class="more" href="modelo.html?id=${v[9]}">Ver ficha técnica${v[10]?" y vista 360°":""} →</a>

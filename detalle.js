@@ -5,7 +5,8 @@ const e = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": 
 export const usd2 = (n) => "USD " + Number(n || 0).toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export function filasDetalle(d) {
-  const phev = d.tec === "PHEV";
+  const phev = d.tec === "PHEV", gas = d.tec === "Gasolina";
+  const gaPct = d.fob ? Math.round((d.ga || 0) / (d.fob * 1.1) * 1000) / 10 : 0;
   const gastos = [
     ["Compra del vehículo en China (precio FOB)", "Origen China", d.fob],
     ["Agente de carga China / inspección", "Origen China", d.agente],
@@ -19,7 +20,7 @@ export function filasDetalle(d) {
     ["Gestión y servicio de importación", "Vascruz", d.gestion],
   ];
   const tributos = [
-    [phev ? "Tributos aduaneros (gravamen arancelario, ICE e IVA)" : "IVA importación 14,94% (sin arancel ni ICE)", "Aduana", d.tributos],
+    [gas ? "Tributos: gravamen arancelario " + String(gaPct).replace(".", ",") + "% + IVA 14,94%" : phev ? "Tributos aduaneros (gravamen arancelario, ICE e IVA)" : "IVA importación 14,94% (sin arancel ni ICE)", "Aduana", d.tributos],
     ["Agencia despachante", "Aduana", d.despachante],
     ["Almacenaje en aduana", "Aduana", d.almAduana],
   ];

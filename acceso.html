@@ -362,7 +362,7 @@ import {
   serverTimestamp, usd, esc, nombreAuto, errorEs, crearCuenta, telWa,
   updatePassword, EmailAuthProvider, reauthenticateWithCredential, usuarioAEmail, esUsuarioCelular, usuarioVisible, claveSeisNumeros
 } from "./fb.js?v=5";
-import { tablaDetalle, CSS_DETALLE, usd2 } from "./detalle.js?v=1";
+import { tablaDetalle, CSS_DETALLE, usd2 } from "./detalle.js?v=2";
 import { iniciarPedidos, CSS_PEDIDOS } from "./pedidos.js?v=4";
 document.head.insertAdjacentHTML("beforeend", `<style>${CSS_DETALLE}${CSS_PEDIDOS}</style>`);
 
@@ -936,7 +936,7 @@ $("#xls").onchange = async (e) => {
   const f = e.target.files[0]; if (!f) return; const out = $("#xls-res");
   out.innerHTML = `<div class="msg info">Leyendo ${esc(f.name)}…</div>`;
   try {
-    const { leerExcelPrivado } = await import("./xlsx-lector.js?v=2");
+    const { leerExcelPrivado } = await import("./xlsx-lector.js?v=3");
     const r = await leerExcelPrivado(await f.arrayBuffer());
     if (r.errores.length) { out.innerHTML = `<div class="msg err">Revise el Excel (no se guardó nada):<br>${r.errores.map(esc).join("<br>")}<br>Si acaba de cambiar precios, abra el Excel, guárdelo y vuelva a intentar.</div>`; return; }
     if (!r.n) { out.innerHTML = `<div class="msg err">No hay vehículos con "Sí" en "Incluir en catálogo".</div>`; return; }

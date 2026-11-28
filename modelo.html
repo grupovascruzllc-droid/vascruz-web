@@ -178,14 +178,14 @@ if(!m){
   const pago=p!=null?[["50%","Reserva"],["30%","Chasis listo"],["20%","En Iquique"]].map(([pc,t])=>`<div><strong>${fmt(p*parseInt(pc)/100)}</strong><span>${pc} · ${t}</span></div>`).join(""):"";
   const filas=[
     ["Marca",m.marca],["Modelo",m.modelo],["Versión",m.version],["Año modelo",m.anio],
-    ["Tecnología",m.tec==="PHEV"?"Híbrido enchufable (PHEV)":"100% eléctrico (BEV)"],["Carrocería",m.tipo],
-    ["Autonomía de referencia",m.autonomia?m.autonomia+" km (CLTC)":null],["Batería",fi.bateria],
+    ["Tecnología",m.tec==="PHEV"?"Híbrido enchufable (PHEV)":m.tec==="Gasolina"?"Gasolina":"100% eléctrico (BEV)"],["Carrocería",m.tipo],
+    ["Autonomía de referencia",m.autonomia?m.autonomia+" km (CLTC)":null],[m.tec==="Gasolina"?"Motor":"Batería",fi.bateria],
     ["Potencia",fi.potencia],["Tracción",fi.traccion],["Dimensiones (L × A × H)",fi.dimensiones],
-    ["Distancia entre ejes",fi.distancia_ejes],["Carga",fi.carga],["Destacado",fi.destacado],["Colores disponibles",m.colores]
+    ["Distancia entre ejes",fi.distancia_ejes],[m.tec==="Gasolina"?"Capacidad de carga":"Carga",fi.carga],["Destacado",fi.destacado],["Colores disponibles",m.colores]
   ].filter(r=>r[1]);
   const mitad=Math.ceil(filas.length/2);
   const dl=a=>`<dl>${a.map(r=>`<div><dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd></div>`).join("")}</dl>`;
-  const kpi=[[m.autonomia?m.autonomia+" km":"—","Autonomía"],[fi.bateria_destacado||"—","Batería"],[fi.potencia_destacado||"—","Potencia"]];
+  const kpi=m.tec==="Gasolina"?[[fi.bateria_destacado||"—","Motor"],[fi.potencia_destacado||"—","Potencia"],[fi.traccion||"—","Tracción"]]:[[m.autonomia?m.autonomia+" km":"—","Autonomía"],[fi.bateria_destacado||"—","Batería"],[fi.potencia_destacado||"—","Potencia"]];
 
   app.innerHTML=`
   <div class="print-head"><img src="img/logo.png" alt="Vascruz Import &amp; Export SRL"><div><b>Vascruz Import &amp; Export SRL</b><br>Av. Grigotá B/El Parí, Calle Guariyú #132, Santa Cruz de la Sierra<br>WhatsApp +591 77006107 · grupovascruzllc@gmail.com · vascruz.com</div></div>
@@ -195,7 +195,7 @@ if(!m){
       <div class="eyebrow">${esc(m.marca)} · ${esc(m.anio||"")}</div>
       <h1>${esc(nombre)}</h1>
       <p class="version">${esc(m.version||"")}</p>
-      <div class="tags"><span class="tag">${m.tec==="PHEV"?"Híbrido enchufable":"100% eléctrico"}</span>${m.tipo?`<span class="tag">${esc(m.tipo)}</span>`:""}${v?`<span class="tag">Vista 360°</span>`:""}</div>
+      <div class="tags"><span class="tag">${m.tec==="PHEV"?"Híbrido enchufable":m.tec==="Gasolina"?"Gasolina":"100% eléctrico"}</span>${m.tipo?`<span class="tag">${esc(m.tipo)}</span>`:""}${v?`<span class="tag">Vista 360°</span>`:""}</div>
       <div class="pricebox">
         ${p!=null?`<small>Precio referencial, puesto en Santa Cruz</small><b>${fmt(p)}</b><div class="pay">${pago}</div>`:`<small>Precio puesto en Santa Cruz</small><b>Consultar precio</b><p>Escríbanos y le enviamos su cotización detallada.</p>`}
       </div>

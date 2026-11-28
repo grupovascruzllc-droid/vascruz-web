@@ -251,7 +251,7 @@ function buildDetalle(base, calc, comis) {
       tec: textOrNull(cell(base, r3, 7)) || "", cont: c(4),
       fob: fob, agente: c(13), flete: c(6), seguro: c(7), puerto: c(14), almIqq: c(15), descons: c(16),
       ibmetro: textOrNull(cell(base, r3, 7)) === "PHEV" ? c(17) : 0, cig: c(19), gestion: c(26), pagoExt: c(18),
-      tributos: c(12), despachante: c(20), almAduana: c(21)
+      tributos: c(12), ga: c(9), despachante: c(20), almAduana: c(21)
     };
     var rm = filaCom[id];
     var com = rm ? cell(comis, rm, 5) : null;
