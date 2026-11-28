@@ -1,6 +1,6 @@
 // Generado automáticamente desde el Excel de Vascruz con "Actualizar web". No editar a mano.
 window.VASCRUZ_CATALOGO = {
- "actualizado": "2026-11-24T18:44:08Z",
+ "actualizado": "2026-11-28T01:47:52Z",
  "modelos": [
   {
    "id": 1,
@@ -577,6 +577,54 @@ window.VASCRUZ_CATALOGO = {
     "carga": "Autonomía eléctrica 100 km (NEDC)",
     "destacado": "Pickup híbrida · remolque 2.500 kg"
    }
+  },
+  {
+   "id": 29,
+   "marca": "ZNA",
+   "modelo": "Pickup Z11A",
+   "version": "4x2 · 2.4 gasolina · manual 5 vel.",
+   "anio": null,
+   "tec": "Gasolina",
+   "tipo": "Pickup cabina simple",
+   "autonomia": null,
+   "colores": "Blanco (otros colores a consultar)",
+   "precio": null,
+   "foto": "img/autos/29_ZNA_Z11A.jpg",
+   "ficha": {
+    "bateria": "Motor 2TZD 2,4 L a gasolina · manual de 5 velocidades",
+    "bateria_destacado": "2,4 L",
+    "potencia": "116 kW (158 hp) · 230 Nm",
+    "potencia_destacado": "158 HP",
+    "traccion": "Trasera (4x2)",
+    "dimensiones": "5.290 × 1.850 × 1.810 mm",
+    "distancia_ejes": "3.150 mm",
+    "carga": "Carga útil 500 kg · caja 1.510 × 1.562 × 475 mm",
+    "destacado": "Doble airbag, ABS + EBD + ESP, A/C y asientos de cuero"
+   }
+  },
+  {
+   "id": 30,
+   "marca": "ZNA",
+   "modelo": "Pickup Z22A",
+   "version": "4x4 · 2.4 gasolina · manual 5 vel. · full",
+   "anio": null,
+   "tec": "Gasolina",
+   "tipo": "Pickup cabina simple",
+   "autonomia": null,
+   "colores": "Blanco (otros colores a consultar)",
+   "precio": null,
+   "foto": "img/autos/30_ZNA_Z22A.jpg",
+   "ficha": {
+    "bateria": "Motor 2TZD 2,4 L a gasolina · manual de 5 velocidades",
+    "bateria_destacado": "2,4 L",
+    "potencia": "116 kW (158 hp) · 230 Nm",
+    "potencia_destacado": "158 HP",
+    "traccion": "4x4",
+    "dimensiones": "5.290 × 1.850 × 1.850 mm",
+    "distancia_ejes": "3.150 mm",
+    "carga": "Carga útil 500 kg · caja 1.510 × 1.562 × 475 mm",
+    "destacado": "Cámara de retroceso, sensores, pantalla 9\", estribos y barras de techo"
+   }
   }
  ],
  "fotos_origen": {
@@ -607,6 +655,8 @@ window.VASCRUZ_CATALOGO = {
   "26_BYD_Leopard_7.jpg": "d0af4577c1bc619af257c117ea800c7bacad81fb",
   "27_BYD_Shark_6.jpg": "51b35194bce590bc6c8c6cba596ffc57e7733df0",
   "05_BYD_Dolphin_Mini.jpg": "5b27eba3f52495bb199a771760f3c8ffbd04894b",
-  "28_Toyota_BZ5.jpg": "def6c6186220c7c19876118e21397c16fb145aef"
+  "28_Toyota_BZ5.jpg": "def6c6186220c7c19876118e21397c16fb145aef",
+  "29_ZNA_Z11A.jpg": "b1baac9ad048cf2e30e55aa3f84d752c2c0f7416",
+  "30_ZNA_Z22A.jpg": "b1baac9ad048cf2e30e55aa3f84d752c2c0f7416"
  }
 };
